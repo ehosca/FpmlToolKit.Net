@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Configuration xmlns="http://www.microsoft.com/xml/schema/linq">
+  <Namespaces>
+    <Namespace Schema="http://www.fpml.org/FpML-5/reporting" Clr="fpml_5_2_reporting"/>
+    <Namespace Schema="http://www.w3.org/2000/09/xmldsig#" Clr="org.w3.xmldsig"/>
+  </Namespaces>
+</Configuration>
