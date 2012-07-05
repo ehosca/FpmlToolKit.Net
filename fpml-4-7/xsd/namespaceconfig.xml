@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Configuration xmlns="http://www.microsoft.com/xml/schema/linq">
   <Namespaces>
-    <Namespace Schema="http://www.fpml.org/2003/FpML-4-7" Clr="fpml_4_7"/>
+    <Namespace Schema="http://www.fpml.org/2009/FpML-4-7" Clr="fpml_4_7"/>
     <Namespace Schema="http://www.w3.org/2000/09/xmldsig#" Clr="org.w3.xmldsig"/>
   </Namespaces>
 </Configuration>
