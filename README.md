@@ -1,5 +1,4 @@
-FpmlToolKit.Net
-================
+#FpmlToolKit.Net
 
 FpmlToolKit.Net exists to speed up the initial ramp up time for projects that deal with FpML documents. 
 Its based on [Linq2XSD](http://linqtoxsd.codeplex.com).
