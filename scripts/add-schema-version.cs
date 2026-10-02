@@ -1,15 +1,28 @@
-// Creates an fpml-<version>-<view> project from an FpML schema download and adds it to FpmlToolKit.slnx.
+// Creates fpml-<version>-<view> projects from FpML "Schema and Examples" downloads, adds them to FpmlToolKit.slnx,
+// and copies a few of the official examples into the test project.
 //
 //   dotnet run scripts/add-schema-version.cs -- <folder> [<folder> ...]
 //
 // Each folder is searched recursively for fpml-main-*.xsd; every match is one view (confirmation, reporting, ...).
-// The XSDs next to it are copied into the new project's xsd/ folder. The version comes from the main schema's
-// file name (fpml-main-5-13.xsd -> 5-13) and the view from its target namespace
-// (http://www.fpml.org/FpML-5/confirmation -> confirmation). Existing projects are left untouched.
+// The version comes from the main schema's file name (fpml-main-5-13.xsd -> 5-13) and the view from its target
+// namespace (http://www.fpml.org/FpML-5/confirmation -> confirmation).
+//
+// - The schema must compile (System.Xml.Schema) or the view is skipped; LinqToXsd fails silently on such schemas.
+// - The XSDs next to the main schema are copied into the new project's xsd/ folder.
+// - ExamplesPerView schema-valid example documents, spread evenly across the view's examples, are copied to
+//   tests/FpmlToolKit.Tests/Examples/<project>/, keeping their relative paths.
+// Existing projects and existing example folders are left untouched, so the script is safe to re-run.
+
+#nullable enable
 
 using System.Diagnostics;
 using System.Text.RegularExpressions;
+using System.Xml;
 using System.Xml.Linq;
+using System.Xml.Schema;
+
+const int ExamplesPerView = 5;
+const long MaxExampleBytes = 100_000;
 
 var repoRoot = FindRepoRoot();
 var sources = args.Where(a => !a.StartsWith("--")).ToList();
@@ -63,12 +76,86 @@ void Add(string mainSchema)
         : throw new InvalidOperationException($"unexpected target namespace '{targetNamespace}' (only FpML 5.x views are supported)");
 
     var name = $"fpml-{version}-{view}";
+    var schemas = CompileSchema(mainSchema, name);
+    if (schemas is null)
+        return;
+
     var projectDir = Path.Combine(repoRoot, name);
     if (Directory.Exists(projectDir))
+        Console.WriteLine($"{name}: project already exists");
+    else
+        CreateProject(mainSchema, name, version, view, targetNamespace);
+
+    ImportExamples(Path.GetDirectoryName(mainSchema)!, name, targetNamespace, schemas);
+}
+
+XmlSchemaSet? CompileSchema(string mainSchema, string name)
+{
+    var schemas = new XmlSchemaSet { XmlResolver = new XmlUrlResolver() };
+    var errors = new List<string>();
+    schemas.ValidationEventHandler += (_, e) =>
     {
-        Console.WriteLine($"{name}: already exists, skipped");
+        if (e.Severity == XmlSeverityType.Error)
+            errors.Add($"{Path.GetFileName(e.Exception?.SourceUri)}:{e.Exception?.LineNumber}: {e.Message}");
+    };
+    using (var reader = XmlReader.Create(mainSchema))
+        schemas.Add(null, reader);
+    schemas.Compile();
+    if (errors.Count == 0 && schemas.IsCompiled)
+        return schemas;
+
+    Console.Error.WriteLine($"{name}: schema does not compile, skipped");
+    foreach (var error in errors.Take(5))
+        Console.Error.WriteLine($"    {error}");
+    failed++;
+    return null;
+}
+
+void ImportExamples(string viewDir, string name, string targetNamespace, XmlSchemaSet schemas)
+{
+    var examplesDir = Path.Combine(repoRoot, "tests", "FpmlToolKit.Tests", "Examples", name);
+    if (Directory.Exists(examplesDir))
+    {
+        Console.WriteLine($"{name}: examples already imported");
         return;
     }
+
+    var candidates = new List<string>();
+    foreach (var file in Directory.GetFiles(viewDir, "*.xml", SearchOption.AllDirectories).Order(StringComparer.Ordinal))
+    {
+        if (new FileInfo(file).Length > MaxExampleBytes)
+            continue;
+        XDocument doc;
+        try { doc = XDocument.Load(file); }
+        catch (XmlException) { continue; }
+        if (doc.Root!.Name.NamespaceName != targetNamespace)
+            continue;
+        var valid = true;
+        doc.Validate(schemas, (_, e) => valid &= e.Severity != XmlSeverityType.Error);
+        if (valid)
+            candidates.Add(file);
+    }
+
+    if (candidates.Count == 0)
+    {
+        Console.WriteLine($"{name}: no schema-valid examples found");
+        return;
+    }
+
+    var picks = Enumerable.Range(0, Math.Min(ExamplesPerView, candidates.Count))
+        .Select(i => candidates[i * candidates.Count / Math.Min(ExamplesPerView, candidates.Count)]);
+    foreach (var file in picks)
+    {
+        var target = Path.Combine(examplesDir, Path.GetRelativePath(viewDir, file));
+        Directory.CreateDirectory(Path.GetDirectoryName(target)!);
+        File.Copy(file, target);
+    }
+    Console.WriteLine($"{name}: imported {Math.Min(ExamplesPerView, candidates.Count)} of {candidates.Count} schema-valid examples");
+}
+
+void CreateProject(string mainSchema, string name, string version, string view, string targetNamespace)
+{
+    var projectDir = Path.Combine(repoRoot, name);
 
     var xsdDir = Directory.CreateDirectory(Path.Combine(projectDir, "xsd")).FullName;
     var schemaFiles = Directory.GetFiles(Path.GetDirectoryName(mainSchema)!, "*.xsd");

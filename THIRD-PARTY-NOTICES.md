@@ -6,7 +6,9 @@ schemas themselves.
 
 ## FpML schemas
 
-Files: `fpml-*/xsd/fpml-*.xsd`, and the `xsd/` folder of each `FpmlToolKit.Fpml*` package.
+Files: `fpml-*/xsd/fpml-*.xsd`, the `xsd/` folder of each `FpmlToolKit.Fpml*` package, and the official FpML
+example documents in `tests/FpmlToolKit.Tests/Examples/` (copied unmodified from FpML's "Schema and Examples"
+downloads).
 
 The FpML Specifications of this document are subject to the FpML Public License (the "License"); you may not use the
 FpML Specifications except in compliance with the License. You may obtain a copy of the License at

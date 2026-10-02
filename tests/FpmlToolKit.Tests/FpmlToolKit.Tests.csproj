@@ -20,6 +20,7 @@
   <ItemGroup>
     <Using Include="Xunit" />
     <None Include="Samples\**" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="Examples\**" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\fpml-*\xsd\**" Link="Schemas\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 

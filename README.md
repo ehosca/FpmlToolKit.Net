@@ -25,7 +25,9 @@ LinqToXsdCore bug that duplicates `creditCurve.name` and `creditCurve.currency` 
 
 To add a schema version, download its schemas from [fpml.org](https://www.fpml.org/the_standard/current/), unzip them
 and run `dotnet run scripts/add-schema-version.cs -- <folder>`. It creates one `fpml-<version>-<view>` project per
-`fpml-main-*.xsd` it finds under the folder and adds it to the solution.
+`fpml-main-*.xsd` it finds under the folder (skipping schemas that do not compile), adds it to the solution, and copies
+five schema-valid official examples per view into `tests/FpmlToolKit.Tests/Examples/`. The tests validate each example,
+load it through the generated `XRoot` API and check that it round-trips unchanged.
 
 
     using System;
