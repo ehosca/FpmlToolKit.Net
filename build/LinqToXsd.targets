@@ -1,0 +1,174 @@
+<Project>
+
+  <!--
+    Shared FpML code generation for SDK-style projects (see Directory.Build.targets).
+
+    Generates C# from FpML schemas at build time using the LinqToXsdCore local tool
+    (see dotnet-tools.json). Projects opt in by declaring:
+      <LinqToXsdSchema Include="xsd\fpml-main-x-y.xsd" />
+      <LinqToXsdConfiguration Include="xsd\namespaceconfig.xml" />
+    Generated code goes to obj/ and is never committed (about 10 MB per schema set).
+
+    Generation is skipped when a SHA-256 of the inputs (every xsd, the namespace config, dotnet-tools.json and this
+    file) matches the one stored next to the output. Content hashes rather than timestamps let CI restore generated
+    code from a cache: a fresh checkout gives every file a new timestamp, but unchanged schemas keep their hash.
+  -->
+
+  <ItemGroup>
+    <LinqToXsdSchemaDependency Include="$(MSBuildProjectDirectory)/xsd/**/*.xsd" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <LinqToXsdOutputFile>$(MSBuildProjectDirectory)/$(BaseIntermediateOutputPath)LinqToXsdSource.g.cs</LinqToXsdOutputFile>
+    <LinqToXsdInputHashFile>$(LinqToXsdOutputFile).inputs.sha256</LinqToXsdInputHashFile>
+    <LinqToXsdToolRestoreStamp>$(MSBuildProjectDirectory)/$(BaseIntermediateOutputPath).linqtoxsd-tool-restore.stamp</LinqToXsdToolRestoreStamp>
+  </PropertyGroup>
+
+  <Target Name="LinqToXsdToolRestore"
+          Condition="'@(LinqToXsdSchema)' != ''"
+          Inputs="$(MSBuildThisFileDirectory)../dotnet-tools.json"
+          Outputs="$(LinqToXsdToolRestoreStamp)">
+    <Exec Command="dotnet tool restore" WorkingDirectory="$(MSBuildThisFileDirectory).." />
+    <Touch Files="$(LinqToXsdToolRestoreStamp)" AlwaysCreate="true" />
+  </Target>
+
+  <!-- The output is framework-independent, so a multi-targeted build generates once in the outer
+       build (before DispatchToInnerBuilds); the inner builds then find it up to date. -->
+  <Target Name="LinqToXsdGenerate"
+          BeforeTargets="DispatchToInnerBuilds"
+          Condition="'@(LinqToXsdSchema)' != ''"
+          DependsOnTargets="LinqToXsdToolRestore">
+    <LinqToXsdInputHash Files="@(LinqToXsdSchema);@(LinqToXsdSchemaDependency);@(LinqToXsdConfiguration);$(MSBuildThisFileDirectory)../dotnet-tools.json;$(MSBuildThisFileFullPath)"
+                        BaseDirectory="$(MSBuildProjectDirectory)">
+      <Output TaskParameter="Hash" PropertyName="_LinqToXsdInputHash" />
+    </LinqToXsdInputHash>
+    <ReadLinesFromFile File="$(LinqToXsdInputHashFile)" Condition="Exists('$(LinqToXsdInputHashFile)')">
+      <Output TaskParameter="Lines" PropertyName="_LinqToXsdStoredHash" />
+    </ReadLinesFromFile>
+    <PropertyGroup>
+      <_LinqToXsdUpToDate>false</_LinqToXsdUpToDate>
+      <_LinqToXsdUpToDate Condition="Exists('$(LinqToXsdOutputFile)') and '$(_LinqToXsdStoredHash)' == '$(_LinqToXsdInputHash)'">true</_LinqToXsdUpToDate>
+    </PropertyGroup>
+
+    <Message Condition="'$(_LinqToXsdUpToDate)' == 'true'" Text="LinqToXsd: $(MSBuildProjectName) is up to date." />
+    <Message Condition="'$(_LinqToXsdUpToDate)' != 'true'" Importance="high" Text="LinqToXsd: generating $(MSBuildProjectName)" />
+    <!-- Remove the stored hash first so an interrupted run is never mistaken for an up-to-date one. -->
+    <Delete Condition="'$(_LinqToXsdUpToDate)' != 'true'" Files="$(LinqToXsdInputHashFile);$(LinqToXsdOutputFile)" />
+    <Exec Condition="'$(_LinqToXsdUpToDate)' != 'true'"
+          Command="dotnet LinqToXsd gen &quot;@(LinqToXsdSchema->'%(FullPath)', '&quot; &quot;')&quot; -c &quot;@(LinqToXsdConfiguration->'%(FullPath)')&quot; -o &quot;$(LinqToXsdOutputFile)&quot;"
+          StandardOutputImportance="low" />
+    <!-- LinqToXsd exits 0 and prints nothing when it fails (https://github.com/mamift/LinqToXsdCore/issues/107). -->
+    <Error Condition="!Exists('$(LinqToXsdOutputFile)')"
+           Text="LinqToXsd did not produce $(LinqToXsdOutputFile). The schema probably does not compile; LinqToXsd reports no error (mamift/LinqToXsdCore#107)." />
+    <LinqToXsdRemoveDuplicateForwarders Condition="'$(_LinqToXsdUpToDate)' != 'true'" GeneratedFile="$(LinqToXsdOutputFile)" />
+    <WriteLinesToFile Condition="'$(_LinqToXsdUpToDate)' != 'true'" File="$(LinqToXsdInputHashFile)" Lines="$(_LinqToXsdInputHash)" Overwrite="true" />
+  </Target>
+
+  <!-- SHA-256 over the sorted "relative path: file SHA-256" lines of the given files. -->
+  <UsingTask TaskName="LinqToXsdInputHash"
+             TaskFactory="RoslynCodeTaskFactory"
+             AssemblyFile="$(MSBuildToolsPath)/Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <Files ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+      <BaseDirectory ParameterType="System.String" Required="true" />
+      <Hash ParameterType="System.String" Output="true" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System.IO" />
+      <Using Namespace="System.Linq" />
+      <Using Namespace="System.Security.Cryptography" />
+      <Using Namespace="System.Text" />
+      <Code Type="Fragment" Language="cs"><![CDATA[
+        using (var sha = SHA256.Create())
+        {
+            // Inline tasks compile against netstandard2.0 (no Path.GetRelativePath). Files outside the project
+            // directory (dotnet-tools.json, this targets file) are identified by name only.
+            var baseDir = Path.GetFullPath(BaseDirectory).TrimEnd('/', '\\') + Path.DirectorySeparatorChar;
+            var lines = Files
+                .Select(f => Path.GetFullPath(f.ItemSpec))
+                .Distinct()
+                .Select(path => (path.StartsWith(baseDir) ? path.Substring(baseDir.Length) : "../" + Path.GetFileName(path)).Replace('\\', '/')
+                                + ": " + Convert.ToBase64String(sha.ComputeHash(File.ReadAllBytes(path))))
+                .OrderBy(line => line, System.StringComparer.Ordinal);
+            Hash = Convert.ToBase64String(sha.ComputeHash(Encoding.UTF8.GetBytes(string.Join("\n", lines))));
+        }
+      ]]></Code>
+    </Task>
+  </UsingTask>
+
+  <!--
+    Works around a LinqToXsdCore 3.4.23 bug. When an extension type re-declares an element its base type
+    already has (FpML 4.1-4.9 CreditCurve re-declares PricingStructure's name and currency), the type class
+    correctly merges them into one "new" member, but the global element wrapper class forwards both the merged
+    "new" member and the base member, which fails with CS0102. Within each class this removes a non-"new"
+    property only when a "new" property of the same name also exists, and logs each removal.
+    Upstream: https://github.com/mamift/LinqToXsdCore/issues/106 - remove this task once a fixed release ships.
+  -->
+  <UsingTask TaskName="LinqToXsdRemoveDuplicateForwarders"
+             TaskFactory="RoslynCodeTaskFactory"
+             AssemblyFile="$(MSBuildToolsPath)/Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <GeneratedFile ParameterType="System.String" Required="true" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System.Collections.Generic" />
+      <Using Namespace="System.IO" />
+      <Using Namespace="System.Linq" />
+      <Using Namespace="System.Text.RegularExpressions" />
+      <Code Type="Fragment" Language="cs"><![CDATA[
+        // Split on \n only: the generator copies schema documentation that contains stray \r characters.
+        var lines = File.ReadAllText(GeneratedFile).Split('\n').ToList();
+        var classRegex = new Regex(@"^    public (?:\w+ )*class (@?\w+)");
+        var propertyRegex = new Regex(@"^        public (new )?(?:virtual |override )*\S+ (@?\w+) \{$");
+
+        var remove = new List<(int Start, int End, string Class, string Name)>();
+        string currentClass = null;
+        var properties = new List<(int Line, bool IsNew, string Name)>();
+
+        void Flush()
+        {
+            foreach (var group in properties.GroupBy(p => p.Name))
+            {
+                if (!group.Any(p => p.IsNew)) continue;
+                foreach (var dup in group.Where(p => !p.IsNew))
+                {
+                    var start = dup.Line;
+                    while (start > 0 && lines[start - 1].StartsWith("        ///")) start--;
+                    var end = dup.Line;
+                    while (lines[end] != "        }") end++;
+                    remove.Add((start, end, currentClass, dup.Name));
+                }
+            }
+            properties.Clear();
+        }
+
+        for (var i = 0; i < lines.Count; i++)
+        {
+            var c = classRegex.Match(lines[i]);
+            if (c.Success) { Flush(); currentClass = c.Groups[1].Value; continue; }
+            var p = propertyRegex.Match(lines[i]);
+            if (p.Success) properties.Add((i, p.Groups[1].Success, p.Groups[2].Value));
+        }
+        Flush();
+
+        foreach (var r in remove.OrderByDescending(r => r.Start))
+        {
+            lines.RemoveRange(r.Start, r.End - r.Start + 1);
+            Log.LogMessage(MessageImportance.High, $"LinqToXsd workaround: removed duplicate forwarder {r.Class}.{r.Name}");
+        }
+        if (remove.Count > 0) File.WriteAllText(GeneratedFile, string.Join("\n", lines), new System.Text.UTF8Encoding(true));
+      ]]></Code>
+    </Task>
+  </UsingTask>
+
+  <Target Name="LinqToXsdAddGeneratedSource"
+          BeforeTargets="CoreCompile"
+          DependsOnTargets="LinqToXsdGenerate"
+          Condition="'@(LinqToXsdSchema)' != ''">
+    <ItemGroup>
+      <Compile Include="$(LinqToXsdOutputFile)" />
+      <FileWrites Include="$(LinqToXsdOutputFile)" />
+    </ItemGroup>
+  </Target>
+
+</Project>
