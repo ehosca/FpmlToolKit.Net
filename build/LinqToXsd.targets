@@ -8,6 +8,10 @@
       <LinqToXsdSchema Include="xsd\fpml-main-x-y.xsd" />
       <LinqToXsdConfiguration Include="xsd\namespaceconfig.xml" />
     Generated code goes to obj/ and is never committed (about 10 MB per schema set).
+
+    Generation is skipped when a SHA-256 of the inputs (every xsd, the namespace config, dotnet-tools.json and this
+    file) matches the one stored next to the output. Content hashes rather than timestamps let CI restore generated
+    code from a cache: a fresh checkout gives every file a new timestamp, but unchanged schemas keep their hash.
   -->
 
   <ItemGroup>
@@ -16,6 +20,7 @@
 
   <PropertyGroup>
     <LinqToXsdOutputFile>$(MSBuildProjectDirectory)/$(BaseIntermediateOutputPath)LinqToXsdSource.g.cs</LinqToXsdOutputFile>
+    <LinqToXsdInputHashFile>$(LinqToXsdOutputFile).inputs.sha256</LinqToXsdInputHashFile>
     <LinqToXsdToolRestoreStamp>$(MSBuildProjectDirectory)/$(BaseIntermediateOutputPath).linqtoxsd-tool-restore.stamp</LinqToXsdToolRestoreStamp>
   </PropertyGroup>
 
@@ -32,14 +37,62 @@
   <Target Name="LinqToXsdGenerate"
           BeforeTargets="DispatchToInnerBuilds"
           Condition="'@(LinqToXsdSchema)' != ''"
-          DependsOnTargets="LinqToXsdToolRestore"
-          Inputs="@(LinqToXsdSchema);@(LinqToXsdSchemaDependency);@(LinqToXsdConfiguration);$(MSBuildThisFileDirectory)../dotnet-tools.json;$(MSBuildThisFileFullPath)"
-          Outputs="$(LinqToXsdOutputFile)">
-    <Exec Command="dotnet LinqToXsd gen &quot;@(LinqToXsdSchema->'%(FullPath)', '&quot; &quot;')&quot; -c &quot;@(LinqToXsdConfiguration->'%(FullPath)')&quot; -o &quot;$(LinqToXsdOutputFile)&quot;"
+          DependsOnTargets="LinqToXsdToolRestore">
+    <LinqToXsdInputHash Files="@(LinqToXsdSchema);@(LinqToXsdSchemaDependency);@(LinqToXsdConfiguration);$(MSBuildThisFileDirectory)../dotnet-tools.json;$(MSBuildThisFileFullPath)"
+                        BaseDirectory="$(MSBuildProjectDirectory)">
+      <Output TaskParameter="Hash" PropertyName="_LinqToXsdInputHash" />
+    </LinqToXsdInputHash>
+    <ReadLinesFromFile File="$(LinqToXsdInputHashFile)" Condition="Exists('$(LinqToXsdInputHashFile)')">
+      <Output TaskParameter="Lines" PropertyName="_LinqToXsdStoredHash" />
+    </ReadLinesFromFile>
+    <PropertyGroup>
+      <_LinqToXsdUpToDate>false</_LinqToXsdUpToDate>
+      <_LinqToXsdUpToDate Condition="Exists('$(LinqToXsdOutputFile)') and '$(_LinqToXsdStoredHash)' == '$(_LinqToXsdInputHash)'">true</_LinqToXsdUpToDate>
+    </PropertyGroup>
+
+    <Message Condition="'$(_LinqToXsdUpToDate)' == 'true'" Text="LinqToXsd: $(MSBuildProjectName) is up to date." />
+    <Message Condition="'$(_LinqToXsdUpToDate)' != 'true'" Importance="high" Text="LinqToXsd: generating $(MSBuildProjectName)" />
+    <!-- Remove the stored hash first so an interrupted run is never mistaken for an up-to-date one. -->
+    <Delete Condition="'$(_LinqToXsdUpToDate)' != 'true'" Files="$(LinqToXsdInputHashFile);$(LinqToXsdOutputFile)" />
+    <Exec Condition="'$(_LinqToXsdUpToDate)' != 'true'"
+          Command="dotnet LinqToXsd gen &quot;@(LinqToXsdSchema->'%(FullPath)', '&quot; &quot;')&quot; -c &quot;@(LinqToXsdConfiguration->'%(FullPath)')&quot; -o &quot;$(LinqToXsdOutputFile)&quot;"
           StandardOutputImportance="low" />
     <Error Condition="!Exists('$(LinqToXsdOutputFile)')" Text="LinqToXsd did not produce $(LinqToXsdOutputFile)." />
-    <LinqToXsdRemoveDuplicateForwarders GeneratedFile="$(LinqToXsdOutputFile)" />
+    <LinqToXsdRemoveDuplicateForwarders Condition="'$(_LinqToXsdUpToDate)' != 'true'" GeneratedFile="$(LinqToXsdOutputFile)" />
+    <WriteLinesToFile Condition="'$(_LinqToXsdUpToDate)' != 'true'" File="$(LinqToXsdInputHashFile)" Lines="$(_LinqToXsdInputHash)" Overwrite="true" />
   </Target>
+
+  <!-- SHA-256 over the sorted "relative path: file SHA-256" lines of the given files. -->
+  <UsingTask TaskName="LinqToXsdInputHash"
+             TaskFactory="RoslynCodeTaskFactory"
+             AssemblyFile="$(MSBuildToolsPath)/Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <Files ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+      <BaseDirectory ParameterType="System.String" Required="true" />
+      <Hash ParameterType="System.String" Output="true" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System.IO" />
+      <Using Namespace="System.Linq" />
+      <Using Namespace="System.Security.Cryptography" />
+      <Using Namespace="System.Text" />
+      <Code Type="Fragment" Language="cs"><![CDATA[
+        using (var sha = SHA256.Create())
+        {
+            // Inline tasks compile against netstandard2.0 (no Path.GetRelativePath). Files outside the project
+            // directory (dotnet-tools.json, this targets file) are identified by name only.
+            var baseDir = Path.GetFullPath(BaseDirectory).TrimEnd('/', '\\') + Path.DirectorySeparatorChar;
+            var lines = Files
+                .Select(f => Path.GetFullPath(f.ItemSpec))
+                .Distinct()
+                .Select(path => (path.StartsWith(baseDir) ? path.Substring(baseDir.Length) : "../" + Path.GetFileName(path)).Replace('\\', '/')
+                                + ": " + Convert.ToBase64String(sha.ComputeHash(File.ReadAllBytes(path))))
+                .OrderBy(line => line, System.StringComparer.Ordinal);
+            Hash = Convert.ToBase64String(sha.ComputeHash(Encoding.UTF8.GetBytes(string.Join("\n", lines))));
+        }
+      ]]></Code>
+    </Task>
+  </UsingTask>
 
   <!--
     Works around a LinqToXsdCore 3.4.23 bug. When an extension type re-declares an element its base type

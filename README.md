@@ -20,7 +20,9 @@ fixed in 5.9). For 5.0-5.3 they include the views this project has carried since
     dotnet test FpmlToolKit.slnx
 
 C# classes are generated from the XSDs at build time into `obj/` (see `Directory.Build.targets`) and are not
-committed, since each schema set produces about 10 MB of code. `build/LinqToXsd.targets` also works around a
+committed, since each schema set produces about 10 MB of code. A project regenerates only when the content hash of
+its schemas, namespace config, `dotnet-tools.json` or `build/LinqToXsd.targets` changes; CI caches the generated code
+between runs, so a push regenerates only the projects whose schemas changed. `build/LinqToXsd.targets` also works around a
 LinqToXsdCore bug that duplicates `creditCurve.name` and `creditCurve.currency` in FpML 4.1-4.9.
 
 To add a schema version, download its schemas from [fpml.org](https://www.fpml.org/the_standard/current/), unzip them

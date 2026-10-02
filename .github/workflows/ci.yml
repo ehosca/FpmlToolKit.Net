@@ -14,7 +14,30 @@ jobs:
         with:
           global-json-file: global.json
       - run: dotnet tool restore
+
+      # Generating C# from the schemas is ~95% of build time. Restore the generated code from the most recent
+      # cache; build/LinqToXsd.targets then regenerates only projects whose schema inputs hash differently.
+      - name: Restore generated code
+        id: generated-code
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            fpml-*/obj/LinqToXsdSource.g.cs
+            fpml-*/obj/LinqToXsdSource.g.cs.inputs.sha256
+          key: linqtoxsd-${{ hashFiles('fpml-*/xsd/**', 'dotnet-tools.json', 'build/LinqToXsd.targets') }}
+          restore-keys: linqtoxsd-
+
       - run: dotnet build FpmlToolKit.slnx -c Release
+
+      - name: Save generated code
+        if: steps.generated-code.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            fpml-*/obj/LinqToXsdSource.g.cs
+            fpml-*/obj/LinqToXsdSource.g.cs.inputs.sha256
+          key: linqtoxsd-${{ hashFiles('fpml-*/xsd/**', 'dotnet-tools.json', 'build/LinqToXsd.targets') }}
+
       - run: dotnet test FpmlToolKit.slnx -c Release --no-build
       - run: dotnet pack FpmlToolKit.slnx -c Release --no-build -o artifacts
       - uses: actions/upload-artifact@v4
