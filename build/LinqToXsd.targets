@@ -47,6 +47,7 @@
     correctly merges them into one "new" member, but the global element wrapper class forwards both the merged
     "new" member and the base member, which fails with CS0102. Within each class this removes a non-"new"
     property only when a "new" property of the same name also exists, and logs each removal.
+    Upstream: https://github.com/mamift/LinqToXsdCore/issues/106 - remove this task once a fixed release ships.
   -->
   <UsingTask TaskName="LinqToXsdRemoveDuplicateForwarders"
              TaskFactory="RoslynCodeTaskFactory"
