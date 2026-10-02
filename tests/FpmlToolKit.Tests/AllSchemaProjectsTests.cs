@@ -6,18 +6,19 @@ namespace FpmlToolKit.Tests;
 // Smoke tests over every fpml-* project: its schemas compile and its generated assembly loads.
 public class AllSchemaProjectsTests
 {
-    public static TheoryData<string> Projects()
-    {
-        var data = new TheoryData<string>();
-        foreach (var dir in Directory.GetDirectories(Path.Combine(AppContext.BaseDirectory, "Schemas")).Order())
-            data.Add(Path.GetFileName(dir));
-        return data;
-    }
+    private static IEnumerable<string> ProjectNames() =>
+        Directory.GetDirectories(Path.Combine(AppContext.BaseDirectory, "Schemas")).Select(d => Path.GetFileName(d)!).Order();
 
+    public static TheoryData<string> Projects() => new(ProjectNames());
+
+    // Guards the wildcard schema links in the test project: every referenced fpml-* assembly needs its schemas.
     [Fact]
     public void Every_schema_project_is_covered()
     {
-        Assert.Equal(20, Projects().Count);
+        var assemblies = Directory.GetFiles(AppContext.BaseDirectory, "fpml-*.dll").Select(f => Path.GetFileNameWithoutExtension(f)!).Order();
+
+        Assert.Equal(assemblies, ProjectNames());
+        Assert.True(ProjectNames().Count() >= 20);
     }
 
     [Theory]

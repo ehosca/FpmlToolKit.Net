@@ -20,7 +20,9 @@ C# classes are generated from the XSDs at build time into `obj/` (see `Directory
 committed, since each schema set produces about 10 MB of code. `build/LinqToXsd.targets` also works around a
 LinqToXsdCore bug that duplicates `creditCurve.name` and `creditCurve.currency` in FpML 4.1-4.9.
 
-`scripts/convert-project.cs` converted the original 2012-era projects (`dotnet run scripts/convert-project.cs -- --all`).
+To add a schema version, download its schemas from [fpml.org](https://www.fpml.org/the_standard/current/), unzip them
+and run `dotnet run scripts/add-schema-version.cs -- <folder>`. It creates one `fpml-<version>-<view>` project per
+`fpml-main-*.xsd` it finds under the folder and adds it to the solution.
 
 
     using System;
