@@ -10,9 +10,10 @@ specific needs.
 ## Building (2.0, in progress)
 
 The 2.0 line targets `netstandard2.0` and `net10.0` and uses [LinqToXsdCore](https://github.com/mamift/LinqToXsdCore)
-in place of the original CodePlex LinqToXsd. Schema projects cover FpML 4.0-4.9 and 5.0-5.13, with every view
-FpML publishes for each 5.x version (legal from 5.7, pretrade from 5.5), except FpML 5.8 transparency: its published
-schema does not compile (`fpml-business-events-5-8.xsd` uses a `Withdrawal` type the view never declares; fixed in 5.9).
+in place of the original CodePlex LinqToXsd. Schema projects cover FpML 4.0-4.9 and 5.0-5.13. For 5.4-5.13
+they include every view in FpML's downloads (legal from 5.7, pretrade from 5.5) except 5.8 transparency, whose
+published schema does not compile (`fpml-business-events-5-8.xsd` uses a `Withdrawal` type the view never declares;
+fixed in 5.9). For 5.0-5.3 they include the views this project has carried since 2012.
 
     dotnet tool restore
     dotnet build FpmlToolKit.slnx
