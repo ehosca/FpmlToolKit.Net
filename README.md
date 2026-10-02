@@ -14,9 +14,9 @@ add that folder as a package source, and reference the package:
     dotnet nuget add source ~/fpml-packages --name fpmltoolkit
     dotnet add package FpmlToolKit.Fpml513 --version 2.0.0-beta.1
 
-Known issue: each view assembly contains its own copy of the W3C XML Signature types (`org.w3.xmldsig.*`). Using them
-through the FpML types works, but naming one directly (for example `org.w3.xmldsig.Signature`) when more than one view
-assembly is referenced fails with CS0433; use an `extern alias` for now.
+Each view assembly has its own copy of the W3C XML Signature types, in a namespace under the view's own namespace:
+`fpml_5_13_confirmation.xmldsig.Signature`, `fpml_4_9.xmldsig.Signature` and so on. (Before 2.0.0-beta.2 they were all
+`org.w3.xmldsig.*`, which made the names ambiguous when more than one view assembly was referenced.)
 
 ## Releasing
 
