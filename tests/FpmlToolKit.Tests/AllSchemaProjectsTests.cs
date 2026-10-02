@@ -41,7 +41,7 @@ public class AllSchemaProjectsTests
 
         var types = assembly.GetTypes();
 
+        // Not every view uses XML signatures (5.13 legal does not), so only the FpML namespace is required.
         Assert.Contains(types, t => t.Namespace == rootNamespace);
-        Assert.Contains(types, t => t.Namespace == "org.w3.xmldsig");
     }
 }
