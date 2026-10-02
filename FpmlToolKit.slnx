@@ -16,6 +16,12 @@
   <Project Path="fpml-5-0-reporting/fpml-5-0-reporting.csproj" />
   <Project Path="fpml-5-1-confirmation/fpml-5-1-confirmation.csproj" />
   <Project Path="fpml-5-1-reporting/fpml-5-1-reporting.csproj" />
+  <Project Path="fpml-5-11-confirmation/fpml-5-11-confirmation.csproj" />
+  <Project Path="fpml-5-11-legal/fpml-5-11-legal.csproj" />
+  <Project Path="fpml-5-11-pretrade/fpml-5-11-pretrade.csproj" />
+  <Project Path="fpml-5-11-recordkeeping/fpml-5-11-recordkeeping.csproj" />
+  <Project Path="fpml-5-11-reporting/fpml-5-11-reporting.csproj" />
+  <Project Path="fpml-5-11-transparency/fpml-5-11-transparency.csproj" />
   <Project Path="fpml-5-12-confirmation/fpml-5-12-confirmation.csproj" />
   <Project Path="fpml-5-12-legal/fpml-5-12-legal.csproj" />
   <Project Path="fpml-5-12-pretrade/fpml-5-12-pretrade.csproj" />
