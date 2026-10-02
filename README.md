@@ -1,13 +1,24 @@
-#FpmlToolKit.Net
+# FpmlToolKit.Net
 
-FpmlToolKit.Net exists to speed up the initial ramp up time for projects that deal with FpML documents. 
-Its based on [Linq2XSD](http://linqtoxsd.codeplex.com).
+FpmlToolKit.Net exists to speed up the initial ramp up time for projects that deal with FpML documents.
+It generates strongly typed classes from the FpML schemas with [LinqToXsdCore](https://github.com/mamift/LinqToXsdCore).
 
-You can head over to [downloads](https://github.com/ehosca/FpmlToolKit.Net/downloads) and grab the pre-built 
-binaries and start using them right away, or you can fork this project for fine tuning the output to your
-specific needs.
+## Packages
 
-## Building (2.0, in progress)
+There is one NuGet package per FpML version, `FpmlToolKit.Fpml<major><minor>` (for example `FpmlToolKit.Fpml513`), each
+containing one assembly per view (`fpml-5-13-confirmation.dll`, `fpml-5-13-reporting.dll`, ...) plus the view schemas
+under `xsd/`. Packages target `netstandard2.0` and `net10.0` and are attached to each
+[GitHub release](https://github.com/ehosca/FpmlToolKit.Net/releases). To use one, download the `.nupkg` into a folder,
+add that folder as a package source, and reference the package:
+
+    dotnet nuget add source ~/fpml-packages --name fpmltoolkit
+    dotnet add package FpmlToolKit.Fpml513 --version 2.0.0-beta.1
+
+Known issue: each view assembly contains its own copy of the W3C XML Signature types (`org.w3.xmldsig.*`). Using them
+through the FpML types works, but naming one directly (for example `org.w3.xmldsig.Signature`) when more than one view
+assembly is referenced fails with CS0433; use an `extern alias` for now.
+
+## Building
 
 The 2.0 line targets `netstandard2.0` and `net10.0` and uses [LinqToXsdCore](https://github.com/mamift/LinqToXsdCore)
 in place of the original CodePlex LinqToXsd. Schema projects cover FpML 4.0-4.9 and 5.0-5.13. For 5.4-5.13
@@ -29,7 +40,9 @@ To add a schema version, download its schemas from [fpml.org](https://www.fpml.o
 and run `dotnet run scripts/add-schema-version.cs -- <folder>`. It creates one `fpml-<version>-<view>` project per
 `fpml-main-*.xsd` it finds under the folder (skipping schemas that do not compile), adds it to the solution, and copies
 five schema-valid official examples per view into `tests/FpmlToolKit.Tests/Examples/`. The tests validate each example,
-load it through the generated `XRoot` API and check that it round-trips unchanged.
+load it through the generated `XRoot` API and check that it round-trips unchanged. It also regenerates
+`packages/FpmlToolKit.Fpml<version>/`, the per-version package projects (see `build/VersionPackage.targets`);
+`dotnet pack FpmlToolKit.slnx` produces one `.nupkg` per FpML version.
 
 
     using System;

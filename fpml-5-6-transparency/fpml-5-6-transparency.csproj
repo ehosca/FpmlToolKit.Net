@@ -4,7 +4,6 @@
     <TargetFrameworks>netstandard2.0;net10.0</TargetFrameworks>
     <RootNamespace>fpml_5_6_transparency</RootNamespace>
     <AssemblyName>fpml-5-6-transparency</AssemblyName>
-    <PackageId>FpmlToolKit.Fpml56.Transparency</PackageId>
     <Description>Strongly typed LINQ to XSD classes for the FpML 5.6 transparency view.</Description>
   </PropertyGroup>
 
@@ -15,7 +14,6 @@
   <ItemGroup>
     <LinqToXsdSchema Include="xsd\fpml-main-5-6.xsd" />
     <LinqToXsdConfiguration Include="xsd\namespaceconfig.xml" />
-    <None Include="xsd\**" Pack="true" PackagePath="xsd\" />
   </ItemGroup>
 
 </Project>

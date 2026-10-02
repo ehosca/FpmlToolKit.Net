@@ -3,7 +3,7 @@
   <PropertyGroup>
     <LangVersion>latest</LangVersion>
     <Nullable>disable</Nullable>
-    <Version>2.0.0-alpha.1</Version>
+    <Version>2.0.0-beta.1</Version>
     <Authors>Erhan Hosca</Authors>
     <Copyright>Copyright (C) 2012-2026 Erhan Hosca</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -18,9 +18,9 @@
     <NoWarn>$(NoWarn);CS0108;CS0114;CS8981</NoWarn>
   </PropertyGroup>
 
-  <!-- Schema packages redistribute FpML and W3C schemas; ship their notices with them. -->
-  <ItemGroup Condition="Exists('$(MSBuildProjectDirectory)/xsd')">
-    <None Include="$(MSBuildThisFileDirectory)THIRD-PARTY-NOTICES.md" Pack="true" PackagePath="\" Visible="false" />
-  </ItemGroup>
+  <!-- View projects are packed per FpML version by packages/FpmlToolKit.Fpml*/ (see build/VersionPackage.targets). -->
+  <PropertyGroup Condition="Exists('$(MSBuildProjectDirectory)/xsd')">
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
 
 </Project>

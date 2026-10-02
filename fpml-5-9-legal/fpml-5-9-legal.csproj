@@ -4,7 +4,6 @@
     <TargetFrameworks>netstandard2.0;net10.0</TargetFrameworks>
     <RootNamespace>fpml_5_9_legal</RootNamespace>
     <AssemblyName>fpml-5-9-legal</AssemblyName>
-    <PackageId>FpmlToolKit.Fpml59.Legal</PackageId>
     <Description>Strongly typed LINQ to XSD classes for the FpML 5.9 legal view.</Description>
   </PropertyGroup>
 
@@ -15,7 +14,6 @@
   <ItemGroup>
     <LinqToXsdSchema Include="xsd\fpml-main-5-9.xsd" />
     <LinqToXsdConfiguration Include="xsd\namespaceconfig.xml" />
-    <None Include="xsd\**" Pack="true" PackagePath="xsd\" />
   </ItemGroup>
 
 </Project>

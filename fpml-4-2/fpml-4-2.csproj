@@ -4,7 +4,6 @@
     <TargetFrameworks>netstandard2.0;net10.0</TargetFrameworks>
     <RootNamespace>fpml_4_2</RootNamespace>
     <AssemblyName>fpml-4-2</AssemblyName>
-    <PackageId>FpmlToolKit.Fpml42</PackageId>
     <Description>Strongly typed LINQ to XSD classes for FpML 4.2.</Description>
   </PropertyGroup>
 
@@ -15,7 +14,6 @@
   <ItemGroup>
     <LinqToXsdSchema Include="xsd\fpml-main-4-2.xsd" />
     <LinqToXsdConfiguration Include="xsd\namespaceconfig.xml" />
-    <None Include="xsd\**" Pack="true" PackagePath="xsd\" />
   </ItemGroup>
 
 </Project>

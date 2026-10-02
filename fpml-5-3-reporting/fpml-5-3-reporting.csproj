@@ -4,7 +4,6 @@
     <TargetFrameworks>netstandard2.0;net10.0</TargetFrameworks>
     <RootNamespace>fpml_5_3_reporting</RootNamespace>
     <AssemblyName>fpml-5-3-reporting</AssemblyName>
-    <PackageId>FpmlToolKit.Fpml53.Reporting</PackageId>
     <Description>Strongly typed LINQ to XSD classes for the FpML 5.3 reporting view.</Description>
   </PropertyGroup>
 
@@ -15,7 +14,6 @@
   <ItemGroup>
     <LinqToXsdSchema Include="xsd\fpml-main-5-3.xsd" />
     <LinqToXsdConfiguration Include="xsd\namespaceconfig.xml" />
-    <None Include="xsd\**" Pack="true" PackagePath="xsd\" />
   </ItemGroup>
 
 </Project>

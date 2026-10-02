@@ -1,4 +1,30 @@
 <Solution>
+  <Folder Name="/packages/">
+    <Project Path="packages/FpmlToolKit.Fpml40/FpmlToolKit.Fpml40.csproj" />
+    <Project Path="packages/FpmlToolKit.Fpml41/FpmlToolKit.Fpml41.csproj" />
+    <Project Path="packages/FpmlToolKit.Fpml42/FpmlToolKit.Fpml42.csproj" />
+    <Project Path="packages/FpmlToolKit.Fpml43/FpmlToolKit.Fpml43.csproj" />
+    <Project Path="packages/FpmlToolKit.Fpml44/FpmlToolKit.Fpml44.csproj" />
+    <Project Path="packages/FpmlToolKit.Fpml45/FpmlToolKit.Fpml45.csproj" />
+    <Project Path="packages/FpmlToolKit.Fpml46/FpmlToolKit.Fpml46.csproj" />
+    <Project Path="packages/FpmlToolKit.Fpml47/FpmlToolKit.Fpml47.csproj" />
+    <Project Path="packages/FpmlToolKit.Fpml48/FpmlToolKit.Fpml48.csproj" />
+    <Project Path="packages/FpmlToolKit.Fpml49/FpmlToolKit.Fpml49.csproj" />
+    <Project Path="packages/FpmlToolKit.Fpml50/FpmlToolKit.Fpml50.csproj" />
+    <Project Path="packages/FpmlToolKit.Fpml51/FpmlToolKit.Fpml51.csproj" />
+    <Project Path="packages/FpmlToolKit.Fpml510/FpmlToolKit.Fpml510.csproj" />
+    <Project Path="packages/FpmlToolKit.Fpml511/FpmlToolKit.Fpml511.csproj" />
+    <Project Path="packages/FpmlToolKit.Fpml512/FpmlToolKit.Fpml512.csproj" />
+    <Project Path="packages/FpmlToolKit.Fpml513/FpmlToolKit.Fpml513.csproj" />
+    <Project Path="packages/FpmlToolKit.Fpml52/FpmlToolKit.Fpml52.csproj" />
+    <Project Path="packages/FpmlToolKit.Fpml53/FpmlToolKit.Fpml53.csproj" />
+    <Project Path="packages/FpmlToolKit.Fpml54/FpmlToolKit.Fpml54.csproj" />
+    <Project Path="packages/FpmlToolKit.Fpml55/FpmlToolKit.Fpml55.csproj" />
+    <Project Path="packages/FpmlToolKit.Fpml56/FpmlToolKit.Fpml56.csproj" />
+    <Project Path="packages/FpmlToolKit.Fpml57/FpmlToolKit.Fpml57.csproj" />
+    <Project Path="packages/FpmlToolKit.Fpml58/FpmlToolKit.Fpml58.csproj" />
+    <Project Path="packages/FpmlToolKit.Fpml59/FpmlToolKit.Fpml59.csproj" />
+  </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/FpmlToolKit.Tests/FpmlToolKit.Tests.csproj" />
   </Folder>
