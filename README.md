@@ -18,6 +18,18 @@ Known issue: each view assembly contains its own copy of the W3C XML Signature t
 through the FpML types works, but naming one directly (for example `org.w3.xmldsig.Signature`) when more than one view
 assembly is referenced fails with CS0433; use an `extern alias` for now.
 
+## Releasing
+
+Releases are made by pushing a version tag on a commit that is already on `main`:
+
+    git tag v2.0.0-beta.2
+    git push origin v2.0.0-beta.2
+
+The Release workflow (`.github/workflows/release.yml`) builds and tests everything with that version, packs one
+`.nupkg` per FpML version and attaches them to a GitHub release for the tag; versions with a suffix such as `-beta.2`
+are marked as prereleases. Nothing is published to NuGet.org. Running the workflow manually from the Actions tab does a
+dry run: the packages are kept as a workflow artifact and no release is created.
+
 ## Building
 
 The 2.0 line targets `netstandard2.0` and `net10.0` and uses [LinqToXsdCore](https://github.com/mamift/LinqToXsdCore)
