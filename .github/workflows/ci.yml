@@ -5,6 +5,11 @@ on:
     branches: [master, main]
   pull_request:
 
+# A newer push to the same pull request cancels its still-running build. Pushes to master always run to completion.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   build:
     runs-on: ubuntu-latest

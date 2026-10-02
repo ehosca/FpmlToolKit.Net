@@ -57,7 +57,9 @@
     <Exec Condition="'$(_LinqToXsdUpToDate)' != 'true'"
           Command="dotnet LinqToXsd gen &quot;@(LinqToXsdSchema->'%(FullPath)', '&quot; &quot;')&quot; -c &quot;@(LinqToXsdConfiguration->'%(FullPath)')&quot; -o &quot;$(LinqToXsdOutputFile)&quot;"
           StandardOutputImportance="low" />
-    <Error Condition="!Exists('$(LinqToXsdOutputFile)')" Text="LinqToXsd did not produce $(LinqToXsdOutputFile)." />
+    <!-- LinqToXsd exits 0 and prints nothing when it fails (https://github.com/mamift/LinqToXsdCore/issues/107). -->
+    <Error Condition="!Exists('$(LinqToXsdOutputFile)')"
+           Text="LinqToXsd did not produce $(LinqToXsdOutputFile). The schema probably does not compile; LinqToXsd reports no error (mamift/LinqToXsdCore#107)." />
     <LinqToXsdRemoveDuplicateForwarders Condition="'$(_LinqToXsdUpToDate)' != 'true'" GeneratedFile="$(LinqToXsdOutputFile)" />
     <WriteLinesToFile Condition="'$(_LinqToXsdUpToDate)' != 'true'" File="$(LinqToXsdInputHashFile)" Lines="$(_LinqToXsdInputHash)" Overwrite="true" />
   </Target>
