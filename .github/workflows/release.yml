@@ -1,0 +1,112 @@
+name: Release
+
+# Pushing a version tag (v2.0.0-beta.2, v2.0.0, ...) builds, tests and packs every FpML version package and attaches
+# the .nupkg files to a GitHub release for that tag. Versions with a suffix (-beta.2) are marked as prereleases.
+# Nothing is published to NuGet.org.
+#
+# Run it manually ("Run workflow") for a dry run: same build, test and pack, but the packages are kept as a workflow
+# artifact instead of being released.
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Package version for the dry run, without the leading v (for example 2.0.0-beta.2)
+        required: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # to check that the tagged commit is on main
+
+      - name: Determine version
+        id: version
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          if [ "$GITHUB_REF_TYPE" = "tag" ]; then
+            tag="$GITHUB_REF_NAME"
+            version="${tag#v}"
+          else
+            version="$INPUT_VERSION"
+            tag="v$version"
+          fi
+          if ! echo "$version" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$'; then
+            echo "::error::'$tag' is not a version tag like v2.0.0 or v2.0.0-beta.2"
+            exit 1
+          fi
+          if [ "$GITHUB_REF_TYPE" = "tag" ] && ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
+            echo "::error::$tag points to $GITHUB_SHA, which is not on main. Tag a commit that has been merged to main."
+            exit 1
+          fi
+          prerelease=false
+          case "$version" in *-*) prerelease=true ;; esac
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "prerelease=$prerelease" >> "$GITHUB_OUTPUT"
+          echo "Version $version (tag $tag, prerelease: $prerelease)"
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - run: dotnet tool restore
+
+      # Same cache as the CI workflow: only projects whose schema inputs changed are regenerated.
+      - name: Restore generated code
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            fpml-*/obj/LinqToXsdSource.g.cs
+            fpml-*/obj/LinqToXsdSource.g.cs.inputs.sha256
+          key: linqtoxsd-${{ hashFiles('fpml-*/xsd/**', 'dotnet-tools.json', 'build/LinqToXsd.targets') }}
+          restore-keys: linqtoxsd-
+
+      - run: dotnet build FpmlToolKit.slnx -c Release -p:Version=${{ steps.version.outputs.version }}
+      - run: dotnet test FpmlToolKit.slnx -c Release --no-build
+      - run: dotnet pack FpmlToolKit.slnx -c Release --no-build -p:Version=${{ steps.version.outputs.version }} -o artifacts
+
+      - name: Check packages
+        run: |
+          expected=$(find packages -mindepth 2 -maxdepth 2 -name '*.csproj' | wc -l)
+          actual=$(find artifacts -name "*.${{ steps.version.outputs.version }}.nupkg" | wc -l)
+          echo "$actual packages for $expected FpML versions"
+          if [ "$actual" -ne "$expected" ]; then
+            echo "::error::expected $expected packages, found $actual"
+            ls artifacts
+            exit 1
+          fi
+
+      - name: Keep packages (dry run)
+        if: github.ref_type != 'tag'
+        uses: actions/upload-artifact@v4
+        with:
+          name: packages-${{ steps.version.outputs.version }}
+          path: artifacts/*.nupkg
+
+      - name: Create GitHub release
+        if: github.ref_type == 'tag'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.version.outputs.tag }}
+          VERSION: ${{ steps.version.outputs.version }}
+          PRERELEASE: ${{ steps.version.outputs.prerelease }}
+        run: |
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            echo "Release $TAG already exists; replacing its packages."
+            gh release upload "$TAG" artifacts/*.nupkg --clobber
+          else
+            flags=()
+            if [ "$PRERELEASE" = "true" ]; then flags+=(--prerelease); fi
+            gh release create "$TAG" artifacts/*.nupkg --verify-tag --title "FpmlToolKit.Net $VERSION" --generate-notes "${flags[@]}"
+          fi
