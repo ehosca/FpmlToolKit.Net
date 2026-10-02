@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net10.0</TargetFrameworks>
+    <RootNamespace>fpml_5_12_pretrade</RootNamespace>
+    <AssemblyName>fpml-5-12-pretrade</AssemblyName>
+    <PackageId>FpmlToolKit.Fpml512.Pretrade</PackageId>
+    <Description>Strongly typed LINQ to XSD classes for the FpML 5.12 pretrade view.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="XObjectsCore" Version="3.4.23" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <LinqToXsdSchema Include="xsd\fpml-main-5-12.xsd" />
+    <LinqToXsdConfiguration Include="xsd\namespaceconfig.xml" />
+    <None Include="xsd\**" Pack="true" PackagePath="xsd\" />
+  </ItemGroup>
+
+</Project>

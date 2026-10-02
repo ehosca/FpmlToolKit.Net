@@ -10,7 +10,7 @@ specific needs.
 ## Building (2.0, in progress)
 
 The 2.0 line targets `netstandard2.0` and `net10.0` and uses [LinqToXsdCore](https://github.com/mamift/LinqToXsdCore)
-in place of the original CodePlex LinqToXsd. Schema projects cover FpML 4.0-4.9, 5.0-5.3 and 5.13 (all six views).
+in place of the original CodePlex LinqToXsd. Schema projects cover FpML 4.0-4.9, 5.0-5.3, 5.12 and 5.13 (all six views of each).
 
     dotnet tool restore
     dotnet build FpmlToolKit.slnx
