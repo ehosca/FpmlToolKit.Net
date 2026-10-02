@@ -2,5 +2,24 @@
   <Folder Name="/tests/">
     <Project Path="tests/FpmlToolKit.Tests/FpmlToolKit.Tests.csproj" />
   </Folder>
+  <Project Path="fpml-4-0/fpml-4-0.csproj" />
+  <Project Path="fpml-4-1/fpml-4-1.csproj" />
+  <Project Path="fpml-4-2/fpml-4-2.csproj" />
+  <Project Path="fpml-4-3/fpml-4-3.csproj" />
+  <Project Path="fpml-4-4/fpml-4-4.csproj" />
+  <Project Path="fpml-4-5/fpml-4-5.csproj" />
+  <Project Path="fpml-4-6/fpml-4-6.csproj" />
+  <Project Path="fpml-4-7/fpml-4-7.csproj" />
+  <Project Path="fpml-4-8/fpml-4-8.csproj" />
+  <Project Path="fpml-4-9/fpml-4-9.csproj" />
+  <Project Path="fpml-5-0-confirmation/fpml-5-0-confirmation.csproj" />
+  <Project Path="fpml-5-0-reporting/fpml-5-0-reporting.csproj" />
+  <Project Path="fpml-5-1-confirmation/fpml-5-1-confirmation.csproj" />
+  <Project Path="fpml-5-1-reporting/fpml-5-1-reporting.csproj" />
+  <Project Path="fpml-5-2-confirmation/fpml-5-2-confirmation.csproj" />
+  <Project Path="fpml-5-2-reporting/fpml-5-2-reporting.csproj" />
   <Project Path="fpml-5-3-confirmation/fpml-5-3-confirmation.csproj" />
+  <Project Path="fpml-5-3-recordkeeping/fpml-5-3-recordkeeping.csproj" />
+  <Project Path="fpml-5-3-reporting/fpml-5-3-reporting.csproj" />
+  <Project Path="fpml-5-3-transparency/fpml-5-3-transparency.csproj" />
 </Solution>

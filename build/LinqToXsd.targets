@@ -33,12 +33,77 @@
           BeforeTargets="DispatchToInnerBuilds"
           Condition="'@(LinqToXsdSchema)' != ''"
           DependsOnTargets="LinqToXsdToolRestore"
-          Inputs="@(LinqToXsdSchema);@(LinqToXsdSchemaDependency);@(LinqToXsdConfiguration);$(MSBuildThisFileDirectory)../dotnet-tools.json"
+          Inputs="@(LinqToXsdSchema);@(LinqToXsdSchemaDependency);@(LinqToXsdConfiguration);$(MSBuildThisFileDirectory)../dotnet-tools.json;$(MSBuildThisFileFullPath)"
           Outputs="$(LinqToXsdOutputFile)">
     <Exec Command="dotnet LinqToXsd gen &quot;@(LinqToXsdSchema->'%(FullPath)', '&quot; &quot;')&quot; -c &quot;@(LinqToXsdConfiguration->'%(FullPath)')&quot; -o &quot;$(LinqToXsdOutputFile)&quot;"
           StandardOutputImportance="low" />
     <Error Condition="!Exists('$(LinqToXsdOutputFile)')" Text="LinqToXsd did not produce $(LinqToXsdOutputFile)." />
+    <LinqToXsdRemoveDuplicateForwarders GeneratedFile="$(LinqToXsdOutputFile)" />
   </Target>
+
+  <!--
+    Works around a LinqToXsdCore 3.4.23 bug. When an extension type re-declares an element its base type
+    already has (FpML 4.1-4.9 CreditCurve re-declares PricingStructure's name and currency), the type class
+    correctly merges them into one "new" member, but the global element wrapper class forwards both the merged
+    "new" member and the base member, which fails with CS0102. Within each class this removes a non-"new"
+    property only when a "new" property of the same name also exists, and logs each removal.
+  -->
+  <UsingTask TaskName="LinqToXsdRemoveDuplicateForwarders"
+             TaskFactory="RoslynCodeTaskFactory"
+             AssemblyFile="$(MSBuildToolsPath)/Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <GeneratedFile ParameterType="System.String" Required="true" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System.Collections.Generic" />
+      <Using Namespace="System.IO" />
+      <Using Namespace="System.Linq" />
+      <Using Namespace="System.Text.RegularExpressions" />
+      <Code Type="Fragment" Language="cs"><![CDATA[
+        // Split on \n only: the generator copies schema documentation that contains stray \r characters.
+        var lines = File.ReadAllText(GeneratedFile).Split('\n').ToList();
+        var classRegex = new Regex(@"^    public (?:\w+ )*class (@?\w+)");
+        var propertyRegex = new Regex(@"^        public (new )?(?:virtual |override )*\S+ (@?\w+) \{$");
+
+        var remove = new List<(int Start, int End, string Class, string Name)>();
+        string currentClass = null;
+        var properties = new List<(int Line, bool IsNew, string Name)>();
+
+        void Flush()
+        {
+            foreach (var group in properties.GroupBy(p => p.Name))
+            {
+                if (!group.Any(p => p.IsNew)) continue;
+                foreach (var dup in group.Where(p => !p.IsNew))
+                {
+                    var start = dup.Line;
+                    while (start > 0 && lines[start - 1].StartsWith("        ///")) start--;
+                    var end = dup.Line;
+                    while (lines[end] != "        }") end++;
+                    remove.Add((start, end, currentClass, dup.Name));
+                }
+            }
+            properties.Clear();
+        }
+
+        for (var i = 0; i < lines.Count; i++)
+        {
+            var c = classRegex.Match(lines[i]);
+            if (c.Success) { Flush(); currentClass = c.Groups[1].Value; continue; }
+            var p = propertyRegex.Match(lines[i]);
+            if (p.Success) properties.Add((i, p.Groups[1].Success, p.Groups[2].Value));
+        }
+        Flush();
+
+        foreach (var r in remove.OrderByDescending(r => r.Start))
+        {
+            lines.RemoveRange(r.Start, r.End - r.Start + 1);
+            Log.LogMessage(MessageImportance.High, $"LinqToXsd workaround: removed duplicate forwarder {r.Class}.{r.Name}");
+        }
+        if (remove.Count > 0) File.WriteAllText(GeneratedFile, string.Join("\n", lines), new System.Text.UTF8Encoding(true));
+      ]]></Code>
+    </Task>
+  </UsingTask>
 
   <Target Name="LinqToXsdAddGeneratedSource"
           BeforeTargets="CoreCompile"

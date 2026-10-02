@@ -14,13 +14,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\fpml-5-3-confirmation\fpml-5-3-confirmation.csproj" />
+    <ProjectReference Include="..\..\fpml-*\fpml-*.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Using Include="Xunit" />
     <None Include="Samples\**" CopyToOutputDirectory="PreserveNewest" />
-    <None Include="..\..\fpml-5-3-confirmation\xsd\**" Link="Schemas\fpml-5-3-confirmation\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\fpml-*\xsd\**" Link="Schemas\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

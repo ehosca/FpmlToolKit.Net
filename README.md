@@ -10,15 +10,17 @@ specific needs.
 ## Building (2.0, in progress)
 
 The 2.0 line targets `netstandard2.0` and `net10.0` and uses [LinqToXsdCore](https://github.com/mamift/LinqToXsdCore)
-in place of the original CodePlex LinqToXsd. Converted so far: `fpml-5-3-confirmation`.
+in place of the original CodePlex LinqToXsd. All schema projects (FpML 4.0-4.9 and 5.0-5.3) are converted.
 
     dotnet tool restore
     dotnet build FpmlToolKit.slnx
     dotnet test FpmlToolKit.slnx
 
 C# classes are generated from the XSDs at build time into `obj/` (see `Directory.Build.targets`) and are not
-committed, since each schema set produces about 10 MB of code. To convert another schema version, give its project
-the same SDK-style layout as `fpml-5-3-confirmation/fpml-5-3-confirmation.csproj`.
+committed, since each schema set produces about 10 MB of code. `build/LinqToXsd.targets` also works around a
+LinqToXsdCore bug that duplicates `creditCurve.name` and `creditCurve.currency` in FpML 4.1-4.9.
+
+`scripts/convert-project.cs` converted the original 2012-era projects (`dotnet run scripts/convert-project.cs -- --all`).
 
 
     using System;

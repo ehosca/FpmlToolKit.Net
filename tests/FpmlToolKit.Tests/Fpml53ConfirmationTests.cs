@@ -9,7 +9,7 @@ public class Fpml53ConfirmationTests
         Path.Combine(AppContext.BaseDirectory, "Samples", "fpml-5-3-confirmation", "data-document-parties.xml");
 
     private static readonly Lazy<System.Xml.Schema.XmlSchemaSet> Schemas = new(() =>
-        SchemaValidator.Load(Path.Combine(AppContext.BaseDirectory, "Schemas", "fpml-5-3-confirmation", "fpml-main-5-3.xsd")));
+        SchemaValidator.Load(Path.Combine(AppContext.BaseDirectory, "Schemas", "fpml-5-3-confirmation", "xsd", "fpml-main-5-3.xsd")));
 
     [Fact]
     public void Sample_is_valid_against_the_schema()
