@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Minimal hand-written FpML 5.3 confirmation-view document used by the smoke tests. -->
+<dataDocument xmlns="http://www.fpml.org/FpML-5/confirmation" fpmlVersion="5-3">
+  <party id="party1">
+    <partyId partyIdScheme="http://www.fpml.org/coding-scheme/external/iso17442">549300EXAMPLEBANK001</partyId>
+    <partyName>Example Bank</partyName>
+  </party>
+  <party id="party2">
+    <partyId>COUNTERPARTY-B</partyId>
+  </party>
+</dataDocument>

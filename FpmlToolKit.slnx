@@ -1,0 +1,6 @@
+<Solution>
+  <Folder Name="/tests/">
+    <Project Path="tests/FpmlToolKit.Tests/FpmlToolKit.Tests.csproj" />
+  </Folder>
+  <Project Path="fpml-5-3-confirmation/fpml-5-3-confirmation.csproj" />
+</Solution>

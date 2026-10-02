@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "isRoot": true,
+  "tools": {
+    "linqtoxsdcore": {
+      "version": "3.4.23",
+      "commands": [
+        "LinqToXsd"
+      ],
+      "rollForward": false
+    }
+  }
+}

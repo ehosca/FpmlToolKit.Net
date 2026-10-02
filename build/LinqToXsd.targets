@@ -1,0 +1,53 @@
+<Project>
+
+  <!--
+    Shared FpML code generation for SDK-style projects (see Directory.Build.targets).
+
+    Generates C# from FpML schemas at build time using the LinqToXsdCore local tool
+    (see dotnet-tools.json). Projects opt in by declaring:
+      <LinqToXsdSchema Include="xsd\fpml-main-x-y.xsd" />
+      <LinqToXsdConfiguration Include="xsd\namespaceconfig.xml" />
+    Generated code goes to obj/ and is never committed (about 10 MB per schema set).
+  -->
+
+  <ItemGroup>
+    <LinqToXsdSchemaDependency Include="$(MSBuildProjectDirectory)/xsd/**/*.xsd" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <LinqToXsdOutputFile>$(MSBuildProjectDirectory)/$(BaseIntermediateOutputPath)LinqToXsdSource.g.cs</LinqToXsdOutputFile>
+    <LinqToXsdToolRestoreStamp>$(MSBuildProjectDirectory)/$(BaseIntermediateOutputPath).linqtoxsd-tool-restore.stamp</LinqToXsdToolRestoreStamp>
+  </PropertyGroup>
+
+  <Target Name="LinqToXsdToolRestore"
+          Condition="'@(LinqToXsdSchema)' != ''"
+          Inputs="$(MSBuildThisFileDirectory)../dotnet-tools.json"
+          Outputs="$(LinqToXsdToolRestoreStamp)">
+    <Exec Command="dotnet tool restore" WorkingDirectory="$(MSBuildThisFileDirectory).." />
+    <Touch Files="$(LinqToXsdToolRestoreStamp)" AlwaysCreate="true" />
+  </Target>
+
+  <!-- The output is framework-independent, so a multi-targeted build generates once in the outer
+       build (before DispatchToInnerBuilds); the inner builds then find it up to date. -->
+  <Target Name="LinqToXsdGenerate"
+          BeforeTargets="DispatchToInnerBuilds"
+          Condition="'@(LinqToXsdSchema)' != ''"
+          DependsOnTargets="LinqToXsdToolRestore"
+          Inputs="@(LinqToXsdSchema);@(LinqToXsdSchemaDependency);@(LinqToXsdConfiguration);$(MSBuildThisFileDirectory)../dotnet-tools.json"
+          Outputs="$(LinqToXsdOutputFile)">
+    <Exec Command="dotnet LinqToXsd gen &quot;@(LinqToXsdSchema->'%(FullPath)', '&quot; &quot;')&quot; -c &quot;@(LinqToXsdConfiguration->'%(FullPath)')&quot; -o &quot;$(LinqToXsdOutputFile)&quot;"
+          StandardOutputImportance="low" />
+    <Error Condition="!Exists('$(LinqToXsdOutputFile)')" Text="LinqToXsd did not produce $(LinqToXsdOutputFile)." />
+  </Target>
+
+  <Target Name="LinqToXsdAddGeneratedSource"
+          BeforeTargets="CoreCompile"
+          DependsOnTargets="LinqToXsdGenerate"
+          Condition="'@(LinqToXsdSchema)' != ''">
+    <ItemGroup>
+      <Compile Include="$(LinqToXsdOutputFile)" />
+      <FileWrites Include="$(LinqToXsdOutputFile)" />
+    </ItemGroup>
+  </Target>
+
+</Project>

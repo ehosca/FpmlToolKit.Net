@@ -7,6 +7,19 @@ You can head over to [downloads](https://github.com/ehosca/FpmlToolKit.Net/downl
 binaries and start using them right away, or you can fork this project for fine tuning the output to your
 specific needs.
 
+## Building (2.0, in progress)
+
+The 2.0 line targets `netstandard2.0` and `net10.0` and uses [LinqToXsdCore](https://github.com/mamift/LinqToXsdCore)
+in place of the original CodePlex LinqToXsd. Converted so far: `fpml-5-3-confirmation`.
+
+    dotnet tool restore
+    dotnet build FpmlToolKit.slnx
+    dotnet test FpmlToolKit.slnx
+
+C# classes are generated from the XSDs at build time into `obj/` (see `Directory.Build.targets`) and are not
+committed, since each schema set produces about 10 MB of code. To convert another schema version, give its project
+the same SDK-style layout as `fpml-5-3-confirmation/fpml-5-3-confirmation.csproj`.
+
 
     using System;
     using fpml_5_0_reporting;

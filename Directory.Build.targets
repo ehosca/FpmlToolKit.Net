@@ -1,0 +1,9 @@
+<Project>
+
+  <!--
+    MSBuild imports this file into every project, including the unconverted 2012-era ones, which still use
+    LinqToXsdBin/LinqToXsd.targets with the same item names. Only SDK-style projects get the new generator.
+  -->
+  <Import Project="build/LinqToXsd.targets" Condition="'$(UsingMicrosoftNETSdk)' == 'true'" />
+
+</Project>
