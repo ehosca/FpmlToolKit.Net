@@ -222,7 +222,7 @@ void CreateProject(string mainSchema, string name, string version, string view, 
         <Configuration xmlns="http://www.microsoft.com/xml/schema/linq">
           <Namespaces>
             <Namespace Schema="{targetNamespace}" Clr="{rootNamespace}"/>
-            <Namespace Schema="http://www.w3.org/2000/09/xmldsig#" Clr="org.w3.xmldsig"/>
+            <Namespace Schema="http://www.w3.org/2000/09/xmldsig#" Clr="{rootNamespace}.xmldsig"/>
           </Namespaces>
         </Configuration>
 

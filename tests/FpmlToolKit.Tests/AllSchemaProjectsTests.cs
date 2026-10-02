@@ -21,6 +21,21 @@ public class AllSchemaProjectsTests
         Assert.True(ProjectNames().Count() >= 20);
     }
 
+    // A consumer may reference several schema assemblies at once (every view of a version ships in one package), so a
+    // type full name defined by two assemblies makes that name unusable (CS0433).
+    [Fact]
+    public void No_type_is_defined_by_more_than_one_schema_assembly()
+    {
+        var duplicates = ProjectNames()
+            .SelectMany(p => Assembly.Load(p).GetExportedTypes().Select(t => (Type: t.FullName!, Assembly: p)))
+            .GroupBy(t => t.Type)
+            .Where(g => g.Count() > 1)
+            .Select(g => $"{g.Key} ({g.Count()} assemblies, e.g. {string.Join(", ", g.Take(2).Select(t => t.Assembly))})")
+            .ToList();
+
+        Assert.True(duplicates.Count == 0, $"{duplicates.Count} type names are defined by more than one assembly:\n" + string.Join("\n", duplicates.Take(10)));
+    }
+
     [Theory]
     [MemberData(nameof(Projects))]
     public void Schema_compiles(string project)
