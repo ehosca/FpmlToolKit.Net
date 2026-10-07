@@ -16,7 +16,7 @@ public class Fpml49Tests
         Assert.Empty(SchemaValidator.Validate(XDocument.Load(SamplePath), schemas));
     }
 
-    // creditCurve.name and creditCurve.currency are the members the build-time workaround de-duplicates.
+    // creditCurve.name and creditCurve.currency were generated twice before LinqToXsdCore 3.4.24 (mamift/LinqToXsdCore#106).
     [Fact]
     public void CreditCurve_exposes_both_currency_occurrences()
     {

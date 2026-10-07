@@ -23,7 +23,7 @@
   </ItemDefinitionGroup>
 
   <ItemGroup>
-    <PackageReference Include="XObjectsCore" Version="3.4.23" />
+    <PackageReference Include="XObjectsCore" Version="$(XObjectsCoreVersion)" />
     <None Include="$(MSBuildThisFileDirectory)../THIRD-PARTY-NOTICES.md" Pack="true" PackagePath="\" Visible="false" />
   </ItemGroup>
 
