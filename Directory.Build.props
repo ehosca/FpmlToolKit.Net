@@ -10,6 +10,8 @@
     <PackageProjectUrl>https://github.com/ehosca/FpmlToolKit.Net</PackageProjectUrl>
     <RepositoryUrl>https://github.com/ehosca/FpmlToolKit.Net</RepositoryUrl>
     <PackageTags>fpml;derivatives;xml;xsd;linqtoxsd</PackageTags>
+    <!-- The XObjectsCore runtime must match the LinqToXsdCore tool version in dotnet-tools.json that generates the code. -->
+    <XObjectsCoreVersion>3.4.24</XObjectsCoreVersion>
   </PropertyGroup>
 
   <!-- Schema projects: compiled code is generated, so silence the noise it produces.

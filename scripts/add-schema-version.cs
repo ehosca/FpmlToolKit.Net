@@ -241,7 +241,7 @@ void CreateProject(string mainSchema, string name, string version, string view, 
           </PropertyGroup>
 
           <ItemGroup>
-            <PackageReference Include="XObjectsCore" Version="3.4.23" />
+            <PackageReference Include="XObjectsCore" Version="$(XObjectsCoreVersion)" />
           </ItemGroup>
 
           <ItemGroup>

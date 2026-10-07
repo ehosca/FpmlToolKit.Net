@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   Minimal hand-written FpML 4.9 creditCurve. "currency" appears twice: once from the PricingStructure base type
-  and once from CreditCurveCharacteristics.model. This is the shape that needs the generator workaround in
-  build/LinqToXsd.targets.
+  and once from CreditCurveCharacteristics.model. LinqToXsdCore before 3.4.24 generated duplicate members for this
+  shape (https://github.com/mamift/LinqToXsdCore/issues/106).
 -->
 <creditCurve xmlns="http://www.fpml.org/2010/FpML-4-9" id="curve1">
   <name>ACME Corp senior CDS curve</name>
