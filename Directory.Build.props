@@ -6,12 +6,17 @@
     <Version>2.0.0-beta.1</Version>
     <Authors>Erhan Hosca</Authors>
     <Copyright>Copyright (C) 2012-2026 Erhan Hosca</Copyright>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/ehosca/FpmlToolKit.Net</PackageProjectUrl>
     <RepositoryUrl>https://github.com/ehosca/FpmlToolKit.Net</RepositoryUrl>
     <PackageTags>fpml;derivatives;xml;xsd;linqtoxsd</PackageTags>
     <!-- The XObjectsCore runtime must match the LinqToXsdCore tool version in dotnet-tools.json that generates the code. -->
     <XObjectsCoreVersion>3.4.24</XObjectsCoreVersion>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+  </PropertyGroup>
+
+  <!-- Reproducible builds on CI: normalised source paths in the compiled output. -->
+  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
   </PropertyGroup>
 
   <!-- Schema projects: compiled code is generated, so silence the noise it produces.

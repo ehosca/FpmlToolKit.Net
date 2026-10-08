@@ -2,10 +2,13 @@ name: Release
 
 # Pushing a version tag (v2.0.0-beta.2, v2.0.0, ...) builds, tests and packs every FpML version package and attaches
 # the .nupkg files to a GitHub release for that tag. Versions with a suffix (-beta.2) are marked as prereleases.
-# Nothing is published to NuGet.org.
 #
-# Run it manually ("Run workflow") for a dry run: same build, test and pack, but the packages are kept as a workflow
-# artifact instead of being released.
+# Publishing to NuGet.org (the "nuget" job) is off until the repository variable NUGET_PUBLISH is "true" and the
+# secret NUGET_API_KEY exists. It then pushes the same packages, after approval if the "nuget" environment requires a
+# reviewer. See "Releasing" in README.md.
+#
+# Run it manually ("Run workflow") for a dry run: same build, test and pack, but the packages are only kept as a
+# workflow artifact: no GitHub release and no NuGet.org push.
 
 on:
   push:
@@ -25,6 +28,8 @@ concurrency:
 jobs:
   release:
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -74,7 +79,10 @@ jobs:
 
       - run: dotnet build FpmlToolKit.slnx -c Release -p:Version=${{ steps.version.outputs.version }}
       - run: dotnet test FpmlToolKit.slnx -c Release --no-build
-      - run: dotnet pack FpmlToolKit.slnx -c Release --no-build -p:Version=${{ steps.version.outputs.version }} -o artifacts
+      - run: >-
+          dotnet pack FpmlToolKit.slnx -c Release --no-build -o artifacts
+          -p:Version=${{ steps.version.outputs.version }}
+          "-p:PackageReleaseNotes=${{ github.server_url }}/${{ github.repository }}/releases/tag/${{ steps.version.outputs.tag }}"
 
       - name: Check packages
         run: |
@@ -87,8 +95,8 @@ jobs:
             exit 1
           fi
 
-      - name: Keep packages (dry run)
-        if: github.ref_type != 'tag'
+      # Also used by the nuget job, so it pushes exactly the packages that were tested and released.
+      - name: Keep packages
         uses: actions/upload-artifact@v4
         with:
           name: packages-${{ steps.version.outputs.version }}
@@ -110,3 +118,29 @@ jobs:
             if [ "$PRERELEASE" = "true" ]; then flags+=(--prerelease); fi
             gh release create "$TAG" artifacts/*.nupkg --verify-tag --title "FpmlToolKit.Net $VERSION" --generate-notes "${flags[@]}"
           fi
+
+  nuget:
+    needs: release
+    if: github.ref_type == 'tag' && vars.NUGET_PUBLISH == 'true'
+    runs-on: ubuntu-latest
+    # Add a required reviewer to this environment (Settings > Environments) to approve each push.
+    environment: nuget
+    permissions: {}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: packages-${{ needs.release.outputs.version }}
+          path: artifacts
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - name: Push to NuGet.org
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        run: |
+          if [ -z "$NUGET_API_KEY" ]; then
+            echo "::error::NUGET_PUBLISH is true but the NUGET_API_KEY secret is not set."
+            exit 1
+          fi
+          # --skip-duplicate makes re-running the job safe after a partial push.
+          dotnet nuget push "artifacts/*.nupkg" --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate

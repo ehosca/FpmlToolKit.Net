@@ -27,8 +27,20 @@ Releases are made by pushing a version tag on a commit that is already on `main`
 
 The Release workflow (`.github/workflows/release.yml`) builds and tests everything with that version, packs one
 `.nupkg` per FpML version and attaches them to a GitHub release for the tag; versions with a suffix such as `-beta.2`
-are marked as prereleases. Nothing is published to NuGet.org. Running the workflow manually from the Actions tab does a
-dry run: the packages are kept as a workflow artifact and no release is created.
+are marked as prereleases. Running the workflow manually from the Actions tab does a dry run: the packages are kept as a
+workflow artifact, with no GitHub release and no NuGet.org push.
+
+Publishing the same packages to NuGet.org is off until it is switched on:
+
+1. On nuget.org, create an API key with the **Push new packages and package versions** scope, limited to the glob
+   pattern `FpmlToolKit.*`, and add it as the repository secret `NUGET_API_KEY` (Settings > Secrets and variables >
+   Actions).
+2. Optionally, add a required reviewer to the `nuget` environment (Settings > Environments), so each push waits for
+   approval after the GitHub release is created.
+3. Set the repository variable `NUGET_PUBLISH` to `true`.
+
+The next version tag then also runs the `nuget` job. It uses `--skip-duplicate`, so re-running it after a partial push
+is safe; NuGet.org versions cannot be deleted, only unlisted.
 
 ## Building
 
