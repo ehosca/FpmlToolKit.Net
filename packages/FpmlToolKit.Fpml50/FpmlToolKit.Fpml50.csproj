@@ -13,9 +13,4 @@
     <ProjectReference Include="..\..\fpml-5-0-reporting\fpml-5-0-reporting.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Include="..\..\fpml-5-0-confirmation\xsd\**" Pack="true" PackagePath="xsd\fpml-5-0-confirmation\" Visible="false" />
-    <None Include="..\..\fpml-5-0-reporting\xsd\**" Pack="true" PackagePath="xsd\fpml-5-0-reporting\" Visible="false" />
-  </ItemGroup>
-
 </Project>

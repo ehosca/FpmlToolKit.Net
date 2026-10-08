@@ -15,11 +15,4 @@
     <ProjectReference Include="..\..\fpml-5-4-transparency\fpml-5-4-transparency.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Include="..\..\fpml-5-4-confirmation\xsd\**" Pack="true" PackagePath="xsd\fpml-5-4-confirmation\" Visible="false" />
-    <None Include="..\..\fpml-5-4-recordkeeping\xsd\**" Pack="true" PackagePath="xsd\fpml-5-4-recordkeeping\" Visible="false" />
-    <None Include="..\..\fpml-5-4-reporting\xsd\**" Pack="true" PackagePath="xsd\fpml-5-4-reporting\" Visible="false" />
-    <None Include="..\..\fpml-5-4-transparency\xsd\**" Pack="true" PackagePath="xsd\fpml-5-4-transparency\" Visible="false" />
-  </ItemGroup>
-
 </Project>

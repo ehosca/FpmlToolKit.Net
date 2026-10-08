@@ -84,7 +84,6 @@ void WriteVersionPackages()
             : $"Strongly typed LINQ to XSD classes for FpML {major}.{minor}, one assembly per view: {string.Join(", ", viewNames)}.";
 
         var references = string.Join(Environment.NewLine, projects.Select(p => $"""    <ProjectReference Include="..\..\{p}\{p}.csproj" />"""));
-        var schemas = string.Join(Environment.NewLine, projects.Select(p => $"""    <None Include="..\..\{p}\xsd\**" Pack="true" PackagePath="xsd\{p}\" Visible="false" />"""));
 
         var dir = Directory.CreateDirectory(Path.Combine(repoRoot, "packages", packageId)).FullName;
         var csprojPath = Path.Combine(dir, packageId + ".csproj");
@@ -104,10 +103,6 @@ void WriteVersionPackages()
             {references}
               </ItemGroup>
 
-              <ItemGroup>
-            {schemas}
-              </ItemGroup>
-
             </Project>
 
             """);
@@ -121,6 +116,8 @@ void WriteVersionPackages()
             return $"| {view} | `{p}.dll` | `{p.Replace('-', '_')}` |";
         }));
         var exampleNamespace = projects[0].Replace('-', '_');
+        // Contains braces, so it is kept out of the raw interpolated readme template below.
+        const string printProblem = "Console.WriteLine($\"{problem.Severity}: {problem.Message}\");";
         var exampleDocument = viewNames.Count == 0
             ? $"an FpML {major}.{minor} document"
             : $"an FpML {major}.{minor} {viewNames[0]} view document (use the matching namespace for other views)";
@@ -146,10 +143,16 @@ void WriteVersionPackages()
             // Load {exampleDocument}; Root is the typed root element.
             var doc = XRoot.Load("document.xml");
             Console.WriteLine(doc.Root.GetType().Name);
+
+            // Validate against the schemas embedded in the assembly (no files or network access needed).
+            foreach (var problem in FpmlSchema.Validate(doc.Root))
+                {printProblem}
             ```
 
             Root element types also have static `Load` and `Parse` methods, and every type can be built in code and
-            serialised with `ToString()`. The package's `xsd/` folder contains the schemas each assembly was generated from.
+            serialised with `ToString()`. Each assembly embeds the schemas it was generated from: `FpmlSchema` validates
+            documents and typed elements (`Validate`, `IsValid`), returns a compiled `XmlSchemaSet` (`CreateSchemaSet`) and
+            opens the raw files (`SchemaFileNames`, `OpenSchema`).
 
             ## License
 
