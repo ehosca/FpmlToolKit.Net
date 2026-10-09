@@ -14,8 +14,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
         with:
           global-json-file: global.json
       - run: dotnet tool restore
@@ -24,7 +24,7 @@ jobs:
       # cache; build/LinqToXsd.targets then regenerates only projects whose schema inputs hash differently.
       - name: Restore generated code
         id: generated-code
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v6
         with:
           path: |
             fpml-*/obj/LinqToXsdSource.g.cs
@@ -37,7 +37,7 @@ jobs:
 
       - name: Save generated code
         if: steps.generated-code.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v6
         with:
           path: |
             fpml-*/obj/LinqToXsdSource.g.cs
@@ -47,7 +47,7 @@ jobs:
 
       - run: dotnet test FpmlToolKit.slnx -c Release --no-build
       - run: dotnet pack FpmlToolKit.slnx -c Release --no-build -o artifacts
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: packages
           path: artifacts/*.nupkg
@@ -61,14 +61,14 @@ jobs:
       # Keep LF line endings: the generated-code cache is keyed on the schema file contents, so CRLF checkouts would
       # miss it and regenerate every project.
       - run: git config --global core.autocrlf false
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
         with:
           global-json-file: global.json
       - run: dotnet tool restore
 
       - name: Restore generated code
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v6
         with:
           path: |
             fpml-*/obj/LinqToXsdSource.g.cs
