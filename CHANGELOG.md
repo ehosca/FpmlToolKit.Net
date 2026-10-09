@@ -6,6 +6,11 @@ and versions follow [Semantic Versioning](https://semver.org/). Packages for eac
 
 ## [Unreleased]
 
+### Changed
+
+- Publishing to NuGet.org uses NuGet Trusted Publishing (a short-lived key per release run) instead of a stored
+  `NUGET_API_KEY` secret.
+
 ## [2.0.0-beta.4] - 2026-10-09
 
 ### Added
