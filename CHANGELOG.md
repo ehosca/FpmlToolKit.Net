@@ -6,6 +6,8 @@ and versions follow [Semantic Versioning](https://semver.org/). Packages for eac
 
 ## [Unreleased]
 
+## [2.0.0-beta.4] - 2026-10-09
+
 ### Added
 
 - Every view assembly embeds the FpML schemas it was generated from and has a `FpmlSchema` class in its namespace:
@@ -17,10 +19,11 @@ and versions follow [Semantic Versioning](https://semver.org/). Packages for eac
   ([#7](https://github.com/ehosca/FpmlToolKit.Net/pull/7))
 - `SECURITY.md`, `CONTRIBUTING.md`, this changelog, and Dependabot updates for NuGet packages, the .NET SDK and
   GitHub Actions.
-
 - FpML 4.10 (`FpmlToolKit.Fpml410`) and FpML 5.14 (`FpmlToolKit.Fpml514`, all six views).
+  ([#8](https://github.com/ehosca/FpmlToolKit.Net/pull/8))
 - `official-files.txt` records the FpML download, entry and SHA-256 of every schema and example, and the tests fail
   if any of them changes. `scripts/official-files.cs` regenerates it and checks it against the downloads on fpml.org.
+  ([#8](https://github.com/ehosca/FpmlToolKit.Net/pull/8))
 
 ### Changed
 
@@ -42,6 +45,7 @@ and versions follow [Semantic Versioning](https://semver.org/). Packages for eac
     `regulationNameScheme`. `AccrualOptionChangeEvent` is `AccrualOptionChange`. `RateObservation.observationWeight`
     is optional. New: `TermPointReference` and `WithdrawalPartyTradeInformation.category`.
   - 4.0, 4.1, 4.4, 4.5, 5.0-5.2, 5.3 recordkeeping and 5.3 reporting: same types and properties.
+  ([#8](https://github.com/ehosca/FpmlToolKit.Net/pull/8))
 - Packages no longer contain a top-level `xsd/` folder, which NuGet never copied into consuming projects; the schemas
   are embedded in the assemblies instead. ([#6](https://github.com/ehosca/FpmlToolKit.Net/pull/6))
 - Packages carry `LICENSE.txt` (MIT for the toolkit, with the FpML and W3C schemas under their own terms) instead of an
@@ -96,7 +100,8 @@ The 2012 toolkit modernised. ([#1](https://github.com/ehosca/FpmlToolKit.Net/pul
 
 FpML 4.0 to 4.9 and 5.0 to 5.3 for .NET Framework 4.0, generated with CodePlex LinqToXsd. Not published as packages.
 
-[Unreleased]: https://github.com/ehosca/FpmlToolKit.Net/compare/v2.0.0-beta.3...HEAD
+[Unreleased]: https://github.com/ehosca/FpmlToolKit.Net/compare/v2.0.0-beta.4...HEAD
+[2.0.0-beta.4]: https://github.com/ehosca/FpmlToolKit.Net/compare/v2.0.0-beta.3...v2.0.0-beta.4
 [2.0.0-beta.3]: https://github.com/ehosca/FpmlToolKit.Net/compare/v2.0.0-beta.2...v2.0.0-beta.3
 [2.0.0-beta.2]: https://github.com/ehosca/FpmlToolKit.Net/compare/v2.0.0-beta.1...v2.0.0-beta.2
 [2.0.0-beta.1]: https://github.com/ehosca/FpmlToolKit.Net/releases/tag/v2.0.0-beta.1
