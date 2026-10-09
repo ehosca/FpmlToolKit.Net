@@ -1,0 +1,4 @@
+# Official FpML files (schemas and example documents) are kept byte for byte as FpML publishes them, so git must
+# never convert their line endings. scripts/official-files.cs and official-files.txt check this.
+fpml-*/xsd/*.xsd -text
+tests/FpmlToolKit.Tests/Examples/** -text

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+  == Copyright (c) 2026 All rights reserved. 
+  == Financial Products Markup Language is subject to the FpML public license. 
+  == A copy of this license is available at http://www.fpml.org/license/license.html
+-->
+<xsd:schema xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns="http://www.fpml.org/FpML-5/confirmation" xmlns:fpml-annotation="http://www.fpml.org/annotation" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.fpml.org/FpML-5/confirmation" ecore:documentRoot="FpML" ecore:nsPrefix="conf" ecore:package="org.fpml.confirmation" version="$Revision$" xml:lang="en" elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xsd:include schemaLocation="fpml-eq-shared-5-14.xsd" />
+  <xsd:complexType name="EquitySwapTransactionSupplement">
+    <xsd:annotation>
+      <xsd:documentation>A type for defining Equity Swap Transaction Supplement</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="ReturnSwapBase">
+        <xsd:sequence>
+          <xsd:group ref="MutualOrOptionalEarlyTermination.model" minOccurs="0" />
+          <xsd:group ref="EquityUnderlyerProvisions.model" minOccurs="0"></xsd:group>
+          <xsd:sequence minOccurs="0">
+            <xsd:element name="benchmarkProvisions" type="BenchmarkProvisionsEnum">
+              <xsd:annotation>
+                <xsd:documentation source="http://www.FpML.org">Benchmark provisions ensure compliance with EU Benchmark Regulation (BMR) and comparable global regimes by addressing circumstances in which the reference index becomes non‑compliant or otherwise affected by benchmark‑related regulatory events.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="alternativePreNominatedIndex" type="AlternativePreNominatedIndex" minOccurs="0">
+              <xsd:annotation>
+                <xsd:documentation>Specifies the index pre‑agreed by the parties to replace the original reference index if a benchmark event occurs, such as loss of authorization, cessation, prohibition of use, or other regulatory impacts under benchmark regulations. This optional fallback index is only applicable when the underlier is an index (singleUnderlier or basketConstituent).</xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+          </xsd:sequence>
+          <xsd:element name="lookThrough" type="LookThroughEnum" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.FpML.org">Specifies whether the transaction applies look‑through treatment to Depository Receipts (DRs), ensuring that corporate actions, dividend provisions, voting adjustments, and valuation mechanics reflect events affecting the underlying shares where economically intended. Parties may elect Full Depository Receipt Look‑Through, under which all relevant underlying‑share events are passed through, or Partial Depository Receipt Look‑Through, under which only a defined subset of such events applies. If the element is absent, Look‑Through does not apply. This election is only applicable where the single underlier or a basket constituent is an equity.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="extraordinaryEvents" type="ExtraordinaryEvents" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>Where the underlying is shares, specifies events affecting the issuer of those shares that may require the terms of the transaction to be adjusted.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:element name="equitySwapTransactionSupplement" type="EquitySwapTransactionSupplement" substitutionGroup="product">
+    <xsd:annotation>
+      <xsd:documentation>Specifies the structure of the equity swap transaction supplement.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+</xsd:schema>
+

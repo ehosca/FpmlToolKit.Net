@@ -24,6 +24,7 @@
     <None Include="Samples\**" CopyToOutputDirectory="PreserveNewest" />
     <None Include="Examples\**" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\fpml-*\xsd\**" Link="Schemas\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\official-files.txt" Link="official-files.txt" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

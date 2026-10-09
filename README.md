@@ -64,7 +64,11 @@ var document = new dataDocument
     fpmlVersion = "5-13",
     party =
     [
-        new Party { id = "party1", partyId = [new PartyId { TypedValue = "549300EXAMPLEBANK001" }] },
+        new Party
+        {
+            id = "party1",
+            partyId = [new PartyId { partyIdScheme = new Uri("http://www.fpml.org/coding-scheme/external/iso17442"), TypedValue = "549300EXAMPLEBANK001" }],
+        },
     ],
 };
 
@@ -136,21 +140,17 @@ is safe; NuGet.org versions cannot be deleted, only unlisted.
 ## Building
 
 The 2.0 line targets `netstandard2.0` and `net10.0` and uses [LinqToXsdCore](https://github.com/mamift/LinqToXsdCore)
-in place of the original CodePlex LinqToXsd. Schema projects cover FpML 4.0-4.9 and 5.0-5.13. For 5.4-5.13
-they include every view in FpML's downloads (legal from 5.7, pretrade from 5.5) except 5.8 transparency, whose
-published schema does not compile (`fpml-business-events-5-8.xsd` uses a `Withdrawal` type the view never declares;
-fixed in 5.9). For 5.0-5.3 they include the views this project has carried since 2012.
+in place of the original CodePlex LinqToXsd. Schema projects cover FpML 4.0-4.10 and 5.0-5.14, each from the latest
+published Recommendation build of that version (for example 5.13 build 8, `fpml-5-13-8-rec-2`). They include every
+view in FpML's downloads except 5.8 transparency, whose published schema does not compile
+(`fpml-business-events-5-8.xsd` uses a `Withdrawal` type the view never declares; fixed in 5.9).
 
-The schemas for 5.4-5.13 are FpML's published files, unchanged. The schemas for 4.0-4.9 and 5.0-5.3 date from 2012:
-each version and view is a single combined `fpml-main-*.xsd`, made from FpML's multi-file schemas with Eclipse EMF
-tooling, which adds `ecore:` annotations. They are kept as they are so that the generated API stays the same as in
-earlier releases. Compared with FpML's current downloads, they define the same named types, elements and groups,
-except:
-
-- 4.2 and 4.3: FpML has since added types for the 2021 ISDA definitions and benchmark fallbacks to these versions
-  (such as `BenchmarkRate`, `FallbackRate` and `CashSettlementMethods2021.model`), which the 2012 files don't have.
-  4.3 also has a `StubValue` type that the current download doesn't.
-- 5.3 confirmation has an extra `EmbeddedOptionType` type, and 5.3 transparency lacks the `BuyerSeller.model` group.
+The schemas (`fpml-*/xsd/*.xsd`) and the example documents (`tests/FpmlToolKit.Tests/Examples/`) are byte-for-byte
+copies of FpML's "Schema and Examples" downloads and are never edited. `official-files.txt` lists every one with its
+SHA-256 and the download and entry it came from, and the downloads with their own SHA-256; `.gitattributes` stops git
+from converting their line endings. The tests fail if a file no longer matches the list, and
+`dotnet run scripts/official-files.cs -- verify` downloads the listed zips from fpml.org and checks every file against
+them.
 
     dotnet tool restore
     dotnet build FpmlToolKit.slnx
@@ -166,13 +166,18 @@ between runs, so a push regenerates only the projects whose schemas changed. The
 (`dotnet-tools.json`) and the `XObjectsCore` runtime version (`XObjectsCoreVersion` in `Directory.Build.props`) must
 match.
 
-To add a schema version, download its schemas from [fpml.org](https://www.fpml.org/the_standard/current/), unzip them
-and run `dotnet run scripts/add-schema-version.cs -- <folder>`. It creates one `fpml-<version>-<view>` project per
-`fpml-main-*.xsd` it finds under the folder (skipping schemas that do not compile), adds it to the solution, and copies
-five schema-valid official examples per view into `tests/FpmlToolKit.Tests/Examples/`. The tests validate each example,
-load it through the generated `XRoot` API and check that it round-trips unchanged. It also regenerates
-`packages/FpmlToolKit.Fpml<version>/`, the per-version package projects (see `build/VersionPackage.targets`);
-`dotnet pack FpmlToolKit.slnx` produces one `.nupkg` per FpML version.
+To add a schema version, download the "Schema and Examples" zip of each view of its latest Recommendation build from
+[fpml.org](https://www.fpml.org/the_standard/current/) (the download links show once you are logged in; the files
+themselves need no login). Keep the zips under their path on fpml.org (for example
+`zips/fpml-5-13-8-rec-2/xml/confirmation-5-13_xml.zip`), unzip copies of them elsewhere, and run
+`dotnet run scripts/add-schema-version.cs -- <folder>`. It creates one `fpml-<version>-<view>` project (`fpml-<version>`
+for 4.x) per `fpml-main-*.xsd` it finds under the folder (skipping schemas that do not compile), adds it to the
+solution, and copies five schema-valid official examples per view into `tests/FpmlToolKit.Tests/Examples/`. The tests
+validate each example, load it through the generated `XRoot` API and check that it round-trips unchanged. It also
+regenerates `packages/FpmlToolKit.Fpml<version>/`, the per-version package projects (see
+`build/VersionPackage.targets`); `dotnet pack FpmlToolKit.slnx` produces one `.nupkg` per FpML version. To move an
+existing version to a newer FpML build, run it with `--replace`. Then run
+`dotnet run scripts/official-files.cs -- write <zips>` to record the new files in `official-files.txt`.
 
 ## License
 

@@ -26,10 +26,8 @@ FpML® is a registered trademark of the International Swaps and Derivatives Asso
 affiliated with or endorsed by ISDA. The FpML Public License is published at
 https://www.fpml.org/the_standard/fpml-public-license/.
 
-The schemas for FpML 5.4-5.13 are FpML's published files, unmodified. For FpML 4.0-4.9 and 5.0-5.3, each version and
-view is a single combined `fpml-main-*.xsd` file, made in 2012 from FpML's multi-file schemas with Eclipse EMF
-tooling, which added `ecore:` annotations; these are modified versions of the FpML schemas. The README's Building
-section lists how they differ from FpML's current downloads.
+All FpML schemas and example documents are FpML's published files, unmodified, from the latest Recommendation build of
+each version. `official-files.txt` lists the download and entry each one was copied from, with SHA-256 checksums.
 
 ## XML Signature schema
 

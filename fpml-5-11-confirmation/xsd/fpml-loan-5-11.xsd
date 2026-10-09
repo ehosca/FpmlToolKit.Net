@@ -531,7 +531,7 @@
       <xsd:element name="paymentFrequency" type="Period" minOccurs="0" />
     </xsd:sequence>
   </xsd:complexType>
-  <xsd:complexType name="AccrualOptionChangeEvent">
+  <xsd:complexType name="AccrualOptionChange">
     <xsd:annotation>
       <xsd:documentation xml:lang="en">An event describing a change to an accrual option associated with a specific facility.</xsd:documentation>
     </xsd:annotation>
@@ -4512,7 +4512,7 @@
       <xsd:documentation xml:lang="en">Head of the substitution group for all facility events.</xsd:documentation>
     </xsd:annotation>
   </xsd:element>
-  <xsd:element name="accrualOptionChange" type="AccrualOptionChangeEvent" substitutionGroup="facilityEventGroup" />
+  <xsd:element name="accrualOptionChange" type="AccrualOptionChange" substitutionGroup="facilityEventGroup" />
   <xsd:element name="accruingFeeChange" type="AccruingFeeChange" substitutionGroup="facilityEventGroup" />
   <xsd:element name="accruingFeeExpiry" type="AccruingFeeExpiry" substitutionGroup="facilityEventGroup" />
   <xsd:element name="accruingFeePayment" type="AccruingFeePayment" substitutionGroup="facilityEventGroup" />

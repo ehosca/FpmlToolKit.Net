@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+  == Copyright (c) 2026 All rights reserved. 
+  == Financial Products Markup Language is subject to the FpML public license. 
+  == A copy of this license is available at http://www.fpml.org/license/license.html     
+-->
+<!--
+Annotation Disclaimer: Certain documentation blocks in this schema were generated 
+with artificial intelligence to provide descriptive text for types and elements 
+that previously lacked documentation. AI-generated documentation is identified 
+by the attribute fpml-annotation:aiGenerated="true" on the corresponding xsd:documentation 
+element. This content is intended solely to improve readability and usability, 
+it is non-normative and should not be relied upon as a substitute for the schema 
+definition itself or the official FpML specification.
+-->
+<xsd:schema xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns="http://www.fpml.org/FpML-5/recordkeeping" xmlns:dsig="http://www.w3.org/2000/09/xmldsig#" xmlns:fpml-annotation="http://www.fpml.org/annotation" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.fpml.org/FpML-5/recordkeeping" ecore:documentRoot="FpML" ecore:nsPrefix="" ecore:package="org.fpml.recordkeeping" version="$Revision$" xml:lang="en" elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xsd:include schemaLocation="fpml-msg-5-14.xsd" />
+  <xsd:complexType name="AffectedTransactions">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A container for identifying one or more trades that have been impacted by a specific event. It allows referencing affected trades either by their full trade details (trade) or by using trade identifiers (tradeReference).</xsd:documentation>
+    </xsd:annotation>
+    <xsd:group ref="TradeOrTradeReference.model" maxOccurs="unbounded" />
+  </xsd:complexType>
+  <xsd:complexType name="BankruptcyEvent">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A specific type of credit event indicating that a counterparty has declared bankruptcy or is undergoing insolvency proceedings. It extends the broader CreditEvent type, inheriting its structure while specifying that the credit event relates to bankruptcy.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="CreditEvent" />
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="CreditEvent">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A financial event indicating that a counterparty has defaulted or experienced financial distress, impacting the terms of a credit agreement. This includes situations such as bankruptcy, failure to pay, restructuring, or obligation acceleration.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:complexType>
+  <xsd:complexType name="CreditEventNoticeDocument">
+    <xsd:annotation>
+      <xsd:documentation>An event type that records the occurrence of a credit event notice.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="affectedTransactions" type="AffectedTransactions" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation>Trades affected by this event.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="referenceEntity" type="LegalEntity" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Identifies the legal entity affected by the credit event. It includes the entity’s name and one or more unique identifiers, such as a Legal Entity Identifier (LEI) or other financial reference codes.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element ref="creditEvent" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Specifies the credit event that has occurred, such as bankruptcy, failure to pay, or restructuring.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="publiclyAvailableInformation" type="Resource" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation>A public information source, e.g. a particular newspaper or electronic news service, that may publish relevant information used in the determination of whether or not a credit event has occurred.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="notifyingPartyReference" type="PartyReference" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Identifies the party responsible for notifying counterparties about the credit event.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="notifiedPartyReference" type="PartyReference" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Identifies the party receiving the credit event notice.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="creditEventNoticeDate" type="xsd:date" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">The date on which the credit event notice was formally issued.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="creditEventDate" type="xsd:date" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">The actual date on which the credit event occurred.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="CreditEventNotification">
+    <xsd:annotation>
+      <xsd:documentation>A message type defining the ISDA defined Credit Event Notice. ISDA defines it as an irrevocable notice from a Notifying Party to the other party that describes a Credit Event that occurred. A Credit Event Notice must contain detail of the facts relevant to the determination that a Credit Event has occurred.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="CorrectableRequestMessage">
+        <xsd:sequence>
+          <xsd:element name="creditEventNotice" type="CreditEventNoticeDocument" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation fpml-annotation:aiGenerated="true">Contains detailed information about a credit event affecting a reference entity. It includes affected transactions, the entity involved, the event type, public information sources, notifying and notified parties, and key dates.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="party" type="Party" minOccurs="0" maxOccurs="unbounded">
+            <xsd:annotation>
+              <xsd:documentation fpml-annotation:aiGenerated="true">Represents a participant in the credit event notification process. A party can be identified by specific attributes or grouped with others. It includes unique references to distinguish involved entities.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="CreditEventNotificationRetracted">
+    <xsd:annotation>
+      <xsd:documentation>A message type retracting a previous credit event notification.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="NonCorrectableRequestMessage">
+        <xsd:sequence>
+          <xsd:element name="creditEventNotice" type="CreditEventNoticeDocument" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation fpml-annotation:aiGenerated="true">Represents a previously issued credit event notice that has now been retracted. It provides details about the withdrawn notification, including the affected transactions, reference entity, event type, public sources, involved parties, and relevant dates.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="party" type="Party" minOccurs="0" maxOccurs="unbounded">
+            <xsd:annotation>
+              <xsd:documentation fpml-annotation:aiGenerated="true">Identifies the entities involved in the credit event retraction. Each party may be referenced individually or as part of a group, ensuring clarity in the notification withdrawal process.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="FailureToPayEvent">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Represents a specific type of CreditEvent that occurs when a reference entity fails to meet its payment obligations on a financial instrument. This event typically triggers credit protections under derivative contracts and is defined by predetermined thresholds and grace periods. It inherits all attributes from CreditEvent, ensuring consistency in credit event reporting.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="CreditEvent" />
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="ObligationAccelerationEvent">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">This credit event occurs when an obligation of the reference entity is accelerated and becomes due and payable before its scheduled maturity due to a default or other triggering condition. It signifies a material credit deterioration and can trigger credit protection clauses in derivative contracts.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="CreditEvent" />
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="ObligationDefaultEvent">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">This credit event occurs when the reference entity defaults on one or more of its obligations, regardless of whether acceleration occurs. It signals a failure to meet contractual terms, which may lead to credit protection activation in financial contracts.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="CreditEvent" />
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="RepudiationMoratoriumEvent">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">This credit event occurs when a reference entity refuses to honor or acknowledge its obligations, or when an official moratorium is imposed on its debt payments. It often applies to sovereign and corporate debt in distressed situations and may trigger contractual remedies.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="CreditEvent" />
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="RestructuringEvent">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">This credit event occurs when a reference entity restructures its obligations in a way that is adverse to creditors, such as reducing principal, extending maturity, or lowering interest rates. It is one of the key credit events recognized in credit default swaps and other credit risk agreements.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="CreditEvent">
+        <xsd:sequence>
+          <xsd:element name="partialExerciseAmount" type="Money" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation fpml-annotation:aiGenerated="true">The monetary amount to which a partial exercise applies in connection with the reported restructuring credit event.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:element name="bankruptcy" type="BankruptcyEvent" substitutionGroup="creditEvent">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A specific type of credit event indicating that a counterparty has declared bankruptcy or is undergoing insolvency proceedings. It extends the broader CreditEvent type, inheriting its structure while specifying that the credit event relates to bankruptcy.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="creditEvent" type="CreditEvent" abstract="true">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A financial event indicating that a counterparty has defaulted or experienced financial distress, impacting the terms of a credit agreement. This includes situations such as bankruptcy, failure to pay, restructuring, or obligation acceleration.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="creditEventNotice" type="CreditEventNoticeDocument">
+    <xsd:annotation>
+      <xsd:documentation>A global element used to hold CENs.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="failureToPay" type="FailureToPayEvent" substitutionGroup="creditEvent">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Represents a specific type of CreditEvent that occurs when a reference entity fails to meet its payment obligations on a financial instrument. This event typically triggers credit protections under derivative contracts and is defined by predetermined thresholds and grace periods. It inherits all attributes from CreditEvent, ensuring consistency in credit event reporting.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="obligationAcceleration" type="ObligationAccelerationEvent" substitutionGroup="creditEvent">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">This credit event occurs when an obligation of the reference entity is accelerated and becomes due and payable before its scheduled maturity due to a default or other triggering condition. It signifies a material credit deterioration and can trigger credit protection clauses in derivative contracts.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="obligationDefault" type="ObligationDefaultEvent" substitutionGroup="creditEvent">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">This credit event occurs when the reference entity defaults on one or more of its obligations, regardless of whether acceleration occurs. It signals a failure to meet contractual terms, which may lead to credit protection activation in financial contracts.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="repudiationMoratorium" type="RepudiationMoratoriumEvent" substitutionGroup="creditEvent">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">This credit event occurs when a reference entity refuses to honor or acknowledge its obligations, or when an official moratorium is imposed on its debt payments. It often applies to sovereign and corporate debt in distressed situations and may trigger contractual remedies.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="restructuring" type="RestructuringEvent" substitutionGroup="creditEvent">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">This credit event occurs when a reference entity restructures its obligations in a way that is adverse to creditors, such as reducing principal, extending maturity, or lowering interest rates. It is one of the key credit events recognized in credit default swaps and other credit risk agreements.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:annotation>
+    <xsd:documentation>Credit Event Notification message.</xsd:documentation>
+  </xsd:annotation>
+  <xsd:element name="creditEventNotification" type="CreditEventNotification">
+    <xsd:annotation>
+      <xsd:documentation>A message defining the ISDA defined Credit Event Notice. ISDA defines it as an irrevocable notice from a Notifying Party to the other party that describes a Credit Event that occurred. A Credit Event Notice must contain detail of the facts relevant to the determination that a Credit Event has occurred.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="creditEventNotificationRetracted" type="CreditEventNotificationRetracted">
+    <xsd:annotation>
+      <xsd:documentation>A message retracting a previous credit event notification.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="creditEventAcknowledgement" type="Acknowledgement">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A formal acknowledgment of the receipt of a credit event notification. It confirms that the message has been received and processed but does not imply agreement or validation of its contents.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="creditEventException" type="Exception">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Represents an exception message related to a credit event notification. It is used when an issue arises in processing or validating a credit event, such as missing information, inconsistencies, or errors in the reported event.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+</xsd:schema>
+

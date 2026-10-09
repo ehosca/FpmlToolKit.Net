@@ -1,0 +1,1210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+== Copyright (c) 2026 All rights reserved. 
+== Financial Products Markup Language is subject to the FpML public license. 
+== A copy of this license is available at http://www.fpml.org/license/license.html
+-->
+<!--
+Annotation Disclaimer: Certain documentation blocks in this schema were generated 
+with artificial intelligence to provide descriptive text for types and elements 
+that previously lacked documentation. AI-generated documentation is identified 
+by the attribute fpml-annotation:aiGenerated="true" on the corresponding xsd:documentation 
+element. This content is intended solely to improve readability and usability, 
+it is non-normative and should not be relied upon as a substitute for the schema 
+definition itself or the official FpML specification.
+-->
+<xsd:schema xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns="http://www.fpml.org/FpML-5/confirmation" xmlns:dsig="http://www.w3.org/2000/09/xmldsig#" xmlns:fpml-annotation="http://www.fpml.org/annotation" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.fpml.org/FpML-5/confirmation" ecore:documentRoot="FpML" ecore:nsPrefix="conf" ecore:package="org.fpml.confirmation" version="$Revision$" xml:lang="en" elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xsd:include schemaLocation="fpml-reg-reporting-shared-5-14.xsd" />
+  <xsd:complexType name="AllocationApproved">
+    <xsd:annotation>
+      <xsd:documentation>A message indicating that a request to allocate a trade has been approved by the sender.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="ResponseMessage">
+        <xsd:sequence>
+          <xsd:element name="blockTradeIdentifier" type="TradeIdentifier" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation fpml-annotation:aiGenerated="true">Uniquely identifies a block trade, which is a large transaction executed as a single trade but later allocated among multiple accounts or parties.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="allocations" type="Allocations" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation fpml-annotation:aiGenerated="true">Contains details on how a block trade is split among different parties or accounts.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:group ref="PartiesAndAccounts.model" minOccurs="0" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="AllocationRefused">
+    <xsd:annotation>
+      <xsd:documentation>A message indicating that a request to allocate a trade has been refused by the sender.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="ResponseMessage">
+        <xsd:sequence>
+          <xsd:element name="blockTradeIdentifier" type="TradeIdentifier" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation fpml-annotation:aiGenerated="true">Uniquely identifies a block trade that was rejected for allocation. It references the original block trade that was supposed to be split among multiple accounts, and helps trace the failed allocation attempt, allowing parties to investigate and correct any issues.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="allocations" type="Allocations" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation fpml-annotation:aiGenerated="true">Represents the allocation details of a block trade that was not accepted. It lists the intended allocations that were rejected and records them, which can be useful for troubleshooting and regulatory reporting.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:group ref="PartiesAndAccounts.model" minOccurs="0" />
+          <xsd:element name="reason" type="Reason" minOccurs="0" maxOccurs="unbounded">
+            <xsd:annotation>
+              <xsd:documentation fpml-annotation:aiGenerated="true">Describes the nature and possible location of an error in the previous message that resulted in refusal of the trade allocation request.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="ApprovalStatusNotification">
+    <xsd:annotation>
+      <xsd:documentation>A message describing the approvals currently applied to the trade and their status (e.g. pending, approved, refused).</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="NotificationMessage">
+        <xsd:sequence>
+          <xsd:choice>
+            <xsd:element name="trade" type="Trade">
+              <xsd:annotation>
+                <xsd:documentation fpml-annotation:aiGenerated="true">Represents the full details of a financial transaction whose approval status is being notified.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="tradeIdentifier" type="TradeIdentifier">
+              <xsd:annotation>
+                <xsd:documentation fpml-annotation:aiGenerated="true">Uniquely identifies the trade whose approval status is being reported. This element is used when the full trade details are not required in the notification, allowing for a lightweight reference to an existing trade record.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+          </xsd:choice>
+          <xsd:element name="approvals" type="Approvals">
+            <xsd:annotation>
+              <xsd:documentation>All of the approvals for a specific trade.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:group ref="PartiesAndAccounts.model" minOccurs="0" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="Clearing">
+    <xsd:annotation>
+      <xsd:documentation>A structure describing a trade registration event that is part of a clearing process.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="submitted" type="TradeWrapper">
+        <xsd:annotation>
+          <xsd:documentation>The original trade or event submitted to the clearing service.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="cleared" type="TradeWrapper" minOccurs="2" maxOccurs="2">
+        <xsd:annotation>
+          <xsd:documentation>The trades or events generated by the clearing service as a result of clearing.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="ClearingConfirmed">
+    <xsd:annotation>
+      <xsd:documentation>A message indicating that a clearing request has been acted on and as a result a trade has been cleared.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="NotificationMessage">
+        <xsd:sequence>
+          <xsd:group ref="Compression.model" minOccurs="0" />
+          <xsd:group ref="PortfolioReference.model" minOccurs="0" />
+          <xsd:choice minOccurs="0">
+            <xsd:group ref="ClearingResults.model" minOccurs="0" />
+            <xsd:element name="change" type="TradeChangeContent" minOccurs="0">
+              <xsd:annotation>
+                <xsd:documentation fpml-annotation:aiGenerated="true">Provides details of a non-negotiated trade change resulting from a market event and reported with confirmation of the completed clearing request.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+          </xsd:choice>
+          <xsd:group ref="EventValuation.model" minOccurs="0" />
+          <xsd:element name="creditLimitInformation" type="CreditLimitInformation" minOccurs="0" maxOccurs="unbounded">
+            <xsd:annotation>
+              <xsd:documentation fpml-annotation:aiGenerated="true">Provides details about the credit limits applicable to a cleared trade. This element ensures that clearing participants are informed about how the trade impacts credit exposure, which is essential for risk management and regulatory compliance.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:group ref="PartiesAndAccounts.model" minOccurs="0" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="ClearingRefused">
+    <xsd:annotation>
+      <xsd:documentation>A message indicating that a clearing request has not been acted on due to a business decision and therefore no trade has been cleared.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="NotificationMessage">
+        <xsd:sequence>
+          <xsd:group ref="TradingEvents.model" minOccurs="0" />
+          <xsd:group ref="EventValuation.model" minOccurs="0" />
+          <xsd:group ref="PartiesAndAccounts.model" minOccurs="0" />
+          <xsd:element name="reason" type="Reason" minOccurs="0" maxOccurs="unbounded">
+            <xsd:annotation>
+              <xsd:documentation fpml-annotation:aiGenerated="true">Provides details on why a clearing request was refused.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="ClearingStatus">
+    <xsd:annotation>
+      <xsd:documentation>A message providing the current status of a clearing request. The Clearing Status message is designed to be sent from the Clearing House to the participants. The message sends the clearing status of the trade or the trade package. It’s a centralized model so there is no perspective.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="NotificationMessage">
+        <xsd:sequence>
+          <xsd:element name="clearingStatusItem" type="ClearingStatusItem" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>Describes the status of the clearing process relating to the identified trade.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:group ref="PartiesAndAccounts.model" minOccurs="0" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="CollateralAllocationAccepted">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Represents a confirmation message indicating that a collateral allocation has been successfully accepted. This message is part of the post-trade collateral management process, confirming that an allocation request has been successfully processed and recorded.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="ResponseMessage" />
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="ConfirmationAgreed">
+    <xsd:annotation>
+      <xsd:documentation>A message indicating that a confirmation has been agreed by a counterparty.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="ResponseMessage">
+        <xsd:sequence>
+          <xsd:choice minOccurs="0">
+            <xsd:group ref="TradingEventsBase.model" />
+            <xsd:group ref="PostTradeEventsBase.model" />
+            <xsd:group ref="ChangeEventsBase.model" />
+            <xsd:group ref="OptionsEventsBase.model" />
+            <xsd:element ref="additionalEvent">
+              <xsd:annotation>
+                <xsd:documentation fpml-annotation:aiGenerated="true">Represents an extra event that is relevant to a trade confirmation but does not fit within the predefined trading, post-trade, change, or options event categories. It provides flexibility for capturing supplementary business events.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+          </xsd:choice>
+          <xsd:group ref="PartiesAndAccounts.model" minOccurs="0" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="ConfirmationDisputed">
+    <xsd:annotation>
+      <xsd:documentation>A message indicating that a confirmation has not been agreed by a counterparty.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="ResponseMessage">
+        <xsd:sequence>
+          <xsd:choice minOccurs="0">
+            <xsd:group ref="TradingEventsBase.model" />
+            <xsd:group ref="PostTradeEventsBase.model" />
+            <xsd:group ref="ChangeEventsBase.model" />
+            <xsd:group ref="OptionsEventsBase.model" />
+            <xsd:element ref="additionalEvent">
+              <xsd:annotation>
+                <xsd:documentation fpml-annotation:aiGenerated="true">Represents an extra event that is relevant to a trade confirmation but does not fit within the predefined trading, post-trade, change, or options event categories. It provides flexibility for capturing supplementary business events.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+          </xsd:choice>
+          <xsd:group ref="PartiesAndAccounts.model" minOccurs="0" />
+          <xsd:element name="reason" type="Reason" minOccurs="0" maxOccurs="unbounded">
+            <xsd:annotation>
+              <xsd:documentation fpml-annotation:aiGenerated="true">Provides details on why a confirmation of a trade was disputed.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="ConfirmationRetracted">
+    <xsd:annotation>
+      <xsd:documentation>A message indicating that a confirmation request has been withdrawn by the submitter.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="NonCorrectableRequestMessage">
+        <xsd:sequence>
+          <xsd:choice minOccurs="0">
+            <xsd:group ref="TradingAndPostTradeEvents.model" />
+            <xsd:element name="optionExercise" type="OptionExercise">
+              <xsd:annotation>
+                <xsd:documentation>A structure describing an option exercise event. The optionExercise event supports partial exercise (specify the number of options or amount to exercise), full exercise (use fullExercise flag), as well as the option to request options not to be exercised.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+          </xsd:choice>
+          <xsd:group ref="PartiesAndAccounts.model" minOccurs="0" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="ConfirmationStatus">
+    <xsd:annotation>
+      <xsd:documentation>Message for sending matching results. Response message that returns the status of an event that have been submitted for matching.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="ResponseMessage">
+        <xsd:sequence>
+          <xsd:element name="status" type="EventStatus">
+            <xsd:annotation>
+              <xsd:documentation>Defines the confirmation status of a trade or post-trade event (e.g. Matched, Mismatched, Unmatched, Alleged).</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:choice>
+            <xsd:sequence>
+              <xsd:element name="assertedEvent" type="EventsChoice">
+                <xsd:annotation>
+                  <xsd:documentation>Event (trade or post-trade event) asserted by one of the parties.</xsd:documentation>
+                </xsd:annotation>
+              </xsd:element>
+              <xsd:element name="proposedMatch" type="EventProposedMatch" minOccurs="0" maxOccurs="unbounded">
+                <xsd:annotation>
+                  <xsd:documentation>"Other side's" event (trade or post-trade event) that meets the minimimum matching criteria and is proposed as match to the event that is being asserted.</xsd:documentation>
+                </xsd:annotation>
+              </xsd:element>
+            </xsd:sequence>
+            <xsd:element name="allegedEvent" type="EventsChoice">
+              <xsd:annotation>
+                <xsd:documentation>Event (trade post-trade event) asserted by the "other side's" party.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+          </xsd:choice>
+          <xsd:group ref="PartiesAndAccounts.model" minOccurs="0" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="ConsentGranted">
+    <xsd:annotation>
+      <xsd:documentation>A message indicating that the sender grants consent for the recipient to perform the requested action.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="ResponseMessage">
+        <xsd:sequence>
+          <xsd:element name="type" type="ApprovalType" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The type of approval (e.g. "pre-clearing credit").</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="approver" type="PersonId" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The full name or identifiying ID of the relevant approver.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="approvingPartyReference" type="PartyReference" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>A pointer style reference to a party defined elsewhere in the document. The party referenced needs to approve the specified item (e.g. trade or allocation).</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="approvalId" type="ApprovalId" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>An identifer for a specific appoval, to allow the approval to be identified and tracked.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:group ref="PortfolioReferenceBase.model" minOccurs="0" />
+          <xsd:group ref="EventsOrInfo.model" minOccurs="0" />
+          <xsd:element name="creditLimitInformation" type="CreditLimitInformation" minOccurs="0" maxOccurs="unbounded">
+            <xsd:annotation>
+              <xsd:documentation fpml-annotation:aiGenerated="true">Provides details about the credit limits applicable to a consent approval process. It ensures that the financial and risk constraints associated with a trade or portfolio action are documented, and that approvals are granted within defined credit risk constraints and provide transparency into the credit assessment process.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:group ref="PartiesAndAccounts.model" minOccurs="0" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="ConsentRefused">
+    <xsd:annotation>
+      <xsd:documentation>A message indicating that the sender does not grant consent for the recipient to perform the requested action.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="ResponseMessage">
+        <xsd:sequence>
+          <xsd:element name="type" type="ApprovalType" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The type of approval (e.g. "pre-clearing credit").</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="approver" type="PersonId" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The full name or identifiying ID of the relevant approver.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="approvingPartyReference" type="PartyReference" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>A pointer style reference to a party defined elsewhere in the document. The party referenced needs to approve the specified item (e.g. trade or allocation).</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:group ref="PortfolioReferenceBase.model" minOccurs="0" />
+          <xsd:group ref="EventsOrInfo.model" minOccurs="0" />
+          <xsd:element name="creditLimitInformation" type="CreditLimitInformation" minOccurs="0" maxOccurs="unbounded">
+            <xsd:annotation>
+              <xsd:documentation fpml-annotation:aiGenerated="true">Provides details about the credit limits that were evaluated as part of the approval process and contributed to the refusal decision. This ensures transparency in the decision-making process by documenting the financial constraints that led to the refusal. Unlike its role in ConsentGranted, where it validates that approval is within risk constraints, in ConsentRefused, this element highlights the credit restrictions that led to the rejection.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:group ref="PartiesAndAccounts.model" minOccurs="0" />
+          <xsd:element name="reason" type="Reason" minOccurs="0" maxOccurs="unbounded">
+            <xsd:annotation>
+              <xsd:documentation fpml-annotation:aiGenerated="true">Explains why consent was denied and provides a structured justification for the refusal, which can be used for auditing, dispute resolution, or further negotiation.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="EventRequestAcknowledgement">
+    <xsd:annotation>
+      <xsd:documentation>Defines the structure for a message acknowledging an event request.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="ResponseMessage">
+        <xsd:sequence>
+          <xsd:element name="originalMessage" type="UnprocessedElementWrapper" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation fpml-annotation:aiGenerated="true">Contains the original event request message that was received and acknowledged. This ensures traceability by retaining the initial request, even if it has not yet been fully processed. Given its type UnprocessedElementWrapper, it serves as a container for the unprocessed or partially processed event request, which is typically used to encapsulate raw XML content or messages that require further validation or transformation before they can be fully interpreted.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:group ref="TradeReferenceInformation.model" minOccurs="0" />
+          <xsd:group ref="PartiesAndAccounts.model" minOccurs="0" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="ExecutionAdvice">
+    <xsd:annotation>
+      <xsd:documentation>A message advising a third party that a trade execution has occurred.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="CorrectableRequestMessage">
+        <xsd:sequence>
+          <xsd:element name="productType" type="ProductType" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation fpml-annotation:aiGenerated="true">Specifies the type of financial product associated with the execution advice. It provides a standardized classification for the product being executed, facilitating trade processing, regulatory reporting, and risk management.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:choice>
+            <xsd:group ref="TradingEventsBase.model" />
+            <xsd:group ref="PostTradeEventsBase.model" />
+            <xsd:group ref="ChangeEventsBase.model" />
+            <xsd:group ref="OptionsEventsBase.model" />
+            <xsd:element ref="additionalEvent">
+              <xsd:annotation>
+                <xsd:documentation fpml-annotation:aiGenerated="true">Represents an extra event that supplements the primary trading or post-trade events described within the message.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+          </xsd:choice>
+          <xsd:group ref="EventValuation.model" minOccurs="0" />
+          <xsd:element name="collateralization" type="RegulatoryReportingCollateralization" minOccurs="0" maxOccurs="2">
+            <xsd:annotation>
+              <xsd:documentation>Collateralization block, that holds Regulator specific requirement about the trades' collateralization, is added here to accommodate a technical implementation of SFTR. The change aligns with the established principle that the content in recordkeeping view is now also available in the confirmation view for both functional and technical reasons. The appropriate place for this information is 'regulatoryDisclosure' and 'nonpublicExecutionReport' messages in the Recordkeeping view.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="paymentDetails" type="PaymentDetails" minOccurs="0" maxOccurs="unbounded">
+            <xsd:annotation>
+              <xsd:documentation>Details of the payments, like amount breakdowns, settlement information.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:group ref="PartiesAndAccounts.model" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="ExecutionAdviceRetracted">
+    <xsd:annotation>
+      <xsd:documentation>A message that withdraws an advice to a third party that a trade execution has occurred.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="NonCorrectableRequestMessage">
+        <xsd:sequence>
+          <xsd:choice minOccurs="0">
+            <xsd:group ref="TradingEventsBase.model" />
+            <xsd:group ref="PostTradeEventsBase.model" />
+            <xsd:group ref="ChangeEventsBase.model" />
+            <xsd:group ref="OptionsEventsBase.model" />
+            <xsd:element ref="additionalEvent">
+              <xsd:annotation>
+                <xsd:documentation fpml-annotation:aiGenerated="true">Represents an extra event that supplements the primary trading or post-trade events described within the message.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+          </xsd:choice>
+          <xsd:element name="collateralization" type="RegulatoryReportingCollateralization" minOccurs="0" maxOccurs="2">
+            <xsd:annotation>
+              <xsd:documentation fpml-annotation:aiGenerated="true">Captures collateral-related details associated with the retraction of an execution advice. This element is crucial in regulatory reporting, as it specifies the collateral posted for the trade, ensuring compliance with margining and risk management requirements.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="paymentDetails" type="PaymentDetails" minOccurs="0" maxOccurs="unbounded">
+            <xsd:annotation>
+              <xsd:documentation>Details of the payments, like amount breakdowns, settlement information.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:group ref="PartiesAndAccounts.model" minOccurs="0" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="ExecutionNotification">
+    <xsd:annotation>
+      <xsd:documentation>A message notifying a party that a trade execution has occurred. (Typically this is sent by an execution platform to a participant.)</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="CorrectableRequestMessage">
+        <xsd:sequence>
+          <xsd:choice>
+            <xsd:group ref="TradingEventsBase.model" />
+            <xsd:element name="amendment" type="TradeAmendmentContent">
+              <xsd:annotation>
+                <xsd:documentation fpml-annotation:aiGenerated="true">Captures modifications made to a previously executed trade. This element is crucial for tracking post-trade amendments, ensuring that trade records remain accurate and up to date.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+            <xsd:group ref="OptionsEventsBase.model" />
+            <xsd:element ref="additionalEvent">
+              <xsd:annotation>
+                <xsd:documentation fpml-annotation:aiGenerated="true">Represents an extra event that supplements the primary trading or post-trade events described within the message.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+          </xsd:choice>
+          <xsd:group ref="EventValuation.model" minOccurs="0" />
+          <xsd:element name="collateralization" type="RegulatoryReportingCollateralization" minOccurs="0" maxOccurs="2">
+            <xsd:annotation>
+              <xsd:documentation>Collateralization block, that holds Regulator specific requirement about the trades' collateralization, is added here to accommodate a technical implementation of SFTR. The change aligns with the established principle that the content in recordkeeping view is now also available in the confirmation view for both functional and technical reasons. The appropriate place for this information is 'regulatoryDisclosure' and 'nonpublicExecutionReport' messages in the Recordkeeping view.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:group ref="PartiesAndAccounts.model" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="ExecutionRetracted">
+    <xsd:annotation>
+      <xsd:documentation>A message retracting a notification to a party that a trade execution has occurred. (Typically this is sent by an execution platform to a participant.)</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="NonCorrectableRequestMessage">
+        <xsd:sequence>
+          <xsd:choice minOccurs="0">
+            <xsd:group ref="TradingEvents.model" />
+            <xsd:element name="optionExercise" type="OptionExercise">
+              <xsd:annotation>
+                <xsd:documentation>A structure describing an option exercise event. The optionExercise event supports partial exercise (specify the number of options or amount to exercise), full exercise (use fullExercise flag), as well as the option to request options not to be exercised.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+          </xsd:choice>
+          <xsd:group ref="PartiesAndAccounts.model" minOccurs="0" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="MaturityNotification">
+    <xsd:annotation>
+      <xsd:documentation>A message used to notify another party that a trade has matured. This can be used to report, for example, that a swap has passed its final payment and can be removed, or that an option has expired without being executed.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="CorrectableRequestMessage">
+        <xsd:sequence>
+          <xsd:choice>
+            <xsd:element name="optionExpiry" type="OptionExpiryBase">
+              <xsd:annotation>
+                <xsd:documentation fpml-annotation:aiGenerated="true">Represents the expiration details of an option contract, including the date and time of expiry, and the trade identifier of the option.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="tradeMaturity" type="TradeMaturity">
+              <xsd:annotation>
+                <xsd:documentation fpml-annotation:aiGenerated="true">Provides details on when a trade reaches its contractual end, including the date of maturity and the trade identifier.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+          </xsd:choice>
+          <xsd:group ref="PartiesAndAccounts.model" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="RequestAllocation">
+    <xsd:annotation>
+      <xsd:documentation>A message requesting that a trade be split among several accounts.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="CorrectableRequestMessage">
+        <xsd:sequence>
+          <xsd:element name="relatedParty" type="RelatedParty" minOccurs="0" maxOccurs="unbounded">
+            <xsd:annotation>
+              <xsd:documentation>Identifies a related party performing a role within the transaction.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="blockTradeIdentifier" type="TradeIdentifier">
+            <xsd:annotation>
+              <xsd:documentation fpml-annotation:aiGenerated="true">Specifies a block trade in the context of the request for allocation. A block trade refers to a large trade order that is usually too large to be executed in the open market without significantly impacting the price, causing them to often being broken into smaller portions and allocated across different accounts or parties after execution.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="allocations" type="Allocations">
+            <xsd:annotation>
+              <xsd:documentation fpml-annotation:aiGenerated="true">Represents how the block trade is divided or allocated among different accounts or parties. That is, how much of the total block trade is assigned to each party or account after the trade is executed.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:group ref="PartiesAndAccounts.model" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="RequestAllocationRetracted">
+    <xsd:annotation>
+      <xsd:documentation>A message withdrawing a request that a trade be split among several accounts.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="NonCorrectableRequestMessage">
+        <xsd:sequence>
+          <xsd:element name="blockTradeIdentifier" type="TradeIdentifier" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation fpml-annotation:aiGenerated="true">Specifies a block trade that is being retracted or canceled. A block trade refers to a large trade order that is usually too large to be executed in the open market without significantly impacting the price, causing them to often being broken into smaller portions and allocated across different accounts or parties after execution.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="allocations" type="Allocations" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation fpml-annotation:aiGenerated="true">Represent the allocated portions, previously assigned to one or more parties, that are no longer valid or need to be rolled back.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:group ref="PartiesAndAccounts.model" minOccurs="0" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="RequestClearing">
+    <xsd:annotation>
+      <xsd:documentation>A message requesting that a trade be cleared by a clearing service.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="CorrectableRequestMessage">
+        <xsd:sequence>
+          <xsd:group ref="PortfolioReference.model" minOccurs="0" />
+          <xsd:choice>
+            <xsd:group ref="TradingEvents.model" />
+            <xsd:element name="deClear" type="DeClear">
+              <xsd:annotation>
+                <xsd:documentation>A structure describing a declear event. The deClear event allows a firm to request that a trade be removed from clearing, or a clearing service to request consent for this, or to report that it has been done.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+          </xsd:choice>
+          <xsd:group ref="EventValuation.model" minOccurs="0" />
+          <xsd:group ref="PartiesAndAccounts.model" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="RequestClearingRetracted">
+    <xsd:annotation>
+      <xsd:documentation>A message withdrawing a request that a trade be cleared by a clearing service.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="NonCorrectableRequestMessage">
+        <xsd:sequence>
+          <xsd:choice minOccurs="0">
+            <xsd:group ref="TradingEvents.model" />
+            <xsd:element name="deClear" type="DeClear">
+              <xsd:annotation>
+                <xsd:documentation>A structure describing a declear event. The deClear event allows a firm to request that a trade be removed from clearing, or a clearing service to request consent for this, or to report that it has been done.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+          </xsd:choice>
+          <xsd:group ref="PartiesAndAccounts.model" minOccurs="0" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="RequestCollateralAllocation">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Represents a request for allocating collateral in the context of financial transactions. It specifies the action to be taken regarding collateral allocation, along with relevant references and proposed details for the allocation.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="CorrectableRequestMessage">
+        <xsd:sequence>
+          <xsd:element name="serviceName" type="NormalizedString" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The name of the service to which the message applies</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="requestedAction" type="RequestedCollateralAllocationAction" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The type of change requested for the collateral allocation.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="collateralGiverPartyReference" type="PartyReference" maxOccurs="1">
+            <xsd:annotation>
+              <xsd:documentation>The party paying the margin / issuing the allocation request.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="collateralAllocation" type="ProposedCollateralAllocation" maxOccurs="unbounded">
+            <xsd:annotation>
+              <xsd:documentation>Allocation details</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:group ref="PartiesAndAccounts.model" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="RequestedCollateralAllocationAction">
+    <xsd:annotation>
+      <xsd:documentation>A type that describes the type of collateral allocation action that is requested. The purpose is to allow FCMs to specify how the allocations are to be processed.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:simpleContent>
+      <xsd:extension base="Scheme">
+        <xsd:attribute name="requestedCollateralAllocationActionScheme" type="NonEmptyURI" default="http://www.fpml.org/coding-scheme/requested-collateral-allocation-action" />
+      </xsd:extension>
+    </xsd:simpleContent>
+  </xsd:complexType>
+  <xsd:complexType name="RequestConfirmation">
+    <xsd:annotation>
+      <xsd:documentation>A message type defining the start of the confirmation process. The message may be used to request the confirmation of a new trade or any other event supported by FpML such as novation, terminations, amendments, etc.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="CorrectableRequestMessage">
+        <xsd:sequence>
+          <xsd:choice>
+            <xsd:group ref="TradingAndPostTradeEvents.model" />
+            <xsd:element name="optionExercise" type="OptionExercise">
+              <xsd:annotation>
+                <xsd:documentation>A structure describing an option exercise event. The optionExercise event supports partial exercise (specify the number of options or amount to exercise), full exercise (use fullExercise flag), as well as the option to request options not to be exercised.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+          </xsd:choice>
+          <xsd:group ref="PartiesAndAccounts.model" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="RequestConsent">
+    <xsd:annotation>
+      <xsd:documentation>A message requesting that the sender be authorized by the recipient to peform an action.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="CorrectableRequestMessage">
+        <xsd:sequence>
+          <xsd:element name="requestedAction" type="RequestedAction" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The reason the consent was requested.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="type" type="ApprovalType" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The type of approval (e.g. "pre-clearing credit").</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="approver" type="PersonId" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The full name or identifiying ID of the relevant approver.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="approvingPartyReference" type="PartyReference" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>A pointer style reference to a party defined elsewhere in the document. The party referenced needs to approve the specified item (e.g. trade or allocation).</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:group ref="PortfolioReference.model" minOccurs="0" />
+          <xsd:group ref="Compression.model" minOccurs="0" />
+          <xsd:choice>
+            <xsd:group ref="TradingAndPostTradeEvents.model" />
+            <xsd:element name="deClear" type="DeClear">
+              <xsd:annotation>
+                <xsd:documentation>A structure describing a declear event. The deClear event allows a firm to request that a trade be removed from clearing, or a clearing service to request consent for this, or to report that it has been done.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+          </xsd:choice>
+          <xsd:group ref="EventValuation.model" minOccurs="0" />
+          <xsd:group ref="PartiesAndAccounts.model" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="RequestConsentRetracted">
+    <xsd:annotation>
+      <xsd:documentation>A message withdrawing a request that the sender be authorized by the recipient to peform an action.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="NonCorrectableRequestMessage">
+        <xsd:sequence>
+          <xsd:element name="type" type="ApprovalType" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The type of approval (e.g. "pre-clearing credit").</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="approver" type="PersonId" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The full name or identifiying ID of the relevant approver.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="approvingPartyReference" type="PartyReference" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>A pointer style reference to a party defined elsewhere in the document. The party referenced needs to approve the specified item (e.g. trade or allocation).</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:choice minOccurs="0">
+            <xsd:group ref="TradingAndPostTradeEvents.model" />
+            <xsd:element name="deClear" type="DeClear">
+              <xsd:annotation>
+                <xsd:documentation>A structure describing a declear event. The deClear event allows a firm to request that a trade be removed from clearing, or a clearing service to request consent for this, or to report that it has been done.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+          </xsd:choice>
+          <xsd:group ref="PartiesAndAccounts.model" minOccurs="0" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="RequestExecution">
+    <xsd:annotation>
+      <xsd:documentation>A message requesting that an order be executed.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="CorrectableRequestMessage">
+        <xsd:sequence>
+          <xsd:choice>
+            <xsd:group ref="TradingEvents.model" />
+            <xsd:element name="optionExercise" type="OptionExercise">
+              <xsd:annotation>
+                <xsd:documentation>A structure describing an option exercise event. The optionExercise event supports partial exercise (specify the number of options or amount to exercise), full exercise (use fullExercise flag), as well as the option to request options not to be exercised.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+          </xsd:choice>
+          <xsd:group ref="PartiesAndAccounts.model" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="RequestExecutionRetracted">
+    <xsd:annotation>
+      <xsd:documentation>A message withdrawing a request that an order be executed.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="NonCorrectableRequestMessage">
+        <xsd:sequence>
+          <xsd:choice minOccurs="0">
+            <xsd:group ref="TradingEvents.model" />
+            <xsd:element name="optionExercise" type="OptionExercise">
+              <xsd:annotation>
+                <xsd:documentation>A structure describing an option exercise event. The optionExercise event supports partial exercise (specify the number of options or amount to exercise), full exercise (use fullExercise flag), as well as the option to request options not to be exercised.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+          </xsd:choice>
+          <xsd:group ref="PartiesAndAccounts.model" minOccurs="0" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="RequestTradeReferenceInformationUpdate">
+    <xsd:annotation>
+      <xsd:documentation>Defines the structure for a message requesting information updates to a trade. The trade reference information should contain at least one trade identifier that the recipient is aware of.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="CorrectableRequestMessage">
+        <xsd:sequence>
+          <xsd:group ref="TradeReferenceInformation.model" />
+          <xsd:group ref="PartiesAndAccounts.model" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="RequestTradeReferenceInformationUpdateRetracted">
+    <xsd:annotation>
+      <xsd:documentation>Defines the structure for a message retracting a request to updated information about trade.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="NonCorrectableRequestMessage">
+        <xsd:sequence>
+          <xsd:group ref="TradeReferenceInformation.model" />
+          <xsd:group ref="PartiesAndAccounts.model" minOccurs="0" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="TradeChangeAdvice">
+    <xsd:annotation>
+      <xsd:documentation>Defines the structure for a message indicating that a trade is being changed due to a non-negotiated event.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="CorrectableRequestMessage">
+        <xsd:sequence>
+          <xsd:element name="change" type="TradeChangeContent">
+            <xsd:annotation>
+              <xsd:documentation>Describes the details of the change.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:group ref="EventValuation.model" minOccurs="0" />
+          <xsd:element name="paymentDetails" type="PaymentDetails" minOccurs="0" maxOccurs="unbounded">
+            <xsd:annotation>
+              <xsd:documentation>Details of the payments, like amount breakdowns, settlement information.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:group ref="PartiesAndAccounts.model" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="TradeChangeAdviceRetracted">
+    <xsd:annotation>
+      <xsd:documentation>Defines the structure for a message retracting a prior change advice.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="NonCorrectableRequestMessage">
+        <xsd:sequence>
+          <xsd:element name="tradeIdentifier" type="PartyTradeIdentifier" maxOccurs="unbounded">
+            <xsd:annotation>
+              <xsd:documentation>The qualified identifiers of the subject trade.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="change" type="TradeChangeContent" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>Describes the details of the change being retracted.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="paymentDetails" type="PaymentDetails" minOccurs="0" maxOccurs="unbounded">
+            <xsd:annotation>
+              <xsd:documentation>Details of the payments, like amount breakdowns, settlement information.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:group ref="PartiesAndAccounts.model" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="TradeWrapper">
+    <xsd:annotation>
+      <xsd:documentation>A structure that contains a business event.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:group ref="TradeOrInfo.model" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:group name="ClearingResults.model">
+    <xsd:annotation>
+      <xsd:documentation>Events/Results that are applicable to clearing processes.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:choice>
+      <xsd:group ref="TradingEvents.model" />
+      <xsd:sequence>
+        <xsd:element name="terminatingEvent" type="TerminatingEvent" minOccurs="0">
+          <xsd:annotation>
+            <xsd:documentation>This may be used to describe why a trade was terminated.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="termination" type="TradeNotionalChange">
+          <xsd:annotation>
+            <xsd:documentation fpml-annotation:aiGenerated="true">Captures the terminations in the trade’s notional value. It reports a change in the size or price of a trade down to zero as part of the clearing process.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+      </xsd:sequence>
+      <xsd:element name="deClear" type="DeClear">
+        <xsd:annotation>
+          <xsd:documentation>A structure describing a declear event. The deClear event allows a firm to request that a trade be removed from clearing, or a clearing service to request consent for this, or to report that it has been done.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="clearing" type="Clearing">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">A structure describing the registration of a trade with a clearing service as part of the clearing process.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:choice>
+  </xsd:group>
+  <xsd:group name="EventsOrInfo.model">
+    <xsd:annotation>
+      <xsd:documentation>Defines a model group that allows either details of an event or information about a trade to be provided. Typically this will be used in a response to a request.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:choice>
+      <xsd:group ref="TradingAndPostTradeEvents.model" />
+      <xsd:group ref="TradeReferenceInformation.model" />
+    </xsd:choice>
+  </xsd:group>
+  <xsd:annotation>
+    <xsd:documentation>Confirmation messages.</xsd:documentation>
+  </xsd:annotation>
+<!-- Execution -->
+  <xsd:element name="requestExecution" type="RequestExecution">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Represents a request to execute a trading event or an option exercise. It includes the necessary details for the execution request, such as the underlying trading events or option exercise, along with related parties and accounts.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="requestExecutionRetracted" type="RequestExecutionRetracted">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Signals the retraction or withdrawal of a previously sent execution request. It indicates that the request to execute a trade or option exercise has been rescinded. The retraction may be associated with a change in trading events or option exercises, along with relevant parties and accounts.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="executionNotification" type="ExecutionNotification">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Notifies the execution of a trade or option exercise. It includes information about any amendments to the trade, additional events, collateralization details, and the involved parties and accounts.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="executionRetracted" type="ExecutionRetracted">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Indicates that a previously executed trade or option exercise has been retracted or reversed. It signals the cancellation of the execution and may contain details about the affected trading events or option exercises, along with relevant parties and accounts.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="executionAcknowledgement" type="EventRequestAcknowledgement">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Recognizes the receipt of an event request, such as a trade or option exercise. It serves as confirmation that the request has been processed or received, potentially including details about the original message, trade references, and parties involved.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="executionException" type="Exception">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Represents an exception or error related to an execution request. It contains a header with the exception message, validation details, and any optional correlation or sequence information. This element notifies the sender of issues or problems encountered during the processing of the request.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+<!-- Execution Advice -->
+  <xsd:element name="executionAdvice" type="ExecutionAdvice">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Provides advice or instructions regarding the execution of a trade, including details on the product type, trading events, post-trade events, and any associated amendments or option-related events. It also includes valuation information, collateralization details, and payment instructions, along with related parties and accounts.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="executionAdviceRetracted" type="ExecutionAdviceRetracted">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Signals the retraction or withdrawal of a previously sent execution advice. It indicates that the execution advice has been rescinded and includes details on any revised trading events, post-trade events, changes, or option-related events, along with any collateralization, payment details, and affected parties.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="executionAdviceAcknowledgement" type="EventRequestAcknowledgement">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Recognizes the receipt and processing of an execution advice request. It confirms that the request has been acknowledged, providing potential details about the original message, associated trade references, and parties involved.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="executionAdviceException" type="Exception">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Represents an exception or error related to an execution advice. It includes a header with the exception message, validation details, and additional optional correlation or sequence information, notifying the sender of any issues encountered while processing the execution advice.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+<!-- Maturity -->
+  <xsd:element name="maturityNotification" type="MaturityNotification">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Alerts the parties involved about the maturity of a trade or an option. It includes information about the expiration or maturity of the option or trade, specifying the relevant option expiry or trade maturity details, and includes relevant parties and accounts for further processing.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="maturityAcknowledgement" type="EventRequestAcknowledgement">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Recognizes the receipt and processing of a maturity notification. It confirms that the notification has been received and processed, possibly including information about the original message, trade references, and involved parties.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="maturityException" type="Exception">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Represents an exception or error related to a maturity notification. It provides the exception details, including the header, validation issues, and any additional correlation or sequence information, alerting the sender to problems encountered during the maturity processing.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+<!-- Trade Info update -->
+  <xsd:element name="requestTradeReferenceInformationUpdate" type="RequestTradeReferenceInformationUpdate">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Requests an update to the trade reference information. It includes details about the trade reference and the involved parties and accounts. The request allows for corrections or updates to the trade details.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="requestTradeReferenceInformationUpdateRetracted" type="RequestTradeReferenceInformationUpdateRetracted">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Indicates the retraction or withdrawal of a previously submitted trade reference information update request. It signals that the request for the update should no longer be processed, and it includes details about the trade reference and involved parties.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="tradeReferenceInformationUpdateAcknowledgement" type="EventRequestAcknowledgement">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Recognizes the receipt and processing of a trade reference information update request. It confirms that the update request has been acknowledged, and it may include details about the original message, trade reference information, and involved parties.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="tradeReferenceInformationUpdateException" type="Exception">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Represents an exception or error related to a trade reference information update request. It includes a header with exception details, validation issues, and any additional information, such as correlation or sequence data, alerting the sender to problems encountered while processing the request.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+<!-- Trade Change -->
+  <xsd:element name="tradeChangeAdvice" type="TradeChangeAdvice">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Provides advice or instructions regarding changes to a trade. It includes details on the specific changes (e.g., amendments or adjustments to the trade), valuation information, collateralization, payment details, and related parties and accounts.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="tradeChangeAdviceRetracted" type="TradeChangeAdviceRetracted">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Signals the retraction or withdrawal of a previously submitted trade change advice. It indicates that the trade change advice should no longer be processed and includes information about the trade identifiers, changes made to the trade, payment details, and parties involved.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="tradeChangeAdviceAcknowledgement" type="EventRequestAcknowledgement">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Recognizes the receipt and processing of a trade change advice request. It confirms that the request for trade changes has been received and processed, and it may include details about the original message, trade reference information, and involved parties.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="tradeChangeAdviceException" type="Exception">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Represents an exception or error related to a trade change advice. It includes exception details, such as the header, validation issues, and any correlation or sequence information, alerting the sender to problems encountered during the trade change processing.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+<!-- Consent Negotiation -->
+  <xsd:element name="requestConsent" type="RequestConsent">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Represents a request for consent, typically seeking approval for specific actions or decisions. It includes details about the requested action, the approval type, the approver, and the involved party references. The request may also include portfolio references, compression data, and trading/post-trade events or deClear options, along with any related valuations and parties and accounts.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="requestConsentRetracted" type="RequestConsentRetracted">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Indicates the retraction or withdrawal of a previously submitted request for consent. It signals that the consent request should no longer be processed. It includes the approval type, approver details, party reference, and trading/post-trade events or deClear options. It may also contain relevant parties and accounts.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="consentAcknowledgement" type="EventRequestAcknowledgement">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Recognizes the receipt and processing of a consent request. It confirms that the request for consent has been processed, and may include details about the original message, trade reference information, and involved parties and accounts.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="consentException" type="Exception">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Represents an exception or error related to a consent request. It provides details about the exception, including a header with error information, validation issues, and any correlation or sequence data, signaling problems encountered during processing.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="consentGranted" type="ConsentGranted">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Indicates that consent has been granted for the requested action. It includes the approval type, approver, party reference, approval ID, portfolio reference, event or information details, and credit limit information. It may also include details about the involved parties and accounts.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="consentRefused" type="ConsentRefused">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Indicates that consent has been refused for the requested action. It includes the approval type, approver, party reference, portfolio reference, event or information details, credit limit information, and a reason for the refusal. It may also contain additional details related to the involved parties and accounts.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="approvalStatusNotification" type="ApprovalStatusNotification">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Represents a notification about the approval status of a trade or trade-related action. It includes a trade reference or identifier and the approvals status. It may also contain details about the involved parties and accounts.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+<!-- Confirmation -->
+  <xsd:element name="requestConfirmation" type="RequestConfirmation">
+    <xsd:annotation>
+      <xsd:documentation>The confirmation process starts with the requestConfirmation message. The message may be used to request the confirmation of a new trade or any other event supported by FpML such as novation, terminations, amendments, etc.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="requestConfirmationRetracted" type="ConfirmationRetracted">
+    <xsd:annotation>
+      <xsd:documentation>A requestConfirmation message may be cancelled using the requestConfirmationRetracted message.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="confirmationAcknowledgement" type="EventRequestAcknowledgement">
+    <xsd:annotation>
+      <xsd:documentation>A business acknowledgement message to indicate that the previously sent message was sucessfully processed.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="confirmationException" type="Exception">
+    <xsd:annotation>
+      <xsd:documentation>A message sent to inform another system that some exception has been detected.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="confirmationStatus" type="ConfirmationStatus">
+    <xsd:annotation>
+      <xsd:documentation>The confirmationStatus message provides the status of the matching process: matched, mismatched, unmatched, or alleged. It may also provide the best fit trade(s) or event(s) as result of the matching process.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="confirmationAgreed" type="ConfirmationAgreed">
+    <xsd:annotation>
+      <xsd:documentation>The confirmationAgreed message is sent when the matching process returns a proposed match (trade or event) and the Confirmation Requester agrees with it.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="confirmationDisputed" type="ConfirmationDisputed">
+    <xsd:annotation>
+      <xsd:documentation>The confirmationDisputed message is sent when the matching process returns a proposed match (trade or event) and the Confirmation Requester disputes it.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+<!-- Clearing -->
+  <xsd:element name="requestClearing" type="RequestClearing">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A message sent to request the clearing of a trade or portfolio. It may include references to portfolios, trading events, valuation details, and relevant parties. The request can also include a de-clearing instruction.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="requestClearingRetracted" type="RequestClearingRetracted">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A notification indicating the withdrawal of a previously submitted clearing request. It may reference trading events, de-clearing instructions, and relevant parties involved in the original request.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="clearingAcknowledgement" type="EventRequestAcknowledgement">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A response message confirming receipt of a clearing request. It may include the original request details, trade reference information, and relevant parties.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="clearingException" type="Exception">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A message indicating an issue or error related to the clearing process. It includes an exception header, validation details, and optional correlation and exception tracking information.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="clearingRefused" type="ClearingRefused">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A notification indicating that a clearing request has been declined. It may reference trading events, valuation details, involved parties, and reasons for refusal.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="clearingStatus" type="ClearingStatus">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A message providing an update on the status of a clearing request. It may include details about the current clearing status and involved parties.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="clearingConfirmed" type="ClearingConfirmed">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A notification confirming the successful completion of a clearing process. It may include details on compression, portfolio references, clearing results or trade changes, valuation information, credit limit updates, and relevant parties.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+<!-- Allocation -->
+  <xsd:element name="requestAllocation" type="RequestAllocation">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A message requesting the allocation of a block trade into individual allocations. It includes references to related parties, the block trade identifier, allocation details, and involved parties and accounts.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="requestAllocationRetracted" type="RequestAllocationRetracted">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A notification message indicating the withdrawal of a previously submitted allocation request. It may include the block trade identifier, allocation details, and relevant parties.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="allocationAcknowledgement" type="EventRequestAcknowledgement">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A response message confirming receipt of an allocation request. It may include the original request details, trade reference information, and involved parties.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="allocationException" type="Exception">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A message indicating an issue or error in the allocation process. It includes an exception header, validation details, and optional correlation and exception tracking information.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="allocationRefused" type="AllocationRefused">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A response indicating that an allocation request has been declined. It may include the block trade identifier, allocation details, involved parties, and reasons for refusal.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="allocationApproved" type="AllocationApproved">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A response message confirming the successful approval of an allocation request. It may include the block trade identifier, allocation details, and involved parties.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+<!-- Collateral Allocation -->
+  <xsd:element name="requestCollateralAllocation" type="RequestCollateralAllocation">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A request message for allocating collateral between counterparties. It specifies the requested action, the collateral giver, proposed allocations, and relevant parties and accounts.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="collateralAllocationAcknowledgement" type="Acknowledgement">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A confirmation message indicating receipt of a collateral allocation request. It may include the original request details and references to involved parties and accounts.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="collateralAllocationRejected" type="Exception">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A message indicating that a collateral allocation request has been rejected due to an issue or validation failure. It includes exception details, validation results, and correlation information.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="collateralAllocationAccepted" type="CollateralAllocationAccepted">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A response confirming the approval and acceptance of a collateral allocation request. No additional elements are required beyond the standard response structure.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+<!--Option Exercise / Expiry  -->
+  <xsd:element name="optionExpirationNotification" type="ExecutionNotification">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A notification regarding the expiration of an option, detailing trading events, amendments, regulatory collateralization, and relevant parties and accounts.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+</xsd:schema>
+

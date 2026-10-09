@@ -27,11 +27,12 @@ regenerate only projects whose schemas or generation settings changed. On Window
 - **Generated code is never committed or edited.** It lives in each project's `obj/` folder. To change it, change the
   generation (`build/LinqToXsd.targets`, `build/FpmlSchema.cs.template`, a project's `xsd/namespaceconfig.xml`) or fix
   the generator upstream in [LinqToXsdCore](https://github.com/mamift/LinqToXsdCore).
-- **Schemas are not edited.** Don't change files under `fpml-*/xsd/` other than `namespaceconfig.xml`; a schema that
-  needs patching to compile is left out instead (as FpML 5.8 transparency is). New versions use FpML's published files
-  unchanged. The 4.0-4.9 and 5.0-5.3 schemas are combined single-file versions from 2012, kept as they are so their
-  generated API doesn't change; see [Building](README.md#building) for how they differ from FpML's current downloads.
-- **New FpML versions** are added with `scripts/add-schema-version.cs`; see the README.
+- **Official FpML files are never edited.** Schemas under `fpml-*/xsd/` (everything but `namespaceconfig.xml`) and
+  examples under `tests/FpmlToolKit.Tests/Examples/` are byte-for-byte copies of FpML's downloads, listed with their
+  SHA-256 in `official-files.txt`; the tests fail if one changes. A schema that needs patching to compile is left out
+  instead (as FpML 5.8 transparency is). Test documents of our own go in `tests/FpmlToolKit.Tests/Samples/`.
+- **New FpML versions and builds** are added with `scripts/add-schema-version.cs` and recorded with
+  `scripts/official-files.cs`; see the README.
 - **Generator and runtime versions move together.** The LinqToXsdCore tool version in `dotnet-tools.json` must equal
   `XObjectsCoreVersion` in `Directory.Build.props`.
 - **Add or update tests** in `tests/FpmlToolKit.Tests` for behaviour you change, and keep the build free of warnings.

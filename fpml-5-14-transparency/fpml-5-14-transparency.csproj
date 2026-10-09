@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net10.0</TargetFrameworks>
+    <RootNamespace>fpml_5_14_transparency</RootNamespace>
+    <AssemblyName>fpml-5-14-transparency</AssemblyName>
+    <Description>Strongly typed LINQ to XSD classes for the FpML 5.14 transparency view.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="XObjectsCore" Version="$(XObjectsCoreVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <LinqToXsdSchema Include="xsd\fpml-main-5-14.xsd" />
+    <LinqToXsdConfiguration Include="xsd\namespaceconfig.xml" />
+  </ItemGroup>
+
+</Project>

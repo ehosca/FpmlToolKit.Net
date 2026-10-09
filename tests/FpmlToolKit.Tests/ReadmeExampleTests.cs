@@ -52,7 +52,11 @@ public class ReadmeExampleTests
             fpmlVersion = "5-13",
             party =
             [
-                new Party { id = "party1", partyId = [new PartyId { TypedValue = "549300EXAMPLEBANK001" }] },
+                new Party
+                {
+                    id = "party1",
+                    partyId = [new PartyId { partyIdScheme = new Uri("http://www.fpml.org/coding-scheme/external/iso17442"), TypedValue = "549300EXAMPLEBANK001" }],
+                },
             ],
         };
 

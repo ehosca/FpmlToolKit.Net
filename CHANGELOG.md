@@ -18,8 +18,30 @@ and versions follow [Semantic Versioning](https://semver.org/). Packages for eac
 - `SECURITY.md`, `CONTRIBUTING.md`, this changelog, and Dependabot updates for NuGet packages, the .NET SDK and
   GitHub Actions.
 
+- FpML 4.10 (`FpmlToolKit.Fpml410`) and FpML 5.14 (`FpmlToolKit.Fpml514`, all six views).
+- `official-files.txt` records the FpML download, entry and SHA-256 of every schema and example, and the tests fail
+  if any of them changes. `scripts/official-files.cs` regenerates it and checks it against the downloads on fpml.org.
+
 ### Changed
 
+- **Breaking:** every FpML version now uses FpML's own published files, unchanged, from its latest Recommendation
+  build, along with the official examples from that build. 4.0-4.5 and 5.0-5.2 previously used single-file schemas
+  made in 2012 with Eclipse EMF tooling. 4.6-4.9 used FpML's merged single-file schema and now use the multi-file
+  download, which generates the same types. 5.3 moves from build 6 to build 9, and 5.11 from build 7 to build 9.
+  Changes to the generated API:
+  - 4.2 and 4.3 gain the types FpML added for the 2021 ISDA definitions and benchmark fallbacks (`BenchmarkRate`,
+    `FallbackRate`, `CalculationParameters`, `MidMarketValuation`, ...). `Stub.floatingRate` is now
+    `IList<StubFloatingRate>`, and in 4.3 `StubValue` is gone: `StubCalculationPeriodAmount.initialStub` and
+    `finalStub` are `Stub`, and `ValuationScenarioReference.href` is removed.
+  - 5.3 confirmation no longer has `EmbeddedOptionType` or the `embeddedOptionType` property on products. 5.3
+    transparency gains `buyerPartyReference` and `sellerPartyReference` on options, and `FxCashSettlement.fixing` is
+    removed.
+  - 5.11: `EarlyTerminationProvision`'s `mandatoryEarlyTermination`, `optionalEarlyTermination` and
+    `optionalEarlyTerminationParameters`, and `Knock.knockOut`, are now lists. `regulation` on `InapplicableRegulation`
+    and `RegulatorApplicability` is `IList<RegulationName>`, and `RegulationName.reportingRegimeNameScheme` is
+    `regulationNameScheme`. `AccrualOptionChangeEvent` is `AccrualOptionChange`. `RateObservation.observationWeight`
+    is optional. New: `TermPointReference` and `WithdrawalPartyTradeInformation.category`.
+  - 4.0, 4.1, 4.4, 4.5, 5.0-5.2, 5.3 recordkeeping and 5.3 reporting: same types and properties.
 - Packages no longer contain a top-level `xsd/` folder, which NuGet never copied into consuming projects; the schemas
   are embedded in the assemblies instead. ([#6](https://github.com/ehosca/FpmlToolKit.Net/pull/6))
 - Packages carry `LICENSE.txt` (MIT for the toolkit, with the FpML and W3C schemas under their own terms) instead of an

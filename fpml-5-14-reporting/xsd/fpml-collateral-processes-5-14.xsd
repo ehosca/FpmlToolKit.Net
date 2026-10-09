@@ -1,0 +1,2419 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+== Copyright (c) 2026 All rights reserved. 
+== Financial Products Markup Language is subject to the FpML public license. 
+== A copy of this license is available at http://www.fpml.org/license/license.html
+-->
+<!--
+Annotation Disclaimer: Certain documentation blocks in this schema were generated 
+with artificial intelligence to provide descriptive text for types and elements 
+that previously lacked documentation. AI-generated documentation is identified 
+by the attribute fpml-annotation:aiGenerated="true" on the corresponding xsd:documentation 
+element. This content is intended solely to improve readability and usability, 
+it is non-normative and should not be relied upon as a substitute for the schema 
+definition itself or the official FpML specification.
+-->
+<xsd:schema xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns="http://www.fpml.org/FpML-5/reporting" xmlns:dsig="http://www.w3.org/2000/09/xmldsig#" xmlns:fpml-annotation="http://www.fpml.org/annotation" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.fpml.org/FpML-5/reporting" ecore:documentRoot="FpML" ecore:nsPrefix="rpt" ecore:package="org.fpml.reporting" version="$Revision$" xml:lang="en" elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xsd:include schemaLocation="fpml-reconciliation-5-14.xsd" />
+  <xsd:complexType name="Assets">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A collection of assets, where each asset is represented by an instance of the underlyingAsset element. This element can be of various types, such as bond, basket, cash, commodity, equity, mortgage, security, and others, depending on the specific asset being referenced.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element ref="underlyingAsset" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Represents the concept of an underlying asset, which can take on various concrete forms in FpML. Since it is abstract, it cannot be directly instantiated but must be replaced by one of the specific asset types such as Bond, Basket, Commodity, Equity, Cash, Mortgage, Security, etc.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="AgreedAmount">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">An agreed-upon monetary amount related to margin payments between counterparties in a financial transaction. It includes elements for variation margin and segregated independent amounts, as well as party role information (giver/taker).</xsd:documentation>
+    </xsd:annotation>
+    <xsd:choice>
+      <xsd:sequence>
+        <xsd:group ref="GiverTaker.model" />
+        <xsd:element name="variationMargin" type="Money">
+          <xsd:annotation>
+            <xsd:documentation>variation margin part of the agreed amount.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="segregatedIndependentAmount" type="Money" minOccurs="0">
+          <xsd:annotation>
+            <xsd:documentation fpml-annotation:aiGenerated="true">Represents collateral posted separately from variation margin to cover potential default risk.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+      </xsd:sequence>
+      <xsd:element name="segregatedIndependentAmount" type="Money">
+        <xsd:annotation>
+          <xsd:documentation>segregated independent amount part of the agreed amount.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:choice>
+  </xsd:complexType>
+  <xsd:complexType name="AggregatedIndependentAmount">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Represents different methods of calculating independent amounts for collateral purposes in FpML. It allows specifying independent amounts based on trade-level, value-at-risk (VaR), or net open positions.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:choice maxOccurs="unbounded">
+      <xsd:element name="trade" type="IndependentAmountType">
+        <xsd:annotation>
+          <xsd:documentation>This is the total Independent Amount defined in the confirmations of individual trades. This would relate to the same Independent Amount defined in other FpML messages aggregated for a specific agreement.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="valueAtRisk" type="IndependentAmountType">
+        <xsd:annotation>
+          <xsd:documentation>A portfolio level Independent Amount that reflects portfolio change over a short time period using statistical techniques such as volatility and risk factor correlations. These amounts reflect the summation of independent Amounts due to Party A or Party B.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="netOpenPosition" type="IndependentAmountType">
+        <xsd:annotation>
+          <xsd:documentation>A portfolio level Independent Amounts related to a Parties Net Open Position (NOP). Net Open Position means the total of the Net Long FX and the Net Options in respect of each currency where: Net Long FX for any currency shall be the net amount (if any) of that currency which the Party "A" is long as against Party "B" in respect of all FX transactions.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:choice>
+  </xsd:complexType>
+  <xsd:complexType name="BothDirectionsInterestRequirement">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Defines how interest is treated when it applies in both directions, meaning for both counterparties involved in a financial agreement. It allows specifying whether interest is calculated on a net or gross basis, and includes up to two accrued interest amounts, thus representing both parties.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:choice minOccurs="0">
+        <xsd:element name="netTreatment" type="NetTreatment">
+          <xsd:annotation>
+            <xsd:documentation fpml-annotation:aiGenerated="true">Defines an interest calculation method where the interest obligations of both parties are offset against each other.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="grossTreatment" type="GrossTreatment">
+          <xsd:annotation>
+            <xsd:documentation fpml-annotation:aiGenerated="true">Defines an interest calculation method where the interest obligations of both parties are considered separately without offsetting. Since paymentDetails can occur up to twice, it allows specifying interest payment details for each party independently.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+      </xsd:choice>
+      <xsd:element name="interestAccrued" type="InterestAccrued" minOccurs="0" maxOccurs="2">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Represents the amount of interest accumulated over time, along with key attributes, including involved parties, interest amounts, withholding taxes, and calculation terms.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="BothDirectionsInterestStatementRequirement">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Represents an interest statement that accounts for accrued interest from both counterparties in a transaction. It can contain up to two instances of interestAccrued, each detailing accumulated interest for a specific party.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="interestAccrued" type="InterestAccrued" minOccurs="0" maxOccurs="2">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Represents the amount of interest accumulated over time, along with key attributes, including involved parties, interest amounts, withholding taxes, and calculation terms.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="CashDeliveryReturn">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">The return or delivery of cash collateral as part of a collateral agreement. It provides details about the cash amount being delivered or returned, including its reference asset, valuation, and any adjustments applied.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="assetReference" type="AssetReference" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation>Refers to the asset which specifies the currency of the cash being delivered or returned.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="nominalAmount" type="NonNegativeDecimal" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation>The amount of cash to be moved.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="valueDate" type="xsd:date" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation>The date on which the proposed collateral will be settled .</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="marketValue" type="NonNegativeDecimal" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation>The value of the proposed collateral movement prior to the application of any haircut amount.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="haircut" type="xsd:decimal" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation>The amount to which the collaterals market value will be discounted to take into account the ability to realize the value of that collateral.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="collateralValue" type="NonNegativeDecimal" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation>This is the value of the proposed collateral after the application of the haircut.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="CashType">
+    <xsd:annotation>
+      <xsd:documentation>Specifies cash currency as type of expected collateral.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="currency" type="Currency" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Specifies the type of currency acceptable as cash collateral.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="CollateralBalance">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">The amount and type of collateral currently held by a party in a financial agreement. It ensures that both parties meet their margining obligations to reduce credit risk.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:choice>
+      <xsd:sequence>
+        <xsd:element name="variationMargin" type="MarginCollateral">
+          <xsd:annotation>
+            <xsd:documentation>variation margin part of the collateral balance.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="segregatedIndependentAmount" type="MarginCollateral" minOccurs="0">
+          <xsd:annotation>
+            <xsd:documentation fpml-annotation:aiGenerated="true">Represents collateral posted separately from variation margin to cover potential default risk.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+      </xsd:sequence>
+      <xsd:element name="segregatedIndependentAmount" type="MarginCollateral">
+        <xsd:annotation>
+          <xsd:documentation>segregated independent amount part of the collateral balance.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:choice>
+  </xsd:complexType>
+  <xsd:complexType name="CollateralProposalStatus">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A response message regarding the status of a collateral proposal during a margin call process.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="ResponseMessage">
+        <xsd:sequence>
+          <xsd:element name="marginCallIssuerPartyReference" type="PartyReference">
+            <xsd:annotation>
+              <xsd:documentation>The party issuing the margin call.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="marginCallReceiverPartyReference" type="PartyReference">
+            <xsd:annotation>
+              <xsd:documentation>The party receiving the margin call.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:group ref="ProposedCollateralResponse.model" />
+          <xsd:element name="assets" type="Assets">
+            <xsd:annotation>
+              <xsd:documentation>The list of assets to be moved.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:group ref="PartiesAndAccounts.model" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="CollateralResponseReason">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Specifies the rationale behind a response to a collateral proposal or margin call. It provides structured information on why a collateral request was either accepted, rejected, or modified.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:choice>
+      <xsd:sequence>
+        <xsd:element name="reasonCode" type="CollateralResponseReasonCode">
+          <xsd:annotation>
+            <xsd:documentation>standard reason codes used for the collateral response message</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="description" type="String" minOccurs="0">
+          <xsd:annotation>
+            <xsd:documentation fpml-annotation:aiGenerated="true">A free-text explanation of the reason for the collateral response. It can offer additional context, clarification, or details beyond the predefined reasonCode, particularly when the code itself isn't sufficient to fully explain the situation.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+      </xsd:sequence>
+      <xsd:element name="description" type="String">
+        <xsd:annotation>
+          <xsd:documentation>free form description of the reason</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:choice>
+  </xsd:complexType>
+  <xsd:complexType name="CollateralResponseReasonCode">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Specifies the reason for the collateral response.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:simpleContent>
+      <xsd:extension base="Scheme">
+        <xsd:attribute name="collateralResponseReasonScheme" type="NonEmptyURI" default="http://www.fpml.org/coding-scheme/collateral-response-reason" />
+      </xsd:extension>
+    </xsd:simpleContent>
+  </xsd:complexType>
+  <xsd:complexType name="CollateralRetractionReason">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Represents the reason for the retraction (or removal) of collateral, and it can contain either a reasonCode along with an optional description or just a description on its own.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:choice>
+      <xsd:sequence>
+        <xsd:element name="reasonCode" type="CollateralRetractionReasonCode">
+          <xsd:annotation>
+            <xsd:documentation>reason codes that specify the reason for retraction</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="description" type="String" minOccurs="0">
+          <xsd:annotation>
+            <xsd:documentation fpml-annotation:aiGenerated="true">A free-text explanation of the reason for the collateral retraction. It can offer additional context, clarification, or details beyond the predefined reasonCode, particularly when the code itself isn't sufficient to fully explain the situation.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+      </xsd:sequence>
+      <xsd:element name="description" type="String">
+        <xsd:annotation>
+          <xsd:documentation>free form description of the reason</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:choice>
+  </xsd:complexType>
+  <xsd:complexType name="CollateralRetractionReasonCode">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Defines the specific codes that indicate the reason for the retraction of collateral.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:simpleContent>
+      <xsd:extension base="Scheme">
+        <xsd:attribute name="collateralRetractionReasonScheme" type="NonEmptyURI" default="http://www.fpml.org/coding-scheme/collateral-retraction-reason" />
+      </xsd:extension>
+    </xsd:simpleContent>
+  </xsd:complexType>
+  <xsd:complexType name="DailyInterestCalculation">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Represents the structure used for calculating interest on a daily basis, accounting for various factors like principal amounts, rates, and accrued interest. It is designed to handle multiple aspects of the daily interest calculation process.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="calculationDate" type="xsd:date" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">The date on which the interest calculation is made.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:sequence minOccurs="0">
+        <xsd:sequence minOccurs="0">
+          <xsd:sequence>
+            <xsd:element name="openingPrincipalAmount" type="NonNegativeDecimal" minOccurs="0">
+              <xsd:annotation>
+                <xsd:documentation fpml-annotation:aiGenerated="true">The principal amount at the start of the day or calculation period.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="principalMovement" type="PrincipalMovement" minOccurs="0">
+              <xsd:annotation>
+                <xsd:documentation fpml-annotation:aiGenerated="true">Any changes or adjustments to the principal amount during the day. It is optional and can be omitted if there is no movement in the principal.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+          </xsd:sequence>
+        </xsd:sequence>
+        <xsd:element name="effectivePrincipalAmount" type="NonNegativeDecimal" minOccurs="0">
+          <xsd:annotation>
+            <xsd:documentation fpml-annotation:aiGenerated="true">The effective principal amount after considering any movements or adjustments.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+      </xsd:sequence>
+      <xsd:sequence minOccurs="0">
+        <xsd:sequence minOccurs="0">
+          <xsd:element name="observedRate" type="PositiveDecimal" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation fpml-annotation:aiGenerated="true">An interest rate that is observed in the market (e.g., EONIA, Euribor).</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="spread" type="xsd:decimal" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation fpml-annotation:aiGenerated="true">Represents any adjustment to the observed rate, often based on a contract or agreement.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+        <xsd:element name="effectiveRate" type="PositiveDecimal" minOccurs="0">
+          <xsd:annotation>
+            <xsd:documentation fpml-annotation:aiGenerated="true">The final interest rate that is applied to the principal amount for calculating the interest. It may take into account the observed rate and any spread.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+      </xsd:sequence>
+      <xsd:element name="accruedInterestAmount" type="NonNegativeDecimal" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">The interest amount that has accumulated based on the principal amount and the interest rate.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="cumulativeInterestAmount" type="NonNegativeDecimal" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">The cumulative interest that has been accrued up to the point of the calculation. It takes into account all previous interest calculations.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="DisputedCollateral">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Represents collateral that is under dispute. It contains information about the disputed amount, the date of the dispute, and the methods for resolving the dispute.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="disputedAmount" type="Money" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation>This is confirmation of the amount being disputed this would be the difference between the undisputed amount and the call amount from the requestMargin message.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="disputeDate" type="xsd:date" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation>This is the date from which the Dispute is deemed by the sending party to have occurred on. It can be used for dispute aging purposes.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="disputeResolutionMethod" type="DisputeResolutionMethod" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation>The disputeResolutionMethod can consist of either a resolutionCode and description, a resolution code only or a description only. The purpose of this element is to be able to provide details of how the dispute differences will be resolved.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="DisputeNotification">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A message notifying parties of a dispute related to a margin call or collateral agreement. That is, in scenarios where there is a disagreement or discrepancy regarding a margin call or collateral in a financial contract.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="NotificationMessage">
+        <xsd:sequence>
+          <xsd:element name="marginCallIssuerPartyReference" type="PartyReference">
+            <xsd:annotation>
+              <xsd:documentation>The party receiving the margin call.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="marginCallReceiverPartyReference" type="PartyReference">
+            <xsd:annotation>
+              <xsd:documentation>The party receiving the margin call.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="creditSupportAgreement" type="CreditSupportAgreement">
+            <xsd:annotation>
+              <xsd:documentation>References the legal agreement.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="valuationDate" type="xsd:date" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>Close of business date the local counterparty is valuing and issuing the margin call.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="baseCurrency" type="Currency" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>Denomination currency as specified in the margin agreement.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:group ref="DisputedDetails.model" />
+          <xsd:group ref="PartiesAndAccounts.model" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="DisputeResolutionCode">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A standardized coding scheme used to specify the method or reason for resolving a collateral-related dispute.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:simpleContent>
+      <xsd:extension base="Scheme">
+        <xsd:attribute name="collateralDisputeResolutionMethodReasonScheme" type="NonEmptyURI" default="http://www.fpml.org/coding-scheme/collateral-dispute-resolution-method-reason" />
+      </xsd:extension>
+    </xsd:simpleContent>
+  </xsd:complexType>
+  <xsd:complexType name="DisputeResolutionMethod">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Specifies how a collateral dispute is resolved by providing a resolution code along with an optional descriptive explanation. It allows either a structured resolution approach using a predefined code or a free-text description when a coding scheme is not sufficient.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:choice>
+      <xsd:sequence>
+        <xsd:element name="resolutionCode" type="DisputeResolutionCode">
+          <xsd:annotation>
+            <xsd:documentation>reason codes that specify the reason for the dispute</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="description" type="String" minOccurs="0">
+          <xsd:annotation>
+            <xsd:documentation fpml-annotation:aiGenerated="true">A free-text explanation of the reason for the dispute resolution. It can offer additional context, clarification, or details beyond the predefined resolutionCode, particularly when the code itself isn't sufficient to fully explain the situation.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+      </xsd:sequence>
+      <xsd:element name="description" type="String">
+        <xsd:annotation>
+          <xsd:documentation>free form description of the reason</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:choice>
+  </xsd:complexType>
+  <xsd:complexType name="DisputeRetracted">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A formal notification that a previously reported collateral dispute has been withdrawn.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="NonCorrectableRequestMessage">
+        <xsd:sequence minOccurs="0">
+          <xsd:element name="marginCallIssuerPartyReference" type="PartyReference" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The party issuing the margin call.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="marginCallReceiverPartyReference" type="PartyReference" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The party receiving the margin call.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:group ref="PartiesAndAccounts.model" minOccurs="0" />
+          <xsd:element name="collateralRetractionReason" type="CollateralRetractionReason" minOccurs="0" maxOccurs="unbounded">
+            <xsd:annotation>
+              <xsd:documentation fpml-annotation:aiGenerated="true">Represents the justification for retracting a previously reported collateral dispute.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="ExpectedCollateral">
+    <xsd:annotation>
+      <xsd:documentation>Expected Collateral allows for the definition of collateral that the party making the margin call would prefer to receive or have returned. This can be defined for the Variation Requirement and /or the Segregated Independent Amount Requirement. For deliveries only the type of cash i.e. USD or security type i.e. US Treasuries is expected to be defined. For the return the calling party will know what they posted and therefore can define the expected collateral down to the specific instrument identifier, currency and amount.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:choice>
+      <xsd:sequence>
+        <xsd:element name="variationMargin" type="ExpectedCollateralDeliveryReturn">
+          <xsd:annotation>
+            <xsd:documentation>variation margin part of the expected collateral.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="segregatedIndependentAmount" type="ExpectedCollateralDeliveryReturn" minOccurs="0">
+          <xsd:annotation>
+            <xsd:documentation fpml-annotation:aiGenerated="true">The expected delivery or return of collateral that is segregated as an independent amount, typically used in margining agreements to cover potential future exposures.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+      </xsd:sequence>
+      <xsd:element name="segregatedIndependentAmount" type="ExpectedCollateralDeliveryReturn">
+        <xsd:annotation>
+          <xsd:documentation>segregated independent amount part of the expected collateral.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:choice>
+  </xsd:complexType>
+  <xsd:complexType name="ExpectedCollateralDeliveryReturn">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">The expected delivery or return of collateral that is segregated as an independent amount, typically used in margining agreements to cover potential future exposures.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="deliver" type="ExpectedCollateralDelivery" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">The type of collateral that is expected to be delivered under a collateral agreement.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="return" type="ProposedCollateralDeliveryReturn" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Specifies collateral that is expected to be returned, including details about the parties involved and the type of collateral being returned.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="ExpectedCollateralDelivery">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">The type of collateral that is expected to be delivered under a collateral agreement.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:choice maxOccurs="unbounded">
+      <xsd:element name="cashType" type="CashType">
+        <xsd:annotation>
+          <xsd:documentation>Specifies cash as type of expected collateral.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="securityType" type="SecurityType">
+        <xsd:annotation>
+          <xsd:documentation>Specifies a security as type of expected collateral.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="letterOfCreditType" type="LetterOfCreditType">
+        <xsd:annotation>
+          <xsd:documentation>Specifies a letter of credit as type of expected collateral.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:choice>
+  </xsd:complexType>
+  <xsd:complexType name="Exposure">
+    <xsd:annotation>
+      <xsd:documentation>Consists of two elements, the first MarkToMarkExposureParty supports the definition of which party is the exposed party and which is the obligated party. Within FpML it is important to state both parties roll in the exposure details to avoid ambiguity. The parties referenced should be one of those defined in the Parties element. Therefore if Party A is the exposed party there Party Reference ID would be quoted and Party B would be the obligated party. The second element is the exposureAmount this is the amount to which the exposed party is exposed. This uses the Money type that can take but an amount and a currency.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:group ref="MarkToMarketExposureParty.model" />
+      <xsd:element name="exposureAmount" type="Money" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">The financial exposure of one party to another in a collateral or risk management context.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="GrossTreatment">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Specifies how interest payments are handled on a gross basis (i.e., without tax deductions or netting) in financial transactions.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="paymentDetails" type="InterestPaymentDetails" minOccurs="0" maxOccurs="2">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Allows for precise specification of interest payments, distinguishing between payments made immediately and those capitalized into the principal. This is particularly useful in structured finance, loan agreements, and derivative contracts.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="HeldCollateral">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Represents collateral that is being held by a specific party. It allows for clear identification of which party holds the collateral, which party posted it, and how much it is worth.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="holdingPartyReference" type="PartyReference" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation>The party holding the collateral.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="postingPartyReference" type="PartyReference" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation>The party posting the collateral.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="paymentAmount" type="Money" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Specifies the monetary amount of the held collateral.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="IndependentAmountType">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Represents an independent amount that is exchanged between parties in a financial agreement. It specifies the payer and receiver, the monetary amount, and the convention used to handle the independent amount.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:group ref="GiverTaker.model" />
+      <xsd:element name="paymentAmount" type="Money" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Specifies the monetary amount of the independent amount.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="convention" type="IndependentAmountConventionEnum" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">The convention governing how the independent amount is applied, taken from the applicable independent amount convention scheme.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="InterestAccrued">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">The details of accrued interest in a financial agreement. It specifies the parties involved, the interest amount, withholding tax details, and calculation terms.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="deliveringPartyReference" type="PartyReference" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation>The party delivering the accrued interest.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="receivingPartyReference" type="PartyReference" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation>The party delivering the accrued interest.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="interest" type="Money" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">The amount of accrued interest that has been calculated and is due for payment.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:sequence minOccurs="0">
+        <xsd:element name="withholdingTax" type="Money" minOccurs="0">
+          <xsd:annotation>
+            <xsd:documentation>Specifies the amount of tax withheld.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="withholdingTaxTerms" type="WithholdingTaxTerms" minOccurs="0">
+          <xsd:annotation>
+            <xsd:documentation>Specifies the terms of the tax withholding.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+      </xsd:sequence>
+      <xsd:element name="interestCalculationTerms" type="InterestCalculationTerms" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation>Specifies the terms of the interest calculations.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="interestCalculationDetails" type="InterestCalculationDetails" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation>Details optional calculations for each day of the interest period.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="InterestCalculationDetails">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A detailed breakdown of the daily interest accrual calculations applied to a financial agreement. It allows for a more granular representation of how interest has been computed over time by including one or more dailyInterestCalculation elements.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="dailyInterestCalculation" type="DailyInterestCalculation" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation>Specifies the interest calculations for one day of the interest period.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="InterestCalculationTerms">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Specifies the methodology and parameters used to calculate accrued interest in a financial agreement. It defines key terms such as the calculation type, reference index, spread, and day count fraction, ensuring clarity and consistency in interest computations.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="calculationType" type="InterestCalculationTypeEnum" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Specifies whether the interest accrual is based on a simple (interest is calculated linearly over time without reinvestment) or compounding (interest is periodically added to the principal) methodology.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="index" type="FloatingRateIndex" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Defines the floating rate index (FRO) used as a reference for interest rate calculations.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="spread" type="xsd:decimal" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Represents a fixed decimal margin added to the floating rate index to determine the final interest rate.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="dayCountFraction" type="DayCountFraction" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Specifies the day count convention used to compute interest accruals.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="InterestDirection">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Specifies how interest obligations are determined between parties in a financial agreement. If singleDirection, then interest accrues only in one direction, and if bothDirections, then interest accrues for both parties.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:choice>
+      <xsd:element name="singleDirection" type="SingleDirectionInterestRequirement">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Defines an interest accrual structure where interest is payable in only one direction, meaning one party is obligated to pay interest to the other.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="bothDirections" type="BothDirectionsInterestRequirement">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Defines an interest accrual structure where interest obligations can arise for both counterparties, depending on exposure or collateral balances.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:choice>
+  </xsd:complexType>
+  <xsd:complexType name="InterestPaymentDetails">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Represents the details of an interest payment, ensuring that only non-negative amounts are allowed.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="NonNegativePayment">
+        <xsd:sequence>
+          <xsd:element name="method" type="InterestMethodEnum" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation fpml-annotation:aiGenerated="true">Specifies how the interest payment is handled.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="InterestPeriod">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Represents the timeframe over which interest accrues, using a defined start and end date.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:group ref="Period.model" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="InterestRequirement">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Specifies the conditions under which interest accrues within a financial agreement, defining the relevant time period and applicable interest directions.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="interestPeriod" type="InterestPeriod" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Represents the timeframe over which interest accrues, using a defined start and end date.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:choice minOccurs="0">
+        <xsd:sequence>
+          <xsd:element name="variationMargin" type="InterestDirection">
+            <xsd:annotation>
+              <xsd:documentation>variation margin details for the interest direction</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="segregatedIndependentAmount" type="InterestDirection" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation fpml-annotation:aiGenerated="true">Specifies how interest is applied to segregated independent amounts, allowing for different treatment options.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+        <xsd:element name="segregatedIndependentAmount" type="InterestDirection">
+          <xsd:annotation>
+            <xsd:documentation>segregated independent amount details for the interest direction</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+      </xsd:choice>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="InterestResponse">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A party’s response to an interest accrual request, indicating approval status and providing reasons if necessary.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="interestApproved" type="xsd:boolean" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">A boolean value that indicates whether the receiving party approves the interest accrual request.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="interestResponseReason" type="InterestResponseReason" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Specifies the reason for approving or disputing the interest accrual request.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="InterestResponseReason">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Specifies the reason for approving or disputing the interest accrual request.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:choice>
+      <xsd:sequence>
+        <xsd:element name="reasonCode" type="InterestResponseReasonCode">
+          <xsd:annotation>
+            <xsd:documentation>standard reason codes used for the response to the interest notification.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="description" type="String" minOccurs="0">
+          <xsd:annotation>
+            <xsd:documentation fpml-annotation:aiGenerated="true">A free-text explanation of the reason for the interest response. It can offer additional context, clarification, or details beyond the predefined reasonCode, particularly when the code itself isn't sufficient to fully explain the situation.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+      </xsd:sequence>
+      <xsd:element name="description" type="String">
+        <xsd:annotation>
+          <xsd:documentation>free form description of the reason</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:choice>
+  </xsd:complexType>
+  <xsd:complexType name="InterestResponseReasonCode">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Specifies the reason for approving or disputing an interest accrual request using a standardized coding scheme. This element allows for structured communication of the response rationale, ensuring clarity and consistency in collateral management.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:simpleContent>
+      <xsd:extension base="Scheme">
+        <xsd:attribute name="collateralInterestResponseReasonScheme" type="NonEmptyURI" default="http://www.fpml.org/coding-scheme/collateral-interest-response-reason" />
+      </xsd:extension>
+    </xsd:simpleContent>
+  </xsd:complexType>
+  <xsd:complexType name="InterestStatement">
+    <xsd:annotation>
+      <xsd:documentation>IN1 Interest Notification Message Definition.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="NotificationMessage">
+        <xsd:sequence>
+          <xsd:element name="issuerPartyReference" type="PartyReference" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The party issuing the interest statement.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="receiverPartyReference" type="PartyReference" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The party receiving the interest statement.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="creditSupportAgreement" type="CreditSupportAgreement" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The agreement executed between the parties and intended to govern collateral arrangement for all OTC derivatives transactions between those parties.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="interestRequirement" type="InterestStatementRequirement" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation fpml-annotation:aiGenerated="true">Specifies the details of interest accrual and payment obligations within an interest statement. This element provides structured information regarding the interest period, variation margin interest, and segregated independent amount interest calculations.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="comment" type="String" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation fpml-annotation:aiGenerated="true">A free-text field that allows for additional information or clarification regarding the interest statement. This element provides a way to include contextual details, explanations, or remarks that may be relevant to the interest accrual, payment terms, or any discrepancies noted in the statement.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:group ref="PartiesAndAccounts.model" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="InterestStatementDirection">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Specifies whether interest applies in a single direction or both directions within an interest statement. This complex type allows for the distinction between unilateral and bilateral interest accrual or payment obligations. This choice ensures flexibility in defining interest obligations based on the terms of the credit support agreement or financial contract.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:choice>
+      <xsd:element name="singleDirection" type="SingleDirectionInterestStatementRequirement">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Specifies that interest applies in only one direction within an interest statement. This means that interest is either accrued or paid by one party to another.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="bothDirections" type="BothDirectionsInterestStatementRequirement">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Specifies that interest applies in both directions within an interest statement. This means that both parties may accrue or pay interest to each other.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:choice>
+  </xsd:complexType>
+  <xsd:complexType name="InterestStatementRequirement">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A structured representation of interest calculation requirements within an interest statement. It defines the applicable interestPeriod and specifies how interest is handled for variation margin and segregated independent amounts.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="interestPeriod" type="InterestPeriod" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">The time frame over which interest is accrued and calculated. It includes a startDate and an endDate, defining the period for which the interest applies.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:choice minOccurs="0">
+        <xsd:sequence>
+          <xsd:element name="variationMargin" type="InterestStatementDirection">
+            <xsd:annotation>
+              <xsd:documentation>variation margin details for the interest statement</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="segregatedIndependentAmount" type="InterestStatementDirection" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation fpml-annotation:aiGenerated="true">The interest treatment applied to segregated independent amounts. It indicates whether interest is accrued in a single direction or both directions.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+        <xsd:element name="segregatedIndependentAmount" type="InterestStatementDirection">
+          <xsd:annotation>
+            <xsd:documentation>segregated independent amount details for the interest statement</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+      </xsd:choice>
+    </xsd:sequence>
+  </xsd:complexType>
+<!-- IN2 Matched Acceptance / IN3 Reject Value Date / IN5 Dispute Interest Messages Definition -->
+  <xsd:complexType name="InterestStatus">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Represents a response message detailing the status of an interest accrual request within a collateral agreement.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="ResponseMessage">
+        <xsd:sequence>
+          <xsd:element name="issuerPartyReference" type="PartyReference" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The party issuing the interest notification.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="receiverPartyReference" type="PartyReference" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The party receiving the interest notification.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="creditSupportAgreement" type="CreditSupportAgreement" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The agreement executed between the parties and intended to govern collateral arrangement for all OTC derivatives transactions between those parties.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:group ref="InterestResponseDetails.model" />
+          <xsd:group ref="PartiesAndAccounts.model" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+<!-- Rescind Response to Interest Notification Message Definition -->
+  <xsd:complexType name="InterestStatusRetracted">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Represents a non-correctable request message indicating the retraction of a previously issued interest status.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="NonCorrectableRequestMessage">
+        <xsd:sequence minOccurs="0">
+          <xsd:element name="issuerPartyReference" type="PartyReference" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The party issuing the interest notification.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="receiverPartyReference" type="PartyReference" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The party receiving the interest notification.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:group ref="PartiesAndAccounts.model" minOccurs="0" />
+          <xsd:element name="collateralRetractionReason" type="CollateralRetractionReason" minOccurs="0" maxOccurs="unbounded">
+            <xsd:annotation>
+              <xsd:documentation>Defines a list of collateral retraction reason codes.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="LcSummary">
+    <xsd:annotation>
+      <xsd:documentation>A basic set of fields to identify an LC. Please note that the partyReference within the contract identifier should refer to the Issuing Bank. Type borrowed from FpML 4.x Loan definitions.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="identifier" type="ContractIdentifier" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Represents the unique identifier for a contract or agreement within an LC (letter of credit) summary.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="LetterOfCreditCollateral">
+    <xsd:annotation>
+      <xsd:documentation>Defines a letter of credit.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="LcSummary">
+        <xsd:sequence>
+          <xsd:element name="amount" type="NonNegativeDecimal" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation fpml-annotation:aiGenerated="true">Indicates the amount of collateral associated with the letter of credit (LC).</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="valueDate" type="xsd:date" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation fpml-annotation:aiGenerated="true">Specifies the date on which the collateral’s value is determined.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="marketValue" type="NonNegativeDecimal" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation fpml-annotation:aiGenerated="true">Represents the market value of the collateral.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="haircut" type="xsd:decimal" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation fpml-annotation:aiGenerated="true">Indicates the percentage reduction applied to the market value of the collateral to determine its collateral value.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="collateralValue" type="NonNegativeDecimal" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation fpml-annotation:aiGenerated="true">Represents the final value of the collateral after applying any relevant adjustments (e.g., haircut).</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="LetterOfCreditType">
+    <xsd:annotation>
+      <xsd:documentation>Specifies a letter of credit as type of expected collateral.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="description" type="String" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Stores one or more descriptions of the various types of letters of credit (LCs). These descriptions are used to specify the kind of letter of credit involved in a transaction.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="MarginCallResponseReason">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Defines the possible reasons for a margin call response. It allows for different ways to express the reason for the margin call response, including both a reason code and an optional description.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:choice>
+      <xsd:sequence>
+        <xsd:element name="reasonCode" type="MarginCallResponseReasonCode">
+          <xsd:annotation>
+            <xsd:documentation>reason codes used in the margin call response</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="description" type="String" minOccurs="0">
+          <xsd:annotation>
+            <xsd:documentation fpml-annotation:aiGenerated="true">A free-text description of the reason for the margin call response.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+      </xsd:sequence>
+      <xsd:element name="description" type="String">
+        <xsd:annotation>
+          <xsd:documentation>free form description of the reason</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:choice>
+  </xsd:complexType>
+  <xsd:complexType name="MarginCallResponseReasonCode">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Defines a coded value that provides specific reasons for the margin call response.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:simpleContent>
+      <xsd:extension base="Scheme">
+        <xsd:attribute name="collateralMarginCallResponseReasonScheme" type="NonEmptyURI" default="http://www.fpml.org/coding-scheme/collateral-margin-call-response-reason" />
+      </xsd:extension>
+    </xsd:simpleContent>
+  </xsd:complexType>
+  <xsd:complexType name="MarginCallResult">
+    <xsd:annotation>
+      <xsd:documentation>This composite type is an aggregation of the data supplied in the Margin Requirement composite type. It allows for the sum of the deliver and return requirements in to a single Margin Call Amount for Segregated Independent Amount and/or Variation Margin..</xsd:documentation>
+    </xsd:annotation>
+    <xsd:choice>
+      <xsd:sequence>
+        <xsd:element name="variationMargin" type="VariationResult">
+          <xsd:annotation>
+            <xsd:documentation>summary of the variation margin.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="segregatedIndependentAmount" type="VariationResult" minOccurs="0">
+          <xsd:annotation>
+            <xsd:documentation fpml-annotation:aiGenerated="true">An optional variation result associated with the segregated independent amount for the margin call.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+      </xsd:sequence>
+      <xsd:element name="segregatedIndependentAmount" type="VariationResult">
+        <xsd:annotation>
+          <xsd:documentation>summary of the segregated independent amount.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:choice>
+  </xsd:complexType>
+<!-- Margin Call Response (full agreement: MC3b / full dispute: MC5 / partial dispute: MC6) Message Definition -->
+  <xsd:complexType name="MarginCallStatus">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Represents the status of a margin call, including references to the issuer and receiver parties, the credit support agreement, the valuation date, etc. It provides a comprehensive view of the margin call situation and any associated details or agreements.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="ResponseMessage">
+        <xsd:sequence>
+          <xsd:element name="marginCallIssuerPartyReference" type="PartyReference" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The party issuing the margin call.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="marginCallReceiverPartyReference" type="PartyReference" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The party receiving the margin call.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="creditSupportAgreement" type="CreditSupportAgreement" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The agreement executed between the parties and intended to govern collateral arrangement for all OTC derivatives transactions between those parties.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="valuationDate" type="xsd:date" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>Close of business date the local counterparty is valuing and issuing the margin call.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="baseCurrency" type="Currency" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>Denomination currency as specified in the margin agreement.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:group ref="MarginDetails.model" minOccurs="0" />
+          <xsd:element name="agreedAmount" type="AgreedAmount" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The agreedAmount block allows the responder to detail the undisputed amount for any Variation Margin requirement and/or Segregated Independent Amount requirement they may have received in the corresponding requestMargin message.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="marginCallResponseReason" type="MarginCallResponseReason" minOccurs="0" maxOccurs="unbounded">
+            <xsd:annotation>
+              <xsd:documentation>Defines a list of collateral response reason codes.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:group ref="PartiesAndAccounts.model" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+<!-- MC4 Rescind Margin Call Response Definition -->
+  <xsd:complexType name="MarginCallStatusRetracted">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Represents the retraction of a previously issued margin call status. This message indicates that the margin call is no longer valid, and it includes details about the parties involved, the reason for the retraction, and any relevant account information.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="NonCorrectableRequestMessage">
+        <xsd:sequence minOccurs="0">
+          <xsd:element name="marginCallIssuerPartyReference" type="PartyReference" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The party issuing the margin call.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="marginCallReceiverPartyReference" type="PartyReference" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The party receiving the margin call.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:group ref="PartiesAndAccounts.model" minOccurs="0" />
+          <xsd:element name="collateralRetractionReason" type="CollateralRetractionReason" minOccurs="0" maxOccurs="unbounded">
+            <xsd:annotation>
+              <xsd:documentation fpml-annotation:aiGenerated="true">Provides reasons for the retraction of the margin call. It details why the margin call has been withdrawn, which could be due to a change in market conditions, a change in agreement terms, or other reasons.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="MarginCollateral">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Represents the collateral associated with a margin call, detailing both pending collateral (not yet settled) and held collateral (already secured). It allows up to two instances of each type of collateral to be specified.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:choice>
+      <xsd:sequence>
+        <xsd:element name="pendingCollateral" type="PendingCollateral" maxOccurs="2">
+          <xsd:annotation>
+            <xsd:documentation>pending collateral</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="heldCollateral" type="HeldCollateral" minOccurs="0" maxOccurs="2">
+          <xsd:annotation>
+            <xsd:documentation fpml-annotation:aiGenerated="true">Represents collateral that has already been posted, received, or otherwise designated as fulfilling margin requirements. This includes cash, securities, or other eligible assets currently held as collateral.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+      </xsd:sequence>
+      <xsd:element name="heldCollateral" type="HeldCollateral" maxOccurs="2">
+        <xsd:annotation>
+          <xsd:documentation>held collateral</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:choice>
+  </xsd:complexType>
+  <xsd:complexType name="MarginRequirement">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Represents the required margin obligations in a collateralized financial agreement.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:choice>
+      <xsd:sequence>
+        <xsd:element name="variationMargin" type="VariationRequirement">
+          <xsd:annotation>
+            <xsd:documentation>variation margin requirement</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="segregatedIndependentAmount" type="VariationRequirement" minOccurs="0">
+          <xsd:annotation>
+            <xsd:documentation fpml-annotation:aiGenerated="true">An additional margin requirement, independent of daily market fluctuations, typically required to cover potential future exposure.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+      </xsd:sequence>
+      <xsd:element name="segregatedIndependentAmount" type="VariationRequirement">
+        <xsd:annotation>
+          <xsd:documentation>segregated independent amount requirement</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:choice>
+  </xsd:complexType>
+  <xsd:complexType name="MarginRequirementDeliver">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">The details of a margin requirement delivery in a collateralized financial agreement. It specifies the party delivering the margin, the receiving party, the currency of the margin, and the required amount. This information is critical in collateral management to ensure compliance with margin obligations.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:group ref="DeliverReturn.model" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="MarginRequirementReturn">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">The details of a margin return in a collateralized financial agreement. It specifies the party returning the margin, the receiving party, the currency of the returned margin, and the amount being returned. This structure ensures proper tracking and documentation of margin repayments between counterparties.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:group ref="DeliverReturn.model" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="MarginTerm">
+    <xsd:annotation>
+      <xsd:documentation>Margin Terms can be defined as they apply to Variation Margin and/or Segregated Independent Amount. For Variation Margin Terms a threshold, minimumTransferAmount and transferRounding are defined. For Segregated Independent Amount it is only necessary to provide a minimumTransferAmount and transferRounding.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="currency" type="Currency" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Specifies the currency in which margin obligations are denominated. This ensures that all margin-related calculations, transfers, and agreements are consistently referenced in a single monetary unit, reducing ambiguity in collateral agreements.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:choice minOccurs="0">
+        <xsd:sequence>
+          <xsd:element name="variationMargin" type="VariationMarginTerm">
+            <xsd:annotation>
+              <xsd:documentation>variation margin terms</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="segregatedIndependentAmount" type="SegregatedIndependentAmountMarginTerm" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation fpml-annotation:aiGenerated="true">Represents the independent collateral amount that must be posted separately from variation margin. It ensures compliance with regulatory and contractual requirements by defining terms specific to independent margin obligations.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+        <xsd:element name="segregatedIndependentAmount" type="SegregatedIndependentAmountMarginTerm">
+          <xsd:annotation>
+            <xsd:documentation>segregated independent amount terms</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+      </xsd:choice>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="MarkToMarket">
+    <xsd:annotation>
+      <xsd:documentation>The net market value of the portfolio in base currency</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="exposure" type="Exposure" minOccurs="0" maxOccurs="2">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Represents the financial exposure of a party due to mark-to-market valuation. It quantifies the risk associated with the change in market value of a contract or portfolio and ensures proper assessment for collateral and margining purposes.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="convention" type="MarkToMarketConventionEnum" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation>Specifies whether the exposure should be treated on a net or gross basis.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="NetTreatment">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">The netting treatment applied to payments, particularly in the context of margin or collateral management. It defines how interest payments are handled under netting agreements.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="paymentDetails" type="InterestPaymentDetails" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Represents details about the interest payments associated with netted amounts.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="PendingCollateral">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Represents collateral that has been agreed upon but is pending in terms of its transfer or final settlement. It contains details about the parties involved, the amount of money, and any other associated financial information.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:group ref="GiverTaker.model" />
+      <xsd:element name="paymentAmount" type="Money" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">The amount of money associated with the pending collateral.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="PrincipalMovement">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Represents a movement of principal in financial transactions.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:group ref="PaymentDetails.model" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="ProposedCollateral">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Represents proposed collateral arrangements in a financial transaction. It captures whether collateral is being delivered or returned, or both, and includes details about the proposed delivery/return of collateral.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:choice>
+      <xsd:sequence>
+        <xsd:element name="deliver" type="ProposedCollateralDeliveryReturn">
+          <xsd:annotation>
+            <xsd:documentation>proposed collateral to be delivered</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="return" type="ProposedCollateralDeliveryReturn" minOccurs="0">
+          <xsd:annotation>
+            <xsd:documentation fpml-annotation:aiGenerated="true">A proposed return of collateral. It contains details regarding the collateral being returned, including the parties involved and the type of collateral.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+      </xsd:sequence>
+      <xsd:element name="return" type="ProposedCollateralDeliveryReturn">
+        <xsd:annotation>
+          <xsd:documentation>proposed collateral to be returned</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:choice>
+  </xsd:complexType>
+  <xsd:complexType name="ProposedCollateralDeliveryReturn">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Specifies details about proposed collateral transfers, including the parties involved and the types of collateral being transferred (cash, securities, or letters of credit). It allows multiple types of collateral within a single transaction.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="deliveringPartyReference" type="PartyReference" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Identifies the party delivering the collateral. It refers to a specific entity involved in the collateral transaction.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="receivingPartyReference" type="PartyReference" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Identifies the party receiving the collateral. It refers to the counterparty in the collateral transaction.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element name="cash" type="CashDeliveryReturn">
+          <xsd:annotation>
+            <xsd:documentation fpml-annotation:aiGenerated="true">Represents a cash transfer used as collateral, specifying details such as nominal amount, market value, and collateral valuation adjustments.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="security" type="SecurityDeliveryReturn">
+          <xsd:annotation>
+            <xsd:documentation fpml-annotation:aiGenerated="true">Specifies the delivery of securities as collateral, including references to the underlying asset, valuation dates, and pricing structures based on either nominal amount or unit-based valuation.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="letterOfCredit" type="LetterOfCreditCollateral">
+          <xsd:annotation>
+            <xsd:documentation fpml-annotation:aiGenerated="true">Specifies the use of a letter of credit as collateral, including references to the underlying credit instrument, valuation details, and any applicable haircut adjustments.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+      </xsd:choice>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="ProposedCollateralResponse">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Captures a party's response to a proposed collateral return, indicating whether the proposal is approved, the reasons for any rejection, and the expected collateral to be delivered.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="proposalApproved" type="xsd:boolean" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">A boolean value indicating whether the proposed collateral return is accepted.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="collateralResponseReason" type="CollateralResponseReason" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">A structured reason explaining why the proposed collateral return was rejected. It consists of either a predefined reason code with an optional description, or a free-text description.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="expectedCollateral" type="ExpectedCollateralDeliveryReturn" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Specifies the collateral expected to be delivered instead of the originally proposed collateral.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+<!-- MC3c Propose Collateral Message Definition -->
+  <xsd:complexType name="RequestCollateralAcceptance">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A message sent by the margin call issuer to the margin call receiver, requesting acceptance of the proposed collateral. This request includes details about the parties involved, the agreed collateral amount, the proposed collateral assets, and relevant accounts.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="ResponseMessage">
+        <xsd:sequence>
+          <xsd:element name="marginCallIssuerPartyReference" type="PartyReference">
+            <xsd:annotation>
+              <xsd:documentation>The party issuing the margin call.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="marginCallReceiverPartyReference" type="PartyReference">
+            <xsd:annotation>
+              <xsd:documentation>The party receiving the margin call.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="agreedAmount" type="AgreedAmount" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The agreedAmount block allows the responder to detail the undisputed amount for any Variation Margin requirement and/or Segregated Independent Amount requirement they may have received in the corresponding requestMargin message.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:group ref="ProposedCollateral.model" />
+          <xsd:element name="assets" type="Assets">
+            <xsd:annotation>
+              <xsd:documentation>The list of assets to be moved.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:group ref="PartiesAndAccounts.model" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+<!-- INTEREST PROCESS -->
+<!-- IN1 Interest Notification Message Definition -->
+  <xsd:complexType name="RequestInterest">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A formal request message sent by one party to another to calculate, confirm, or reconcile interest payments related to collateralized transactions. This message includes details about the parties involved, the applicable credit support agreement, the interest requirement, and any additional comments.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="CorrectableRequestMessage">
+        <xsd:sequence>
+          <xsd:element name="issuerPartyReference" type="PartyReference" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The party issuing the interest notification.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="receiverPartyReference" type="PartyReference" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The party receiving the interest notification.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="creditSupportAgreement" type="CreditSupportAgreement" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The agreement executed between the parties and intended to govern collateral arrangement for all OTC derivatives transactions between those parties.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="interestRequirement" type="InterestRequirement" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation fpml-annotation:aiGenerated="true">Specifies the interest to be accrued or settled based on collateral balances.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="comment" type="String" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation fpml-annotation:aiGenerated="true">Additional remarks or clarifications regarding the interest request.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:group ref="PartiesAndAccounts.model" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+<!-- Rescind Interest Notification Message Definition -->
+  <xsd:complexType name="RequestInterestRetracted">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A message sent by the issuing party to formally retract a previously submitted RequestInterest message. This retraction may be due to errors, changes in collateral positions, or any other business reasons affecting the interest calculation process.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="NonCorrectableRequestMessage">
+        <xsd:sequence minOccurs="0">
+          <xsd:element name="issuerPartyReference" type="PartyReference" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The party issuing the interest notification.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="receiverPartyReference" type="PartyReference" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The party receiving the interest notification.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:group ref="PartiesAndAccounts.model" minOccurs="0" />
+          <xsd:element name="collateralRetractionReason" type="CollateralRetractionReason" minOccurs="0" maxOccurs="unbounded">
+            <xsd:annotation>
+              <xsd:documentation>Defines a list of collateral retraction reason codes.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+<!-- MARGIN CALL PROCESS -->
+<!-- MC1 Margin Call Message Definition -->
+  <xsd:complexType name="RequestMargin">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A structured message used to request a margin call, specifying the required collateral adjustments based on valuation changes. This request is typically sent by the margin call issuer to the margin call receiver, detailing the collateral requirement, valuation data, and expected collateral transfers.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="CorrectableRequestMessage">
+        <xsd:sequence>
+          <xsd:element name="marginCallIssuerPartyReference" type="PartyReference" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The party issuing the margin call.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="marginCallReceiverPartyReference" type="PartyReference" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The party receiving the margin call.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="creditSupportAgreement" type="CreditSupportAgreement" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The agreement executed between the parties and intended to govern collateral arrangement for all OTC derivatives transactions between those parties.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="valuationDate" type="xsd:date" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>Close of business date the local counterparty is valuing and issuing the margin call.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="baseCurrency" type="Currency" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>Denomination currency as specified in the margin agreement.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:group ref="MarginDetails.model" />
+          <xsd:element name="marginRequirement" type="MarginRequirement" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation fpml-annotation:aiGenerated="true">Specifies the required collateral adjustment to maintain margin obligations. It includes variation margin (to cover market fluctuations) and segregated independent amounts (to manage counterparty risk).</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="marginCallResult" type="MarginCallResult" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation fpml-annotation:aiGenerated="true">Represents the outcome of a margin call request, detailing the variation margin adjustments and any changes in the independent amount.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="expectedCollateral" type="ExpectedCollateral" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>Structure that allows for the definition of collateral that the party making the margin call would prefer to receive or have returned.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="assets" type="Assets" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The list of assets to be moved.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:group ref="PartiesAndAccounts.model" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+<!-- MARGIN CALL PROCESS -->
+<!-- MC2 Rescind Margin Call Message Definition -->
+  <xsd:complexType name="RequestMarginRetracted">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A message indicating the withdrawal of a previously issued margin request. This occurs when the margin request is no longer applicable due to updated valuations, error corrections, or other factors.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="NonCorrectableRequestMessage">
+        <xsd:sequence minOccurs="0">
+          <xsd:element name="marginCallIssuerPartyReference" type="PartyReference" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The party issuing the margin call.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="marginCallReceiverPartyReference" type="PartyReference" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The party receiving the margin call.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:group ref="PartiesAndAccounts.model" minOccurs="0" />
+          <xsd:element name="collateralRetractionReason" type="CollateralRetractionReason" minOccurs="0" maxOccurs="unbounded">
+            <xsd:annotation>
+              <xsd:documentation>Defines a list of collateral retraction reason codes.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+<!-- SUBSTITUTION PROCESS -->
+<!-- CS1 Request Substitution Message Definition -->
+  <xsd:complexType name="RequestSubstitution">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A message to represent a formal request to substitute collateral in a collateralized agreement. This type of request is commonly used in margin and collateral management to replace existing collateral with alternative assets while maintaining the required credit support.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="CorrectableRequestMessage">
+        <xsd:sequence>
+          <xsd:element name="substitutionIssuerPartyReference" type="PartyReference" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The party issuing the substitution request.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="substitutionReceiverPartyReference" type="PartyReference" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The party receiving the substitution request.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="creditSupportAgreement" type="CreditSupportAgreement" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The agreement executed between the parties and intended to govern collateral arrangement for all OTC derivatives transactions between those parties.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:group ref="SubstitutionDetails.model" />
+          <xsd:element name="assets" type="Assets" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The list of assets being moved.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:group ref="PartiesAndAccounts.model" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+<!-- Rescind Request Substitution Message Definition -->
+  <xsd:complexType name="RequestSubstitutionRetracted">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A formal notification that a previously issued collateral substitution request has been withdrawn. This type ensures that all parties involved are informed that the request is no longer valid, preventing unnecessary processing or execution.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="NonCorrectableRequestMessage">
+        <xsd:sequence minOccurs="0">
+          <xsd:element name="substitutionIssuerPartyReference" type="PartyReference" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The party issuing the substitution request.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="substitutionReceiverPartyReference" type="PartyReference" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The party receiving the substitution request.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:group ref="PartiesAndAccounts.model" minOccurs="0" />
+          <xsd:element name="collateralRetractionReason" type="CollateralRetractionReason" minOccurs="0" maxOccurs="unbounded">
+            <xsd:annotation>
+              <xsd:documentation>Defines a list of collateral retraction reason codes.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="SecurityDeliveryReturn">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">The return of a previously delivered security in a collateral agreement. It captures key details such as the asset being returned, its valuation, and relevant financial terms.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="assetReference" type="AssetReference" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Identifies the security being returned using a reference to its original asset definition.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="valueDate" type="xsd:date" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Specifies the date on which the security is returned to the original party.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:choice minOccurs="0">
+        <xsd:group ref="NominalAmount.model" />
+        <xsd:sequence>
+          <xsd:element name="numberOfUnits" type="NonNegativeDecimal" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The number of units (index or securities).</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="unitPrice" type="NonNegativeDecimal" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The price of each unit.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:choice>
+      <xsd:element name="marketValue" type="NonNegativeDecimal" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Represents the total market value of the returned security.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="haircut" type="xsd:decimal" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Specifies the percentage reduction (haircut) applied to the security’s value for collateral purposes.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="collateralValue" type="NonNegativeDecimal" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Represents the adjusted collateral value of the returned security after applying the haircut.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="SecurityType">
+    <xsd:annotation>
+      <xsd:documentation>Specifies security as type of expected collateral.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="description" type="String" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">A free-text description of the security, which may include details like its type, features, or classification.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="SegregatedIndependentAmountMarginTerm">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Defines the transfer conditions applicable to segregated independent amounts (SIA) in collateral agreements. It specifies the minimum transfer amount and rounding rules that govern how independent margin transfers are executed.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:group ref="TransferDetails.model" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="SingleDirectionInterestRequirement">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Defines the interest accrual conditions for a collateral balance owed in one direction between parties in a margin agreement. It specifies how interest is treated and how it accrues when only one party holds a net collateral position.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="singleTreatment" type="SingleTreatment" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Specifies the method of treatment for single-direction interest payments, defining whether interest applies and under what conditions.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="interestAccrued" type="InterestAccrued" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Represents the amount of interest accrued over time based on the applicable interest rate and outstanding collateral balance.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="SingleDirectionInterestStatementRequirement">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Defines the requirement for an interest statement when one party is entitled to interest on the collateral they provided. This structure is used to ensure that the interest accrued is properly calculated and reported for the relevant party in the transaction.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="interestAccrued" type="InterestAccrued" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Specifies how much interest has been accrued over a period, including rate, time period, and amount.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="SingleTreatment">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Describes the conditions or details related to a single payment treatment (e.g., interest payment).</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="paymentDetails" type="InterestPaymentDetails" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Provides additional information on how the payment (interest or another type of payment) should be made.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="SubstituteCollateral">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Represents the substitution of collateral in a financial agreement. It outlines the details of returning and delivering substitute assets, as well as the amount involved in the substitution.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:choice minOccurs="0">
+        <xsd:sequence>
+          <xsd:element name="return" type="ProposedCollateralDeliveryReturn">
+            <xsd:annotation>
+              <xsd:documentation>return details for substitute collateral</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="deliver" type="ProposedCollateralDeliveryReturn" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation fpml-annotation:aiGenerated="true">Specifies the new collateral being delivered.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+        <xsd:element name="deliver" type="ProposedCollateralDeliveryReturn">
+          <xsd:annotation>
+            <xsd:documentation>return details for substitute collateral</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+      </xsd:choice>
+      <xsd:element name="substitutionAmount" type="xsd:decimal" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Specifies the total value of the collateral being substituted.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="SubstitutionConfirmation">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Represents the confirmation of a collateral substitution in a financial agreement. It indicates whether the substitution process has been completed and provides additional descriptive details.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="released" type="xsd:boolean" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Specifies whether the previously posted collateral has been released as part of the substitution.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="description" type="String" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Provides additional information or comments regarding the substitution process.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="SubstituteReturnConfirmationStatus">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A response message that confirms the status of a collateral substitution or return request. It incorporates details about the parties involved, the associated credit support agreement, and specific confirmation details.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="ResponseMessage">
+        <xsd:sequence>
+          <xsd:element name="substitutionIssuerPartyReference" type="PartyReference" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The party issuing the substitution request.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="substitutionReceiverPartyReference" type="PartyReference" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The party receiving the substitution request.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="creditSupportAgreement" type="CreditSupportAgreement" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The agreement executed between the parties and intended to govern collateral arrangement for all OTC derivatives transactions between those parties.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:group ref="SubstitutionConfirmationDetails.model" />
+          <xsd:element name="assets" type="Assets" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The list of assets being moved.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:group ref="PartiesAndAccounts.model" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+<!-- CS2 Agree Collateral Substitution / CS5 Reject Collateral Substitution Message Definition -->
+  <xsd:complexType name="SubstitutionStatus">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A response message that provides the status of a collateral substitution request. It includes information about the involved parties, governing agreements, and specific details of the substitution process.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="ResponseMessage">
+        <xsd:sequence>
+          <xsd:element name="substitutionIssuerPartyReference" type="PartyReference" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The party issuing the substitution request.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="substitutionReceiverPartyReference" type="PartyReference" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The party receiving the substitution request.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="creditSupportAgreement" type="CreditSupportAgreement" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The agreement executed between the parties and intended to govern collateral arrangement for all OTC derivatives transactions between those parties.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:group ref="SubstitutionResponse.model" />
+          <xsd:element name="assets" type="Assets" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The list of assets being moved.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:group ref="PartiesAndAccounts.model" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+<!-- Rescind Response to Request Substitution Message Definition -->
+  <xsd:complexType name="SubstitutionStatusRetracted">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A request message indicating the retraction of a previously submitted collateral substitution request. It includes information about the involved parties, accounts, and the reason for the retraction.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="NonCorrectableRequestMessage">
+        <xsd:sequence minOccurs="0">
+          <xsd:element name="substitutionIssuerPartyReference" type="PartyReference" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The party issuing the substitution request.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="substitutionReceiverPartyReference" type="PartyReference" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>The party receiving the substitution request.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:group ref="PartiesAndAccounts.model" minOccurs="0" />
+          <xsd:element name="collateralRetractionReason" type="CollateralRetractionReason" minOccurs="0" maxOccurs="unbounded">
+            <xsd:annotation>
+              <xsd:documentation>Defines a list of collateral retraction reason codes.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+<!-- CS3 Confirm Substitution Message Definition / CS4 Confirm Collateral Returned Message Definition -->
+  <xsd:complexType name="SubstitutionResponse">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Represents the outcome of a collateral substitution request, indicating whether the request has been approved or rejected, along with the reason for the decision.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="substitutionApproved" type="xsd:boolean" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Indicates whether the requested collateral substitution has been approved or rejected.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="substitutionResponseReason" type="SubstitutionResponseReason" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Specifies one or more reasons explaining the decision regarding the collateral substitution request.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="SubstitutionResponseReason">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A structured explanation for the approval or rejection of a collateral substitution request.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:choice>
+      <xsd:sequence>
+        <xsd:element name="reasonCode" type="SubstitutionResponseReasonCode">
+          <xsd:annotation>
+            <xsd:documentation>standard reason codes used for the substitution response message</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="description" type="String" minOccurs="0">
+          <xsd:annotation>
+            <xsd:documentation fpml-annotation:aiGenerated="true">A human-readable explanation detailing the reason for approval or rejection.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+      </xsd:sequence>
+      <xsd:element name="description" type="String">
+        <xsd:annotation>
+          <xsd:documentation>free form description of the reason</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:choice>
+  </xsd:complexType>
+  <xsd:complexType name="SubstitutionResponseReasonCode">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A standardized reason code used to explain the approval or rejection of a collateral substitution request.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:simpleContent>
+      <xsd:extension base="Scheme">
+        <xsd:attribute name="collateralSubstitutionResponseReasonScheme" type="NonEmptyURI" default="http://www.fpml.org/coding-scheme/collateral-substitution-response-reason" />
+      </xsd:extension>
+    </xsd:simpleContent>
+  </xsd:complexType>
+  <xsd:complexType name="Threshold">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Represents the minimum collateral amount that must be exceeded before a party is required to transfer collateral under a collateral agreement.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="amount" type="NonNegativeDecimal" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Specifies the numerical threshold value.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="type" type="ThresholdTypeEnum" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Indicates whether the threshold applies to secured or unsecured obligations.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="TransferRounding">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Specifies how collateral transfer amounts should be rounded, ensuring consistency in financial calculations and operational processes.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="direction" type="RoundingDirectionEnum" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Defines the rounding method to apply.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="amount" type="NonNegativeDecimal" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Specifies the increment to which the transfer amount should be rounded.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="VariationMarginTerm">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">The collateral terms related to variation margin in a financial agreement. Variation margin refers to the periodic adjustment of collateral to reflect changes in the market value of underlying positions.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="threshold" type="Threshold" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Specifies the minimum amount of exposure before a margin call is triggered.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:group ref="TransferDetails.model" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="VariationRequirement">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Defines the collateral transfer requirements related to variation margin in a financial agreement. It specifies whether collateral needs to be delivered or returned to maintain the required margin level.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:choice>
+      <xsd:sequence>
+        <xsd:element name="deliver" type="MarginRequirementDeliver">
+          <xsd:annotation>
+            <xsd:documentation>variation margin to be delivered</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="return" type="MarginRequirementReturn" minOccurs="0">
+          <xsd:annotation>
+            <xsd:documentation fpml-annotation:aiGenerated="true">Specifies the amount and details of collateral that must be returned when variation margin requirements decrease.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+      </xsd:sequence>
+      <xsd:element name="return" type="MarginRequirementReturn">
+        <xsd:annotation>
+          <xsd:documentation>variation margin to be returned</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:choice>
+  </xsd:complexType>
+  <xsd:complexType name="VariationResult">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Represents the outcome of a margin call related to variation margin in a financial agreement. It encapsulates key details such as the parties involved and the amount of collateral required to meet margin obligations.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:group ref="MarginCallResult.model" />
+  </xsd:complexType>
+  <xsd:complexType name="WithholdingTaxTerms">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">The withholding tax conditions applicable to a financial agreement. It defines the jurisdiction imposing the tax and the applicable tax rate.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="jurisdiction" type="CountryCode" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">The country or jurisdiction where the withholding tax applies.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="rate" type="PositiveDecimal" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">The withholding tax rate as a positive decimal value.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+<!-- Model Groups -->
+  <xsd:group name="DeliverReturn.model">
+    <xsd:sequence>
+      <xsd:element name="deliveringPartyReference" type="PartyReference" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Identifies the party responsible for delivering the collateral or margin.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="receivingPartyReference" type="PartyReference" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Identifies the counterparty receiving the delivered collateral or margin.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="currency" type="Currency" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">The currency in which the collateral or margin is denominated.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="amount" type="NonNegativeDecimal" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">The quantity of collateral or margin being transferred.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:group>
+  <xsd:group name="DisputedDetails.model">
+    <xsd:choice>
+      <xsd:sequence>
+        <xsd:element name="variationMargin" type="DisputedCollateral">
+          <xsd:annotation>
+            <xsd:documentation>variation margin details</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="segregatedIndependentAmount" type="DisputedCollateral" minOccurs="0">
+          <xsd:annotation>
+            <xsd:documentation fpml-annotation:aiGenerated="true">The portion of independent collateral that is segregated and currently in dispute between counterparties.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+      </xsd:sequence>
+      <xsd:element name="segregatedIndependentAmount" type="DisputedCollateral">
+        <xsd:annotation>
+          <xsd:documentation>segregated independent amount details</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:choice>
+  </xsd:group>
+  <xsd:group name="GiverTaker.model">
+    <xsd:sequence>
+      <xsd:element name="giverPartyReference" type="PartyReference" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Identifies the party that provides the collateral, margin, or other financial asset.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="takerPartyReference" type="PartyReference" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Identifies the party that receives the collateral, margin, or financial asset.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:group>
+  <xsd:group name="InterestResponseDetails.model">
+    <xsd:choice>
+      <xsd:sequence>
+        <xsd:element name="variationMargin" type="InterestResponse">
+          <xsd:annotation>
+            <xsd:documentation>variation margin details for the interest reponse</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="segregatedIndependentAmount" type="InterestResponse" minOccurs="0">
+          <xsd:annotation>
+            <xsd:documentation fpml-annotation:aiGenerated="true">The interest associated with segregated independent amounts (SIA), which are collateral funds held separately from variation margin.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+      </xsd:sequence>
+      <xsd:element name="segregatedIndependentAmount" type="InterestResponse">
+        <xsd:annotation>
+          <xsd:documentation>segregated independent amount details for the interest reponse</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:choice>
+  </xsd:group>
+  <xsd:group name="MarginCallResult.model">
+    <xsd:sequence>
+      <xsd:group ref="GiverTaker.model" />
+      <xsd:element name="marginCallAmount" type="Money" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Specifies the total amount of collateral required or returned as part of the margin call process.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:group>
+  <xsd:group name="MarginDetails.model">
+    <xsd:sequence>
+      <xsd:element name="markToMarket" type="MarkToMarket" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Represents the mark-to-market (MTM) value of a portfolio, measuring unrealized gains or losses due to market fluctuations.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="independentAmount" type="AggregatedIndependentAmount" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Represents additional collateral requirements beyond variation margin, often used to mitigate counterparty risk.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="marginTerm" type="MarginTerm" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Defines the margin terms for a collateralized agreement, including currency, variation margin, and independent amounts.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="collateral" type="CollateralBalance" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Represents the current balance of collateral held, including variation margin and segregated independent amounts.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:group>
+  <xsd:group name="MarkToMarketExposureParty.model">
+    <xsd:annotation>
+      <xsd:documentation>Specifies which party is the exposed party and which is the obligated party.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="exposedPartyReference" type="PartyReference" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation>The party that is exposed.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="obligatedPartyReference" type="PartyReference" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation>The party that is obligated..</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:group>
+  <xsd:group name="NominalAmount.model">
+    <xsd:sequence>
+      <xsd:element name="nominalAmount" type="NonNegativeDecimal" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation>nominal amount of the collateral to be moved.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="dirtyPrice" type="NonNegativeDecimal" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation>Bond dirty price, expressed in percentage points, 100 is the initial value of the bond.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:group>
+  <xsd:group name="ProposedCollateral.model">
+    <xsd:choice>
+      <xsd:sequence>
+        <xsd:element name="variationMargin" type="ProposedCollateral">
+          <xsd:annotation>
+            <xsd:documentation>variation margin details for proposed collateral</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="segregatedIndependentAmount" type="ProposedCollateral" minOccurs="0">
+          <xsd:annotation>
+            <xsd:documentation fpml-annotation:aiGenerated="true">Specifies the amount of segregated independent collateral proposed for the agreement. This collateral is typically held separately from other collateral to provide an extra layer of protection and ensure that it is readily available for margin calls or other financial obligations.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+      </xsd:sequence>
+      <xsd:element name="segregatedIndependentAmount" type="ProposedCollateral">
+        <xsd:annotation>
+          <xsd:documentation>segregated independent amount details for proposed collateral</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:choice>
+  </xsd:group>
+  <xsd:group name="ProposedCollateralResponse.model">
+    <xsd:choice>
+      <xsd:sequence>
+        <xsd:element name="variationMargin" type="ProposedCollateralResponse">
+          <xsd:annotation>
+            <xsd:documentation>variation margin details for proposed collateral response</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="segregatedIndependentAmount" type="ProposedCollateralResponse" minOccurs="0">
+          <xsd:annotation>
+            <xsd:documentation fpml-annotation:aiGenerated="true">Specifies the amount of segregated independent collateral being responded to, typically as part of a collateral management process. This collateral is held in a segregated account for additional security, similar to the ProposedCollateral.model group, but this time in the context of a response.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+      </xsd:sequence>
+      <xsd:element name="segregatedIndependentAmount" type="ProposedCollateralResponse">
+        <xsd:annotation>
+          <xsd:documentation>segregated independent amount details for proposed collateral response</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:choice>
+  </xsd:group>
+  <xsd:group name="SubstitutionConfirmationDetails.model">
+    <xsd:choice>
+      <xsd:sequence>
+        <xsd:element name="variationMargin" type="SubstitutionConfirmation">
+          <xsd:annotation>
+            <xsd:documentation>variation margin details for substitute collateral</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="segregatedIndependentAmount" type="SubstitutionConfirmation" minOccurs="0">
+          <xsd:annotation>
+            <xsd:documentation fpml-annotation:aiGenerated="true">The amount of segregated independent collateral that has been confirmed as part of a collateral substitution process. It specifies the final agreed amount of segregated independent collateral that has been successfully substituted and is now held separately.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+      </xsd:sequence>
+      <xsd:element name="segregatedIndependentAmount" type="SubstitutionConfirmation">
+        <xsd:annotation>
+          <xsd:documentation>segregated independent amount details for substitute collateral</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:choice>
+  </xsd:group>
+  <xsd:group name="SubstitutionDetails.model">
+    <xsd:choice>
+      <xsd:sequence>
+        <xsd:element name="variationMargin" type="SubstituteCollateral">
+          <xsd:annotation>
+            <xsd:documentation>variation margin details for substitute collateral</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="segregatedIndependentAmount" type="SubstituteCollateral" minOccurs="0">
+          <xsd:annotation>
+            <xsd:documentation fpml-annotation:aiGenerated="true">The proposed segregated independent collateral amount that is being substituted. It defines the portion of collateral that is designated for substitution as part of a collateral agreement.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+      </xsd:sequence>
+      <xsd:element name="segregatedIndependentAmount" type="SubstituteCollateral">
+        <xsd:annotation>
+          <xsd:documentation>segregated independent amount details for substitute collateral</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:choice>
+  </xsd:group>
+  <xsd:group name="SubstitutionResponse.model">
+    <xsd:choice>
+      <xsd:sequence>
+        <xsd:element name="variationMargin" type="SubstitutionResponse">
+          <xsd:annotation>
+            <xsd:documentation>variation margin details for substitute collateral</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="segregatedIndependentAmount" type="SubstitutionResponse" minOccurs="0">
+          <xsd:annotation>
+            <xsd:documentation fpml-annotation:aiGenerated="true">The response to a proposed segregated independent collateral substitution. It specifies the approved, rejected, or modified segregated collateral amount in reaction to a substitution request.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+      </xsd:sequence>
+      <xsd:element name="segregatedIndependentAmount" type="SubstitutionResponse">
+        <xsd:annotation>
+          <xsd:documentation>segregated independent amount details for substitute collateral</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:choice>
+  </xsd:group>
+  <xsd:group name="TransferDetails.model">
+    <xsd:sequence>
+      <xsd:element name="minimumTransferAmount" type="xsd:decimal" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">The lowest threshold amount that must be reached before a collateral transfer occurs. If the calculated collateral requirement is below this amount, no transfer takes place.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="transferRounding" type="TransferRounding" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Specifies the rules for rounding collateral transfer amounts. It defines whether rounding should be applied up, down, or to the nearest value, along with the rounding increment.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:group>
+<!-- COLLATERAL MESSAGES                                                -->
+<!--  Margin Call Process -->
+  <xsd:element name="requestMargin" type="RequestMargin">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A formal request for a margin call, initiated by one party to another, specifying the margin requirements based on a credit support agreement.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+<!-- MC1 -->
+  <xsd:element name="requestMarginRetracted" type="RequestMarginRetracted">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">The retraction of a previously issued margin request, canceling the obligation for a margin transfer.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+<!-- MC2 -->
+  <xsd:element name="marginAcknowledgement" type="Acknowledgement">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Confirms receipt of a margin-related message, acknowledging that it has been processed by the receiving party.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="marginException" type="Exception">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Reports an exception or error in a margin-related process, highlighting discrepancies or issues that require resolution.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="marginCallStatus" type="MarginCallStatus">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Provides a status update on a margin call, detailing whether it has been agreed upon, disputed, or modified.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+<!-- MC3b/5/6 -->
+  <xsd:element name="marginCallStatusRetracted" type="MarginCallStatusRetracted">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Represents the retraction of a previously sent margin call status update. It identifies the parties involved in the margin call and provides the reason(s) for retraction of the collateral-related status.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+<!-- MC4 -->
+  <xsd:element name="requestCollateralAcceptance" type="RequestCollateralAcceptance">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A message sent by the margin call issuer to the receiver to propose the acceptance of specific collateral. It specifies the agreed amount, proposed assets, and relevant party references.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+<!-- MC3c -->
+  <xsd:element name="collateralAcceptanceAcknowledgement" type="Acknowledgement">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A response message confirming receipt of a collateral acceptance request. It references the original message and identifies the involved parties.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="collateralAcceptanceException" type="Exception">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Notifies of an issue or exception related to a collateral acceptance process. It includes validation details, correlation data, and exception-related information.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="collateralProposalStatus" type="CollateralProposalStatus">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Provides the status of a collateral proposal exchanged between the margin call issuer and receiver. It includes proposed collateral details, associated assets, and party references.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+<!-- MC7/MC8 -->
+  <xsd:element name="disputeNotification" type="DisputeNotification">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A notification message that informs parties of a dispute related to a margin call. It includes the valuation date, base currency, disputed details, and involved parties.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+<!-- MC11 -->
+  <xsd:element name="disputeRetracted" type="DisputeRetracted">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A message indicating the retraction of a previously issued dispute regarding margin calls. It specifies the involved parties and includes the reason for retraction.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="disputeAcknowledgement" type="Acknowledgement">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A response confirming receipt of a dispute notification. It references the original message and may include party and account details.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="disputeException" type="Exception">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A message reporting an issue related to a dispute, such as validation errors or processing failures. It includes exception details and optional correlation information.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+<!--  Substitution Process -->
+  <xsd:element name="requestSubstitution" type="RequestSubstitution">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A request to substitute collateral under a credit support agreement. It specifies the issuer, receiver, agreement details, and assets involved.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+<!-- CS1 -->
+  <xsd:element name="requestSubstitutionRetracted" type="RequestSubstitutionRetracted">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A message retracting a previously submitted collateral substitution request. It includes party references and the reason for retraction.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="substitutionStatus" type="SubstitutionStatus">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A response message providing the status of a collateral substitution request. It includes agreement details, assets, and involved parties.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+<!-- CS2/CS5 -->
+  <xsd:element name="substitutionStatusRetracted" type="SubstitutionStatusRetracted">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A message indicating the retraction of a previously issued substitution status update. It includes party references and retraction reasons.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="substituteConfirmationStatus" type="SubstituteReturnConfirmationStatus">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">The confirmation status of a substitute return in a collateral agreement. It includes references to the substitution issuer and receiver, details of the credit support agreement, substitution confirmation details, and relevant asset and account information.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+<!-- CS3 -->
+  <xsd:element name="returnConfirmationStatus" type="SubstituteReturnConfirmationStatus">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">The confirmation status of a return transaction in a collateral agreement. It includes references to the involved parties, the credit support agreement, substitution confirmation details, and relevant asset and account details.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+<!-- CS4 -->
+<!--  Interest Process -->
+  <xsd:element name="requestInterest" type="RequestInterest">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A formal request to receive interest related to a collateral agreement. It specifies the requesting and receiving parties, the credit support agreement, interest requirements, optional comments, and account details.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+<!-- IN1 -->
+  <xsd:element name="requestInterestRetracted" type="RequestInterestRetracted">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">The retraction of a previously submitted interest request. It includes references to the issuing and receiving parties, account details, and reasons for retraction.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="interestStatus" type="InterestStatus">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">The response to an interest-related request, confirming the interest status in the context of a credit support agreement. It contains references to the involved parties, agreement details, interest response details, and account information.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+<!-- IN2 -->
+  <xsd:element name="interestStatusRetracted" type="InterestStatusRetracted">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">The retraction of a previously confirmed interest status. It includes references to the relevant parties, account details, and the reasons for retraction.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="interestStatement" type="InterestStatement">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A notification regarding an interest statement related to a credit support agreement. It includes details about the issuer and receiver, the interest statement requirements, optional comments, and associated account information.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+</xsd:schema>
+
