@@ -76,6 +76,7 @@ jobs:
             fpml-*/obj/LinqToXsdSource.g.cs.inputs.sha256
           key: linqtoxsd-${{ hashFiles('fpml-*/xsd/**', 'dotnet-tools.json', 'build/LinqToXsd.targets') }}
           restore-keys: linqtoxsd-
+          enableCrossOsArchive: true # must match the CI workflow's cache entries
 
       - run: dotnet build FpmlToolKit.slnx -c Release -p:Version=${{ steps.version.outputs.version }}
       - run: dotnet test FpmlToolKit.slnx -c Release --no-build

@@ -31,6 +31,7 @@ jobs:
             fpml-*/obj/LinqToXsdSource.g.cs.inputs.sha256
           key: linqtoxsd-${{ hashFiles('fpml-*/xsd/**', 'dotnet-tools.json', 'build/LinqToXsd.targets') }}
           restore-keys: linqtoxsd-
+          enableCrossOsArchive: true # also restored by the windows job
 
       - run: dotnet build FpmlToolKit.slnx -c Release
 
@@ -42,6 +43,7 @@ jobs:
             fpml-*/obj/LinqToXsdSource.g.cs
             fpml-*/obj/LinqToXsdSource.g.cs.inputs.sha256
           key: linqtoxsd-${{ hashFiles('fpml-*/xsd/**', 'dotnet-tools.json', 'build/LinqToXsd.targets') }}
+          enableCrossOsArchive: true
 
       - run: dotnet test FpmlToolKit.slnx -c Release --no-build
       - run: dotnet pack FpmlToolKit.slnx -c Release --no-build -o artifacts
@@ -49,3 +51,32 @@ jobs:
         with:
           name: packages
           path: artifacts/*.nupkg
+
+  # The packages' netstandard2.0 assemblies, tested on .NET Framework 4.8. Runs after the build job so it can restore
+  # the generated code that job cached instead of regenerating all of it on Windows.
+  windows:
+    needs: build
+    runs-on: windows-latest
+    steps:
+      # Keep LF line endings: the generated-code cache is keyed on the schema file contents, so CRLF checkouts would
+      # miss it and regenerate every project.
+      - run: git config --global core.autocrlf false
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - run: dotnet tool restore
+
+      - name: Restore generated code
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            fpml-*/obj/LinqToXsdSource.g.cs
+            fpml-*/obj/LinqToXsdSource.g.cs.inputs.sha256
+          key: linqtoxsd-${{ hashFiles('fpml-*/xsd/**', 'dotnet-tools.json', 'build/LinqToXsd.targets') }}
+          restore-keys: linqtoxsd-
+          enableCrossOsArchive: true
+
+      # -f net48 builds the referenced schema projects for netstandard2.0 only.
+      - run: dotnet build tests/FpmlToolKit.Tests/FpmlToolKit.Tests.csproj -c Release -f net48
+      - run: dotnet test tests/FpmlToolKit.Tests/FpmlToolKit.Tests.csproj -c Release -f net48 --no-build
