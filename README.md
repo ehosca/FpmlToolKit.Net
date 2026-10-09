@@ -127,12 +127,16 @@ workflow artifact, with no GitHub release and no NuGet.org push.
 
 Publishing the same packages to NuGet.org is off until it is switched on:
 
-1. On nuget.org, create an API key with the **Push new packages and package versions** scope, limited to the glob
-   pattern `FpmlToolKit.*`, and add it as the repository secret `NUGET_API_KEY` (Settings > Secrets and variables >
-   Actions).
-2. Optionally, add a required reviewer to the `nuget` environment (Settings > Environments), so each push waits for
-   approval after the GitHub release is created.
-3. Set the repository variable `NUGET_PUBLISH` to `true`.
+1. On nuget.org, under **Trusted Publishing**, create a policy for GitHub Actions: repository owner `ehosca`,
+   repository `FpmlToolKit.Net`, workflow file `release.yml`, environment `nuget`, scope **Push new packages and package
+   versions**, glob pattern `FpmlToolKit.*`. The workflow then gets a short-lived API key for each run; no key is
+   stored in GitHub.
+2. Create the `nuget` environment (Settings > Environments) and add the environment variable `NUGET_USER`: the
+   nuget.org profile name that owns the policy. Optionally, add a required reviewer, so each push waits for approval
+   after the GitHub release is created.
+3. Set the repository variable `NUGET_PUBLISH` to `true` (Settings > Secrets and variables > Actions > Variables). It
+   has to be a repository variable: the `nuget` job checks it before the job enters the environment, when
+   environment variables are not yet available.
 
 The next version tag then also runs the `nuget` job. It uses `--skip-duplicate`, so re-running it after a partial push
 is safe; NuGet.org versions cannot be deleted, only unlisted.

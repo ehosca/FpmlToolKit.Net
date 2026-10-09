@@ -3,9 +3,10 @@ name: Release
 # Pushing a version tag (v2.0.0-beta.2, v2.0.0, ...) builds, tests and packs every FpML version package and attaches
 # the .nupkg files to a GitHub release for that tag. Versions with a suffix (-beta.2) are marked as prereleases.
 #
-# Publishing to NuGet.org (the "nuget" job) is off until the repository variable NUGET_PUBLISH is "true" and the
-# secret NUGET_API_KEY exists. It then pushes the same packages, after approval if the "nuget" environment requires a
-# reviewer. See "Releasing" in README.md.
+# Publishing to NuGet.org (the "nuget" job) is off until the repository variable NUGET_PUBLISH is "true". It then
+# pushes the same packages, after approval if the "nuget" environment requires a reviewer. It uses NuGet Trusted
+# Publishing: a nuget.org policy trusts this workflow file and the "nuget" environment, so no API key is stored here.
+# See "Releasing" in README.md.
 #
 # Run it manually ("Run workflow") for a dry run: same build, test and pack, but the packages are only kept as a
 # workflow artifact: no GitHub release and no NuGet.org push.
@@ -126,7 +127,8 @@ jobs:
     runs-on: ubuntu-latest
     # Add a required reviewer to this environment (Settings > Environments) to approve each push.
     environment: nuget
-    permissions: {}
+    permissions:
+      id-token: write # the GitHub OIDC token that NuGet/login exchanges for a short-lived API key
     steps:
       - uses: actions/download-artifact@v7
         with:
@@ -135,13 +137,14 @@ jobs:
       - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: 10.0.x
+      # Trusted Publishing: needs a nuget.org policy for this repository, release.yml and the "nuget" environment.
+      - name: Log in to NuGet.org
+        id: nuget-login
+        uses: NuGet/login@v1
+        with:
+          user: ${{ vars.NUGET_USER }} # nuget.org profile name of the policy's owner; a "nuget" environment variable
       - name: Push to NuGet.org
         env:
-          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-        run: |
-          if [ -z "$NUGET_API_KEY" ]; then
-            echo "::error::NUGET_PUBLISH is true but the NUGET_API_KEY secret is not set."
-            exit 1
-          fi
-          # --skip-duplicate makes re-running the job safe after a partial push.
-          dotnet nuget push "artifacts/*.nupkg" --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate
+          NUGET_API_KEY: ${{ steps.nuget-login.outputs.NUGET_API_KEY }}
+        # --skip-duplicate makes re-running the job safe after a partial push.
+        run: dotnet nuget push "artifacts/*.nupkg" --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate
