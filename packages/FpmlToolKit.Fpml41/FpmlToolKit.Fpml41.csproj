@@ -12,8 +12,4 @@
     <ProjectReference Include="..\..\fpml-4-1\fpml-4-1.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Include="..\..\fpml-4-1\xsd\**" Pack="true" PackagePath="xsd\fpml-4-1\" Visible="false" />
-  </ItemGroup>
-
 </Project>

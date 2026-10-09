@@ -1,9 +1,9 @@
 FpmlToolKit.Net is licensed under the MIT License (below).
 
 This package also contains third-party material that is NOT covered by the MIT License:
-- FpML schemas (xsd/*/fpml-*.xsd), licensed by the International Swaps and Derivatives Association, Inc. (ISDA)
+- FpML schemas (embedded in each assembly as FpmlSchemas/fpml-*.xsd resources), licensed by the International Swaps and Derivatives Association, Inc. (ISDA)
   under the FpML Public License: https://www.fpml.org/the_standard/fpml-public-license/
-- The W3C XML Signature schema (xsd/*/xmldsig-core-schema.xsd), under the W3C Software License:
+- The W3C XML Signature schema (embedded as FpmlSchemas/xmldsig-core-schema.xsd), under the W3C Software License:
   http://www.w3.org/Consortium/Legal/copyright-software-19980720
 See THIRD-PARTY-NOTICES.md in this package for the required notices.
 

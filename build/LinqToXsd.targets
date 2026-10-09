@@ -18,6 +18,11 @@
     <LinqToXsdSchemaDependency Include="$(MSBuildProjectDirectory)/xsd/**/*.xsd" />
   </ItemGroup>
 
+  <!-- The schemas are embedded in the assembly (read by the generated FpmlSchema class, see FpmlSchema.cs.template). -->
+  <ItemGroup Condition="'@(LinqToXsdSchema)' != ''">
+    <EmbeddedResource Include="@(LinqToXsdSchemaDependency)" LogicalName="FpmlSchemas/%(Filename)%(Extension)" />
+  </ItemGroup>
+
   <PropertyGroup>
     <LinqToXsdOutputFile>$(MSBuildProjectDirectory)/$(BaseIntermediateOutputPath)LinqToXsdSource.g.cs</LinqToXsdOutputFile>
     <LinqToXsdInputHashFile>$(LinqToXsdOutputFile).inputs.sha256</LinqToXsdInputHashFile>
@@ -99,9 +104,16 @@
           BeforeTargets="CoreCompile"
           DependsOnTargets="LinqToXsdGenerate"
           Condition="'@(LinqToXsdSchema)' != ''">
+    <PropertyGroup>
+      <_FpmlSchemaSourceFile>$(IntermediateOutputPath)FpmlSchema.g.cs</_FpmlSchemaSourceFile>
+      <_FpmlMainSchemaFileName>@(LinqToXsdSchema->'%(Filename)%(Extension)')</_FpmlMainSchemaFileName>
+      <_FpmlSchemaSource>$([System.IO.File]::ReadAllText('$(MSBuildThisFileDirectory)FpmlSchema.cs.template').Replace('__NAMESPACE__', '$(RootNamespace)').Replace('__MAIN_SCHEMA__', '$(_FpmlMainSchemaFileName)'))</_FpmlSchemaSource>
+    </PropertyGroup>
+    <!-- Escape so the C# source is written as one item (WriteLinesToFile would otherwise split it on ';'). -->
+    <WriteLinesToFile File="$(_FpmlSchemaSourceFile)" Lines="$([MSBuild]::Escape($(_FpmlSchemaSource)))" Overwrite="true" WriteOnlyWhenDifferent="true" />
     <ItemGroup>
-      <Compile Include="$(LinqToXsdOutputFile)" />
-      <FileWrites Include="$(LinqToXsdOutputFile)" />
+      <Compile Include="$(LinqToXsdOutputFile);$(_FpmlSchemaSourceFile)" />
+      <FileWrites Include="$(LinqToXsdOutputFile);$(_FpmlSchemaSourceFile)" />
     </ItemGroup>
   </Target>
 

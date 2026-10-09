@@ -16,12 +16,4 @@
     <ProjectReference Include="..\..\fpml-5-8-reporting\fpml-5-8-reporting.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Include="..\..\fpml-5-8-confirmation\xsd\**" Pack="true" PackagePath="xsd\fpml-5-8-confirmation\" Visible="false" />
-    <None Include="..\..\fpml-5-8-legal\xsd\**" Pack="true" PackagePath="xsd\fpml-5-8-legal\" Visible="false" />
-    <None Include="..\..\fpml-5-8-pretrade\xsd\**" Pack="true" PackagePath="xsd\fpml-5-8-pretrade\" Visible="false" />
-    <None Include="..\..\fpml-5-8-recordkeeping\xsd\**" Pack="true" PackagePath="xsd\fpml-5-8-recordkeeping\" Visible="false" />
-    <None Include="..\..\fpml-5-8-reporting\xsd\**" Pack="true" PackagePath="xsd\fpml-5-8-reporting\" Visible="false" />
-  </ItemGroup>
-
 </Project>

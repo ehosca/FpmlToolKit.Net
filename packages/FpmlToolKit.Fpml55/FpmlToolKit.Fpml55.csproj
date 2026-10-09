@@ -16,12 +16,4 @@
     <ProjectReference Include="..\..\fpml-5-5-transparency\fpml-5-5-transparency.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Include="..\..\fpml-5-5-confirmation\xsd\**" Pack="true" PackagePath="xsd\fpml-5-5-confirmation\" Visible="false" />
-    <None Include="..\..\fpml-5-5-pretrade\xsd\**" Pack="true" PackagePath="xsd\fpml-5-5-pretrade\" Visible="false" />
-    <None Include="..\..\fpml-5-5-recordkeeping\xsd\**" Pack="true" PackagePath="xsd\fpml-5-5-recordkeeping\" Visible="false" />
-    <None Include="..\..\fpml-5-5-reporting\xsd\**" Pack="true" PackagePath="xsd\fpml-5-5-reporting\" Visible="false" />
-    <None Include="..\..\fpml-5-5-transparency\xsd\**" Pack="true" PackagePath="xsd\fpml-5-5-transparency\" Visible="false" />
-  </ItemGroup>
-
 </Project>

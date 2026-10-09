@@ -6,7 +6,8 @@ schemas themselves.
 
 ## FpML schemas
 
-Files: `fpml-*/xsd/fpml-*.xsd`, the `xsd/` folder of each `FpmlToolKit.Fpml*` package, and the official FpML
+Files: `fpml-*/xsd/fpml-*.xsd` (embedded as `FpmlSchemas/*` resources in each assembly of the `FpmlToolKit.Fpml*`
+packages), and the official FpML
 example documents in `tests/FpmlToolKit.Tests/Examples/` (copied unmodified from FpML's "Schema and Examples"
 downloads).
 
@@ -30,7 +31,7 @@ the multi-file layout FpML distributes.
 
 ## XML Signature schema
 
-Files: `fpml-*/xsd/xmldsig-core-schema.xsd`.
+Files: `fpml-*/xsd/xmldsig-core-schema.xsd` (also embedded in each assembly).
 
 Copyright 2001 The Internet Society and W3C (Massachusetts Institute of Technology, Institut National de Recherche en
 Informatique et en Automatique, Keio University). All Rights Reserved. http://www.w3.org/Consortium/Legal/
