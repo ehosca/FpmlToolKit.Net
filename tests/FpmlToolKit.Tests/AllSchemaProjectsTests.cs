@@ -7,7 +7,7 @@ namespace FpmlToolKit.Tests;
 public class AllSchemaProjectsTests
 {
     private static IEnumerable<string> ProjectNames() =>
-        Directory.GetDirectories(Path.Combine(AppContext.BaseDirectory, "Schemas")).Select(d => Path.GetFileName(d)!).Order();
+        Directory.GetDirectories(Path.Combine(AppContext.BaseDirectory, "Schemas")).Select(d => Path.GetFileName(d)!).OrderBy(x => x, StringComparer.Ordinal);
 
     public static TheoryData<string> Projects() => new(ProjectNames());
 
@@ -15,7 +15,7 @@ public class AllSchemaProjectsTests
     [Fact]
     public void Every_schema_project_is_covered()
     {
-        var assemblies = Directory.GetFiles(AppContext.BaseDirectory, "fpml-*.dll").Select(f => Path.GetFileNameWithoutExtension(f)!).Order();
+        var assemblies = Directory.GetFiles(AppContext.BaseDirectory, "fpml-*.dll").Select(f => Path.GetFileNameWithoutExtension(f)!).OrderBy(x => x, StringComparer.Ordinal);
 
         Assert.Equal(assemblies, ProjectNames());
         Assert.True(ProjectNames().Count() >= 20);

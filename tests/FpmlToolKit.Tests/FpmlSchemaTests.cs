@@ -11,7 +11,7 @@ public class FpmlSchemaTests
     private static readonly string ExamplesRoot = Path.Combine(AppContext.BaseDirectory, "Examples");
 
     private static IEnumerable<string> ProjectNames() =>
-        Directory.GetDirectories(Path.Combine(AppContext.BaseDirectory, "Schemas")).Select(d => Path.GetFileName(d)!).Order();
+        Directory.GetDirectories(Path.Combine(AppContext.BaseDirectory, "Schemas")).Select(d => Path.GetFileName(d)!).OrderBy(x => x, StringComparer.Ordinal);
 
     public static TheoryData<string> Projects() => new(ProjectNames());
 
@@ -24,7 +24,7 @@ public class FpmlSchemaTests
     {
         var type = FpmlSchemaType(project);
         var expected = Directory.GetFiles(Path.Combine(AppContext.BaseDirectory, "Schemas", project, "xsd"), "*.xsd")
-            .Select(Path.GetFileName).Order(StringComparer.Ordinal);
+            .Select(Path.GetFileName).OrderBy(x => x, StringComparer.Ordinal);
 
         var embedded = (IReadOnlyList<string>)type.GetProperty("SchemaFileNames")!.GetValue(null)!;
         var mainSchema = (string)type.GetField("MainSchemaFileName")!.GetValue(null)!;

@@ -69,6 +69,9 @@ fixed in 5.9). For 5.0-5.3 they include the views this project has carried since
     dotnet build FpmlToolKit.slnx
     dotnet test FpmlToolKit.slnx
 
+On Windows the tests also run on .NET Framework 4.8 (`net48`), against the `netstandard2.0` build of each schema
+assembly; CI does the same in a separate Windows job.
+
 C# classes are generated from the XSDs at build time into `obj/` (see `Directory.Build.targets`) and are not
 committed, since each schema set produces about 10 MB of code. A project regenerates only when the content hash of
 its schemas, namespace config, `dotnet-tools.json` or `build/LinqToXsd.targets` changes; CI caches the generated code

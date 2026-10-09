@@ -16,10 +16,10 @@ public class OfficialExampleTests
     public static TheoryData<string, string> Examples()
     {
         var data = new TheoryData<string, string>();
-        foreach (var projectDir in Directory.GetDirectories(ExamplesRoot).Order(StringComparer.Ordinal))
+        foreach (var projectDir in Directory.GetDirectories(ExamplesRoot).OrderBy(x => x, StringComparer.Ordinal))
         {
-            foreach (var file in Directory.GetFiles(projectDir, "*.xml", SearchOption.AllDirectories).Order(StringComparer.Ordinal))
-                data.Add(Path.GetFileName(projectDir), Path.GetRelativePath(projectDir, file).Replace('\\', '/'));
+            foreach (var file in Directory.GetFiles(projectDir, "*.xml", SearchOption.AllDirectories).OrderBy(x => x, StringComparer.Ordinal))
+                data.Add(Path.GetFileName(projectDir), file.Substring(projectDir.Length + 1).Replace('\\', '/'));
         }
         return data;
     }
