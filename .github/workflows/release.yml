@@ -142,7 +142,7 @@ jobs:
         id: nuget-login
         uses: NuGet/login@v1
         with:
-          user: ${{ vars.NUGET_USER }} # nuget.org profile name of the policy's owner
+          user: ${{ vars.NUGET_USER }} # nuget.org profile name of the policy's owner; a "nuget" environment variable
       - name: Push to NuGet.org
         env:
           NUGET_API_KEY: ${{ steps.nuget-login.outputs.NUGET_API_KEY }}

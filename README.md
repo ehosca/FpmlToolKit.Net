@@ -131,10 +131,12 @@ Publishing the same packages to NuGet.org is off until it is switched on:
    repository `FpmlToolKit.Net`, workflow file `release.yml`, environment `nuget`, scope **Push new packages and package
    versions**, glob pattern `FpmlToolKit.*`. The workflow then gets a short-lived API key for each run; no key is
    stored in GitHub.
-2. Set the repository variables (Settings > Secrets and variables > Actions > Variables) `NUGET_USER` to the
-   nuget.org profile name that owns the policy, and `NUGET_PUBLISH` to `true`.
-3. Optionally, add a required reviewer to the `nuget` environment (Settings > Environments), so each push waits for
-   approval after the GitHub release is created.
+2. Create the `nuget` environment (Settings > Environments) and add the environment variable `NUGET_USER`: the
+   nuget.org profile name that owns the policy. Optionally, add a required reviewer, so each push waits for approval
+   after the GitHub release is created.
+3. Set the repository variable `NUGET_PUBLISH` to `true` (Settings > Secrets and variables > Actions > Variables). It
+   has to be a repository variable: the `nuget` job checks it before the job enters the environment, when
+   environment variables are not yet available.
 
 The next version tag then also runs the `nuget` job. It uses `--skip-duplicate`, so re-running it after a partial push
 is safe; NuGet.org versions cannot be deleted, only unlisted.
