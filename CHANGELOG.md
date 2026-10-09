@@ -6,10 +6,12 @@ and versions follow [Semantic Versioning](https://semver.org/). Packages for eac
 
 ## [Unreleased]
 
+## [2.0.0-beta.5] - 2026-10-09
+
 ### Changed
 
 - Publishing to NuGet.org uses NuGet Trusted Publishing (a short-lived key per release run) instead of a stored
-  `NUGET_API_KEY` secret.
+  `NUGET_API_KEY` secret. ([#12](https://github.com/ehosca/FpmlToolKit.Net/pull/12))
 
 ## [2.0.0-beta.4] - 2026-10-09
 
@@ -105,7 +107,8 @@ The 2012 toolkit modernised. ([#1](https://github.com/ehosca/FpmlToolKit.Net/pul
 
 FpML 4.0 to 4.9 and 5.0 to 5.3 for .NET Framework 4.0, generated with CodePlex LinqToXsd. Not published as packages.
 
-[Unreleased]: https://github.com/ehosca/FpmlToolKit.Net/compare/v2.0.0-beta.4...HEAD
+[Unreleased]: https://github.com/ehosca/FpmlToolKit.Net/compare/v2.0.0-beta.5...HEAD
+[2.0.0-beta.5]: https://github.com/ehosca/FpmlToolKit.Net/compare/v2.0.0-beta.4...v2.0.0-beta.5
 [2.0.0-beta.4]: https://github.com/ehosca/FpmlToolKit.Net/compare/v2.0.0-beta.3...v2.0.0-beta.4
 [2.0.0-beta.3]: https://github.com/ehosca/FpmlToolKit.Net/compare/v2.0.0-beta.2...v2.0.0-beta.3
 [2.0.0-beta.2]: https://github.com/ehosca/FpmlToolKit.Net/compare/v2.0.0-beta.1...v2.0.0-beta.2
