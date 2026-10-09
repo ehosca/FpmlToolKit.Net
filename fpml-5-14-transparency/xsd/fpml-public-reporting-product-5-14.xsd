@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+        == Copyright (c) 2026 All rights reserved. 
+        == Financial Products Markup Language is subject to the FpML public license. 
+        == A copy of this license is available at http://www.fpml.org/license/license.html
+-->
+<xsd:schema xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns="http://www.fpml.org/FpML-5/transparency" xmlns:dsig="http://www.w3.org/2000/09/xmldsig#" xmlns:fpml-annotation="http://www.fpml.org/annotation" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.fpml.org/FpML-5/transparency" ecore:documentRoot="FpML" ecore:nsPrefix="trnsp" ecore:package="org.fpml.transparency" version="$Revision: 13452 $" xml:lang="en" elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xsd:annotation>
+    <xsd:documentation>Regulatory Reporting Product Info - for use in regulatory reporting to define the economic data fields about a transaction for regulatory reporting purposes. This can be used in place of a full FpML product representaiton.</xsd:documentation>
+  </xsd:annotation>
+  <xsd:include schemaLocation="fpml-generic-5-14.xsd" />
+  <xsd:complexType name="PublicReportingNonCDEOptionDetails">
+    <xsd:annotation>
+      <xsd:documentation>This defines data elements not defined in CDE that describe option characteristics.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="optionType" type="OptionTypeEnum" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation>For options, what type of option it is (e.g. butterfly).</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="firstExerciseDate" type="xsd:date" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">For options, the first date on which exercise may occur under the specified option terms.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="optionExpirationDate" type="xsd:date" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">For options, each specified date on which the option expires and its exercise right terminates.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="exerciseStyle" type="GenericExerciseStyle" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation>For options, whether the option is a put or call option.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="PublicReportingPayment">
+    <xsd:annotation>
+      <xsd:documentation>Simple product representation providing key information about trade economics of any type of trade for regulatory reporting purposes.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="paymentAmount" type="Money" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">The currency-denominated amount of the fee or additional payment identified by the associated payment type for regulatory reporting purposes.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="paymentType" type="PaymentType" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation>A classification of the type of fee or additional payment, e.g. brokerage, upfront fee etc. FpML does not define domain values for this element.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="PublicReportingProduct">
+    <xsd:annotation>
+      <xsd:documentation>Simple product representation providing key information about trade economics of any type of trade for regulatory reporting purposes.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="Product">
+        <xsd:sequence>
+          <xsd:element name="dates" type="PublicReportingProductDates" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation fpml-annotation:aiGenerated="true">Specifies the date-related terms that contribute to the reported product’s key trade economics for regulatory reporting purposes.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="sizes" type="PublicReportingProductSizes" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation fpml-annotation:aiGenerated="true">Contains the values used to quantify the product’s size as part of the trade economics reported for regulatory purposes.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="underlyers" type="PublicReportingProductUnderlyers" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation fpml-annotation:aiGenerated="true">Captures non-CDE information concerning the product’s underlying references, which CPMI-IOSCO common data elements rely on the unique product identifier to convey.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="priceTerms" type="PublicReportingProductPriceTerms" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation fpml-annotation:aiGenerated="true">Provides the price information for the product’s trade economics, as defined by the CPMI-IOSCO Critical Data Elements.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="otherCalculationTerms" type="PublicReportingProductCalculationTerms" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation fpml-annotation:aiGenerated="true">Provides additional terms for calculating the product’s reported economics beyond its dates, sizes, underlyers, price terms, option details, settlement details, and payments.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="optionDetails" type="PublicReportingNonCDEOptionDetails" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation fpml-annotation:aiGenerated="true">Provides option characteristics not defined in the Common Data Elements for the product’s trade economics in public regulatory reporting.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="settlementDetails" type="PublicReportingProductSettlementDetails" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation fpml-annotation:aiGenerated="true">Provides the settlement terms included in the product representation for public reporting of the trade’s economic characteristics.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="otherPayment" type="PublicReportingPayment" minOccurs="0" maxOccurs="unbounded">
+            <xsd:annotation>
+              <xsd:documentation fpml-annotation:aiGenerated="true">Details of an additional payment forming part of the product’s trade economics, represented for public regulatory reporting purposes.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="PublicReportingProductCalculationTerms">
+    <xsd:annotation>
+      <xsd:documentation />
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="dayCountFraction" type="DayCountFraction" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Specifies the convention for calculating days between dates and the assumed number of days in a year when determining reported fixed or floating payment amounts.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="paymentFrequency" type="Frequency" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">The time interval at which payments under the reported product are made, expressed as a frequency such as one day or three months.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:group ref="PublicReportingNonCDECalculationTerms.model" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="PublicReportingProductDates">
+    <xsd:annotation>
+      <xsd:documentation />
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="effectiveDate" type="xsd:date" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">A date on which the reported product takes contractual effect, distinguished from its expiration and final contractual settlement dates.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="contractExpirationDate" type="xsd:date" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">A date marking the end of the contractual term of the product for public reporting purposes.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="finalContractualSettlementDate" type="xsd:date" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">The date on which the last settlement contractually required for the publicly reported product is scheduled to occur.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="PublicReportingProductPriceTerms">
+    <xsd:annotation>
+      <xsd:documentation>All price term information is defined by CPMI-IOSCO CDE.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="fixedRate" type="xsd:decimal" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">The numeric value of a fixed rate reported as a product price term, interpreted using the corresponding fixed rate notation.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="fixedRateNotation" type="xsd:token" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Identifies the notation in which a fixed rate is expressed for public reporting, providing the interpretive basis for the corresponding decimal rate value.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="spread" type="xsd:decimal" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">The decimal value of the spread applicable to the product’s reported price terms, with its denomination or expression conveyed by the associated spread currency and notation.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="spreadCurrency" type="Currency" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Identifies the currency or fund applicable to a reported spread value, using an ISO 4217 code by default.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="spreadNotation" type="xsd:token" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Textual notation associated with a reported spread value, indicating the form in which the spread is expressed within the product price terms.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="strikePrice" type="xsd:decimal" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">A decimal value representing a strike level among the product price terms disclosed for public reporting, with its quotation convention identified by the corresponding strike price notation.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="strikePriceNotation" type="xsd:token" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">A textual notation specifying the format or convention in which a reported strike price is expressed.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="exchangeRate" type="ExchangeRate" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">The exchange rate applicable to the transaction as part of its publicly reported product price terms.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="PublicReportingProductSettlementDetails">
+    <xsd:annotation>
+      <xsd:documentation>Settlement details</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="settlementCurrency" type="Currency" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Identifies the currency or fund in which settlement of the publicly reported product is denominated.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="PublicReportingProductSizes">
+    <xsd:annotation>
+      <xsd:documentation>Fields related to sizing the product.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="notional" type="NonNegativeMoney" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">A non-negative monetary amount representing a notional measure of the product size for public reporting.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:group ref="PublicReportingNonCDESizeFields.model" minOccurs="0" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="PublicReportingProductUnderlyers">
+    <xsd:annotation>
+      <xsd:documentation>At the moment all of the underlyer information is non-CDE, as CPMI-IOSCO CDE doesn not define underlier information. Instead, it relies on the UPI to convey this information.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="underlyer" type="TradeUnderlyer2" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Represents an asset, index, fixed rate, listed security, quoted currency pair, reference price, or credit reference entity whose observed rate or price supports cashflow valuation for the publicly reported generic product.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:group name="PublicReportingNonCDECalculationTerms.model">
+    <xsd:annotation>
+      <xsd:documentation>Product settlement calcuation terms not defined by CPMI-IOSCO CDE.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="resetFrequency" type="Frequency" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">The time interval at which a value applied under the product settlement calculation terms is reset.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:group>
+  <xsd:group name="PublicReportingNonCDESizeFields.model">
+    <xsd:annotation>
+      <xsd:documentation>Fields related to product size that are not specifically called out in CPMI-IOSCO CDE.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="quantity" type="NonNegativeDecimal" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">A non-negative decimal value specifying a quantity measure of product size for public reporting, separate from its quantity frequency and total notional quantity.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="quantityFrequency" type="NonNegativeDecimal" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">The non-negative number of times the reported quantity applies when determining the product’s transaction size.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="totalNotionalQuantity" type="NonNegativeDecimal" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">A non-negative decimal value representing the aggregate quantity used to express the product's notional size for public reporting.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:group>
+  <xsd:element name="publicReportingProductInfo" type="PublicReportingProduct" substitutionGroup="product">
+    <xsd:annotation>
+      <xsd:documentation>Product data fields required by regulators in satisfaction of public (price transparency) regulatory reporting regulations. These are identified where possible using CPMI-IOSCO Common Data Element lexicon and terminology, but include additional fields required by other regulations. This product is not intended to provide the full trade economics required for confirmation or valuation purposes. This product allows a simpler representation of OTC derivative products that have full standardized representations in FpML.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+</xsd:schema>
+

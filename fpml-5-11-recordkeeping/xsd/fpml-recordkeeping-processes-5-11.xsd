@@ -105,9 +105,9 @@
       <xsd:choice>
         <xsd:sequence>
           <xsd:element name="supervisoryBody" type="xsd:token" />
-          <xsd:element name="regulation" type="xsd:token" minOccurs="0" maxOccurs="unbounded" />
+          <xsd:element name="regulation" type="RegulationName" minOccurs="0" maxOccurs="unbounded" />
         </xsd:sequence>
-        <xsd:element name="regulation" type="xsd:token" />
+        <xsd:element name="regulation" type="RegulationName" />
       </xsd:choice>
       <xsd:element name="withdrawalReasonCode" type="ReasonCode" minOccurs="0" />
     </xsd:sequence>

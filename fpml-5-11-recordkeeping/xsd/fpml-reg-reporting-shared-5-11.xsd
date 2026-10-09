@@ -115,11 +115,11 @@
   </xsd:complexType>
   <xsd:complexType name="RegulationName">
     <xsd:annotation>
-      <xsd:documentation xml:lang="en">An identifier of an reporting regime or format used for regulatory reporting, for example DoddFrankAct, MiFID, HongKongOTCDRepository, etc.</xsd:documentation>
+      <xsd:documentation xml:lang="en">An identifier of a regulation used for regulatory reporting, for example CFTC_PART43, CFTC_PART45, CSA_2013, etc.</xsd:documentation>
     </xsd:annotation>
     <xsd:simpleContent>
       <xsd:extension base="Scheme">
-        <xsd:attribute name="reportingRegimeNameScheme" type="NonEmptyURI" default="http://www.fpml.org/coding-scheme/reporting-regime" />
+        <xsd:attribute name="regulationNameScheme" type="NonEmptyURI" />
       </xsd:extension>
     </xsd:simpleContent>
   </xsd:complexType>
@@ -129,7 +129,7 @@
     </xsd:annotation>
     <xsd:sequence>
       <xsd:element name="supervisoryBody" type="xsd:token" minOccurs="0" />
-      <xsd:element name="regulation" type="xsd:token" minOccurs="0" maxOccurs="unbounded" />
+      <xsd:element name="regulation" type="RegulationName" minOccurs="0" maxOccurs="unbounded" />
       <xsd:group ref="ReportingAndCounterParty.model" minOccurs="0">
         <xsd:annotation>
           <xsd:documentation>Use the reportingParty, counterParty references at the root of the message to identify the reporting party and counterparty. If the same message is going to multiple regulators and they will have different roles, the roles can be overridden at the regulator-level (if they differ from the roles specified at the root of the message)</xsd:documentation>

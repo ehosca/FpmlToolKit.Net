@@ -2,6 +2,7 @@
   <Folder Name="/packages/">
     <Project Path="packages/FpmlToolKit.Fpml40/FpmlToolKit.Fpml40.csproj" />
     <Project Path="packages/FpmlToolKit.Fpml41/FpmlToolKit.Fpml41.csproj" />
+    <Project Path="packages/FpmlToolKit.Fpml410/FpmlToolKit.Fpml410.csproj" />
     <Project Path="packages/FpmlToolKit.Fpml42/FpmlToolKit.Fpml42.csproj" />
     <Project Path="packages/FpmlToolKit.Fpml43/FpmlToolKit.Fpml43.csproj" />
     <Project Path="packages/FpmlToolKit.Fpml44/FpmlToolKit.Fpml44.csproj" />
@@ -16,6 +17,7 @@
     <Project Path="packages/FpmlToolKit.Fpml511/FpmlToolKit.Fpml511.csproj" />
     <Project Path="packages/FpmlToolKit.Fpml512/FpmlToolKit.Fpml512.csproj" />
     <Project Path="packages/FpmlToolKit.Fpml513/FpmlToolKit.Fpml513.csproj" />
+    <Project Path="packages/FpmlToolKit.Fpml514/FpmlToolKit.Fpml514.csproj" />
     <Project Path="packages/FpmlToolKit.Fpml52/FpmlToolKit.Fpml52.csproj" />
     <Project Path="packages/FpmlToolKit.Fpml53/FpmlToolKit.Fpml53.csproj" />
     <Project Path="packages/FpmlToolKit.Fpml54/FpmlToolKit.Fpml54.csproj" />
@@ -30,6 +32,7 @@
   </Folder>
   <Project Path="fpml-4-0/fpml-4-0.csproj" />
   <Project Path="fpml-4-1/fpml-4-1.csproj" />
+  <Project Path="fpml-4-10/fpml-4-10.csproj" />
   <Project Path="fpml-4-2/fpml-4-2.csproj" />
   <Project Path="fpml-4-3/fpml-4-3.csproj" />
   <Project Path="fpml-4-4/fpml-4-4.csproj" />
@@ -66,6 +69,12 @@
   <Project Path="fpml-5-13-recordkeeping/fpml-5-13-recordkeeping.csproj" />
   <Project Path="fpml-5-13-reporting/fpml-5-13-reporting.csproj" />
   <Project Path="fpml-5-13-transparency/fpml-5-13-transparency.csproj" />
+  <Project Path="fpml-5-14-confirmation/fpml-5-14-confirmation.csproj" />
+  <Project Path="fpml-5-14-legal/fpml-5-14-legal.csproj" />
+  <Project Path="fpml-5-14-pretrade/fpml-5-14-pretrade.csproj" />
+  <Project Path="fpml-5-14-recordkeeping/fpml-5-14-recordkeeping.csproj" />
+  <Project Path="fpml-5-14-reporting/fpml-5-14-reporting.csproj" />
+  <Project Path="fpml-5-14-transparency/fpml-5-14-transparency.csproj" />
   <Project Path="fpml-5-2-confirmation/fpml-5-2-confirmation.csproj" />
   <Project Path="fpml-5-2-reporting/fpml-5-2-reporting.csproj" />
   <Project Path="fpml-5-3-confirmation/fpml-5-3-confirmation.csproj" />

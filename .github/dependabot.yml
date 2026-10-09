@@ -1,0 +1,38 @@
+# Weekly dependency update PRs. See https://docs.github.com/code-security/dependabot/working-with-dependabot/dependabot-options-reference
+version: 2
+updates:
+  # NuGet packages and the LinqToXsdCore local tool (dotnet-tools.json).
+  - package-ecosystem: nuget
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      # The XObjectsCore runtime (XObjectsCoreVersion in Directory.Build.props) must match the LinqToXsdCore tool
+      # version that generates the code, so they are always updated in one PR.
+      linqtoxsd:
+        patterns:
+          - XObjectsCore
+          - LinqToXsdCore
+      test:
+        patterns:
+          - coverlet.collector
+          - Microsoft.NET.Test.Sdk
+          - xunit
+          - xunit.*
+
+  # The .NET SDK pinned by global.json. A new major version (.NET 11) is a deliberate upgrade, not a weekly bump.
+  - package-ecosystem: dotnet-sdk
+    directory: /
+    schedule:
+      interval: weekly
+    ignore:
+      - dependency-name: '*'
+        update-types: [version-update:semver-major]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ['*']

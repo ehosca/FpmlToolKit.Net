@@ -1,20 +1,24 @@
-// Creates fpml-<version>-<view> projects from FpML "Schema and Examples" downloads, adds them to FpmlToolKit.slnx,
-// and copies a few of the official examples into the test project.
+// Creates fpml-<version>-<view> (5.x) and fpml-<version> (4.x) projects from FpML "Schema and Examples" downloads,
+// adds them to FpmlToolKit.slnx, and copies a few of the official examples into the test project.
 //
-//   dotnet run scripts/add-schema-version.cs -- <folder> [<folder> ...]
+//   dotnet run scripts/add-schema-version.cs -- [--replace] <folder> [<folder> ...]
 //   dotnet run scripts/add-schema-version.cs              (only regenerate the per-version package projects)
 //
 // Each folder is searched recursively for fpml-main-*.xsd; every match is one view (confirmation, reporting, ...).
 // The version comes from the main schema's file name (fpml-main-5-13.xsd -> 5-13) and the view from its target
-// namespace (http://www.fpml.org/FpML-5/confirmation -> confirmation).
+// namespace (http://www.fpml.org/FpML-5/confirmation -> confirmation; 4.x has no views).
 //
 // - The schema must compile (System.Xml.Schema) or the view is skipped; LinqToXsd fails silently on such schemas.
-// - The XSDs next to the main schema are copied into the new project's xsd/ folder.
+// - The XSDs next to the main schema are copied, byte for byte, into the new project's xsd/ folder.
 // - ExamplesPerView schema-valid example documents, spread evenly across the view's examples, are copied to
 //   tests/FpmlToolKit.Tests/Examples/<project>/, keeping their relative paths.
 // - packages/FpmlToolKit.Fpml<version>/ is (re)generated for every FpML version in the repository: one NuGet package
 //   per version, containing all of that version's view projects (see build/VersionPackage.targets).
-// Existing projects and existing example folders are left untouched, so the script is safe to re-run.
+// Existing projects and existing example folders are left untouched, so the script is safe to re-run. With --replace,
+// an existing project's XSDs and examples are replaced by the ones in the given folders instead (moving a version to
+// a newer FpML build); its namespaceconfig.xml and project file are kept.
+//
+// Afterwards, run scripts/official-files.cs to record where every copied file came from.
 
 #nullable enable
 
@@ -29,6 +33,7 @@ const long MaxExampleBytes = 100_000;
 
 var repoRoot = FindRepoRoot();
 var sources = args.Where(a => !a.StartsWith("--")).ToList();
+var replace = args.Contains("--replace");
 
 foreach (var missing in sources.Where(s => !Directory.Exists(s)))
 {
@@ -173,20 +178,24 @@ void Add(string mainSchema)
 
     var targetNamespace = (string?)XDocument.Load(mainSchema).Root!.Attribute("targetNamespace")
         ?? throw new InvalidOperationException("main schema has no targetNamespace");
-    var view = Regex.Match(targetNamespace, @"^http://www\.fpml\.org/FpML-5/([a-z]+)$") is { Success: true } v
+    string? view = Regex.Match(targetNamespace, @"^http://www\.fpml\.org/FpML-5/([a-z]+)$") is { Success: true } v
         ? v.Groups[1].Value
-        : throw new InvalidOperationException($"unexpected target namespace '{targetNamespace}' (only FpML 5.x views are supported)");
+        : Regex.IsMatch(targetNamespace, $@"^http://www\.fpml\.org/\d{{4}}/FpML-{version}$")
+            ? null
+            : throw new InvalidOperationException($"unexpected target namespace '{targetNamespace}' for FpML {version}");
 
-    var name = $"fpml-{version}-{view}";
+    var name = view is null ? $"fpml-{version}" : $"fpml-{version}-{view}";
     var schemas = CompileSchema(mainSchema, name);
     if (schemas is null)
         return;
 
     var projectDir = Path.Combine(repoRoot, name);
-    if (Directory.Exists(projectDir))
-        Console.WriteLine($"{name}: project already exists");
-    else
+    if (!Directory.Exists(projectDir))
         CreateProject(mainSchema, name, version, view, targetNamespace);
+    else if (replace)
+        ReplaceSchemas(mainSchema, name);
+    else
+        Console.WriteLine($"{name}: project already exists");
 
     ImportExamples(Path.GetDirectoryName(mainSchema)!, name, targetNamespace, schemas);
 }
@@ -216,6 +225,8 @@ XmlSchemaSet? CompileSchema(string mainSchema, string name)
 void ImportExamples(string viewDir, string name, string targetNamespace, XmlSchemaSet schemas)
 {
     var examplesDir = Path.Combine(repoRoot, "tests", "FpmlToolKit.Tests", "Examples", name);
+    if (Directory.Exists(examplesDir) && replace)
+        Directory.Delete(examplesDir, recursive: true);
     if (Directory.Exists(examplesDir))
     {
         Console.WriteLine($"{name}: examples already imported");
@@ -255,14 +266,33 @@ void ImportExamples(string viewDir, string name, string targetNamespace, XmlSche
     Console.WriteLine($"{name}: imported {Math.Min(ExamplesPerView, candidates.Count)} of {candidates.Count} schema-valid examples");
 }
 
-void CreateProject(string mainSchema, string name, string version, string view, string targetNamespace)
+int CopySchemas(string mainSchema, string xsdDir)
+{
+    var schemaFiles = Directory.GetFiles(Path.GetDirectoryName(mainSchema)!, "*.xsd");
+    foreach (var file in schemaFiles)
+        File.Copy(file, Path.Combine(xsdDir, Path.GetFileName(file)));
+    return schemaFiles.Length;
+}
+
+void ReplaceSchemas(string mainSchema, string name)
+{
+    var projectDir = Path.Combine(repoRoot, name);
+    var csproj = File.ReadAllText(Path.Combine(projectDir, name + ".csproj"));
+    if (!csproj.Contains($@"<LinqToXsdSchema Include=""xsd\{Path.GetFileName(mainSchema)}"" />"))
+        throw new InvalidOperationException($"{name}.csproj does not generate from xsd\\{Path.GetFileName(mainSchema)}");
+
+    var xsdDir = Path.Combine(projectDir, "xsd");
+    foreach (var file in Directory.GetFiles(xsdDir, "*.xsd"))
+        File.Delete(file);
+    Console.WriteLine($"{name}: replaced schemas ({CopySchemas(mainSchema, xsdDir)} files)");
+}
+
+void CreateProject(string mainSchema, string name, string version, string? view, string targetNamespace)
 {
     var projectDir = Path.Combine(repoRoot, name);
 
     var xsdDir = Directory.CreateDirectory(Path.Combine(projectDir, "xsd")).FullName;
-    var schemaFiles = Directory.GetFiles(Path.GetDirectoryName(mainSchema)!, "*.xsd");
-    foreach (var file in schemaFiles)
-        File.Copy(file, Path.Combine(xsdDir, Path.GetFileName(file)));
+    var schemaFileCount = CopySchemas(mainSchema, xsdDir);
 
     var rootNamespace = name.Replace('-', '_');
     File.WriteAllText(Path.Combine(xsdDir, "namespaceconfig.xml"), $"""
@@ -285,7 +315,7 @@ void CreateProject(string mainSchema, string name, string version, string view, 
             <TargetFrameworks>netstandard2.0;net10.0</TargetFrameworks>
             <RootNamespace>{rootNamespace}</RootNamespace>
             <AssemblyName>{name}</AssemblyName>
-            <Description>Strongly typed LINQ to XSD classes for the FpML {dotted} {view} view.</Description>
+            <Description>Strongly typed LINQ to XSD classes for {(view is null ? $"FpML {dotted}" : $"the FpML {dotted} {view} view")}.</Description>
           </PropertyGroup>
 
           <ItemGroup>
@@ -302,7 +332,7 @@ void CreateProject(string mainSchema, string name, string version, string view, 
         """);
 
     Run("dotnet", $"sln FpmlToolKit.slnx add \"{csprojPath}\"");
-    Console.WriteLine($"{name}: added ({schemaFiles.Length} schema files)");
+    Console.WriteLine($"{name}: added ({schemaFileCount} schema files)");
 }
 
 void Run(string file, string arguments)

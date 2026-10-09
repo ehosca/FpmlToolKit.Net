@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+== Copyright (c) 2026 All rights reserved. 
+== Financial Products Markup Language is subject to the FpML public license. 
+== A copy of this license is available at http://www.fpml.org/license/license.html
+-->
+<xsd:schema xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns="http://www.fpml.org/FpML-5/transparency" xmlns:dsig="http://www.w3.org/2000/09/xmldsig#" xmlns:fpml-annotation="http://www.fpml.org/annotation" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.fpml.org/FpML-5/transparency" ecore:documentRoot="FpML" ecore:nsPrefix="trnsp" ecore:package="org.fpml.transparency" version="$Revision: 7629 $" xml:lang="en" elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xsd:include schemaLocation="fpml-recordkeeping-processes-5-14.xsd" />
+  <xsd:complexType name="PublicDisclosure" fpml-annotation:deprecated="true" fpml-annotation:deprecatedReason="Not in use (RPTWG decision 2025-09-25).">
+    <xsd:annotation>
+      <xsd:documentation>DEPRECATED. Not in use (RPTWG decision 2025-09-25).</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="AddressedMessage">
+        <xsd:sequence>
+          <xsd:element name="isCorrection" type="xsd:boolean" minOccurs="0" fpml-annotation:deprecated="true" fpml-annotation:deprecatedReason="Not in use (RPTWG decision 2025-09-25).">
+            <xsd:annotation>
+              <xsd:documentation>Indicates if this message corrects an earlier submission. If true, the recipient is directed to record information about the most recent lifecycle event affecting the trade as a correction of the previous submission, rather than as a new lifecycle event.</xsd:documentation>
+              <xsd:documentation>DEPRECATED. Not in use (RPTWG decision 2025-09-25).</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="onBehalfOf" type="OnBehalfOf" minOccurs="0" maxOccurs="4" fpml-annotation:deprecated="true" fpml-annotation:deprecatedReason="Not in use (RPTWG decision 2025-09-25).">
+            <xsd:annotation>
+              <xsd:documentation>Indicates which party (or parties) (and accounts) a trade or event is being processed for. Normally there will only be a maximum of 2 parties, but in the case of a novation there could be a transferor, transferee, remaining party, and other remaining party. Also, in the context of a trade package there could be several parties for which limit check is requested, necessitating multiple onBehalfOf elements. Except for these cases, there should be no more than two onBehalfOf references in a message.</xsd:documentation>
+              <xsd:documentation>DEPRECATED. Not in use (RPTWG decision 2025-09-25).</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="eventId" type="EventId" minOccurs="0" fpml-annotation:deprecated="true" fpml-annotation:deprecatedReason="Not in use (RPTWG decision 2025-09-25).">
+            <xsd:annotation>
+              <xsd:documentation>A unique event identifier.</xsd:documentation>
+              <xsd:documentation>DEPRECATED. Not in use (RPTWG decision 2025-09-25).</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="eventType" type="EventTaxonomy" fpml-annotation:deprecated="true" fpml-annotation:deprecatedReason="Not in use (RPTWG decision 2025-09-25).">
+            <xsd:annotation>
+              <xsd:documentation>A structured code indicating the event type.</xsd:documentation>
+              <xsd:documentation>DEPRECATED. Not in use (RPTWG decision 2025-09-25).</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="eventTimestamp" type="xsd:dateTime" fpml-annotation:deprecated="true" fpml-annotation:deprecatedReason="Not in use (RPTWG decision 2025-09-25).">
+            <xsd:annotation>
+              <xsd:documentation>When the reported event happened.</xsd:documentation>
+              <xsd:documentation>DEPRECATED. Not in use (RPTWG decision 2025-09-25).</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:group ref="ReportingNotionalChange.model" minOccurs="0" fpml-annotation:deprecated="true" fpml-annotation:deprecatedReason="Not in use (RPTWG decision 2025-09-25)." />
+          <xsd:element name="applicableRegulations" type="ApplicableRegulations" fpml-annotation:deprecated="true" fpml-annotation:deprecatedReason="Not in use (RPTWG decision 2025-09-25).">
+            <xsd:annotation>
+              <xsd:documentation>All the regulator that applies to this trade.</xsd:documentation>
+              <xsd:documentation>DEPRECATED. Not in use (RPTWG decision 2025-09-25).</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="regulationSpecificInformation" type="PublicRegulationDetails" minOccurs="0" fpml-annotation:deprecated="true" fpml-annotation:deprecatedReason="Not in use (RPTWG decision 2025-09-25).">
+            <xsd:annotation>
+              <xsd:documentation>All the regulations that this trade should be reported under.</xsd:documentation>
+              <xsd:documentation>DEPRECATED. Not in use (RPTWG decision 2025-09-25).</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="trade" type="Trade" fpml-annotation:deprecated="true" fpml-annotation:deprecatedReason="Not in use (RPTWG decision 2025-09-25).">
+            <xsd:annotation>
+              <xsd:documentation>The revised state of the trade or its final state for a lifecycle ending event</xsd:documentation>
+              <xsd:documentation>DEPRECATED. Not in use (RPTWG decision 2025-09-25).</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="quote" type="BasicQuotation" minOccurs="0" maxOccurs="unbounded" fpml-annotation:deprecated="true" fpml-annotation:deprecatedReason="Not in use (RPTWG decision 2025-09-25).">
+            <xsd:annotation>
+              <xsd:documentation>Pricing information for the trade.</xsd:documentation>
+              <xsd:documentation>DEPRECATED. Not in use (RPTWG decision 2025-09-25).</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="party" type="Party" minOccurs="0" maxOccurs="unbounded" fpml-annotation:deprecated="true" fpml-annotation:deprecatedReason="Not in use (RPTWG decision 2025-09-25).">
+            <xsd:annotation>
+              <xsd:documentation>The supporting party definitions.</xsd:documentation>
+              <xsd:documentation>DEPRECATED. Not in use (RPTWG decision 2025-09-25).</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="PublicDisclosureAcknowledgement" fpml-annotation:deprecated="true" fpml-annotation:deprecatedReason="Not in use (RPTWG decision 2025-09-25).">
+    <xsd:annotation>
+      <xsd:documentation>DEPRECATED. Not in use (RPTWG decision 2025-09-25).</xsd:documentation>
+      <xsd:documentation>A type defining an acknowledgement to a regulatory reporting submission, e.g. regulatoryDisclosure or regulatoryWithdrawal.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="Message">
+        <xsd:sequence>
+          <xsd:element name="header" type="ResponseMessageHeader" minOccurs="0" fpml-annotation:deprecated="true" fpml-annotation:deprecatedReason="Not in use (RPTWG decision 2025-09-25).">
+            <xsd:annotation>
+              <xsd:documentation>DEPRECATED. Not in use (RPTWG decision 2025-09-25).</xsd:documentation>
+              <xsd:documentation>Standard FpML message header</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="tradeIdentifier" type="PartyTradeIdentifier" minOccurs="0" fpml-annotation:deprecated="true" fpml-annotation:deprecatedReason="Not in use (RPTWG decision 2025-09-25).">
+            <xsd:annotation>
+              <xsd:documentation>DEPRECATED. Not in use (RPTWG decision 2025-09-25).</xsd:documentation>
+              <xsd:documentation>identifies the affected trade</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="reportingStatus" type="ReportingStatus" minOccurs="0" maxOccurs="unbounded" fpml-annotation:deprecated="true" fpml-annotation:deprecatedReason="Not in use (RPTWG decision 2025-09-25).">
+            <xsd:annotation>
+              <xsd:documentation>DEPRECATED. Not in use (RPTWG decision 2025-09-25).</xsd:documentation>
+              <xsd:documentation>Information about how the position is being reported to regulators.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="additionalData" type="AdditionalData" minOccurs="0" fpml-annotation:deprecated="true" fpml-annotation:deprecatedReason="Not in use (RPTWG decision 2025-09-25).">
+            <xsd:annotation>
+              <xsd:documentation>DEPRECATED. Not in use (RPTWG decision 2025-09-25).</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="party" type="Party" minOccurs="0" maxOccurs="unbounded" fpml-annotation:deprecated="true" fpml-annotation:deprecatedReason="Not in use (RPTWG decision 2025-09-25).">
+            <xsd:annotation>
+              <xsd:documentation>DEPRECATED. Not in use (RPTWG decision 2025-09-25).</xsd:documentation>
+              <xsd:documentation>Reference information about parties, business units, and persons involed in the trade.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="PublicExecutionReport">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A correctable request conveying trade events, valuations, and party information for public dissemination.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="CorrectableRequestMessage">
+        <xsd:sequence>
+          <xsd:choice minOccurs="0">
+            <xsd:annotation></xsd:annotation>
+            <xsd:group ref="TradingAndPostTradeEvents.model" />
+          </xsd:choice>
+          <xsd:group ref="EventValuation.model" minOccurs="0" />
+          <xsd:group ref="PartiesAndAccounts.model" minOccurs="0" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="PublicExecutionReportRetracted">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A non-correctable request identifying a trade or event for public execution report retraction.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="NonCorrectableRequestMessage">
+        <xsd:sequence>
+          <xsd:choice minOccurs="0">
+            <xsd:group ref="TradingAndPostTradeEvents.model" />
+            <xsd:sequence>
+              <xsd:element name="primaryAssetClass" type="AssetClass" minOccurs="0">
+                <xsd:annotation>
+                  <xsd:documentation fpml-annotation:aiGenerated="true">A scheme-qualified code identifying the primary asset class of the publicly reported transaction or event to which the retraction applies.</xsd:documentation>
+                </xsd:annotation>
+              </xsd:element>
+              <xsd:element name="tradeIdentifier" type="PartyTradeIdentifier" minOccurs="0">
+                <xsd:annotation>
+                  <xsd:documentation fpml-annotation:aiGenerated="true">Provides one or more identifiers allocated by a party to identify the trade associated with the public execution report retraction.</xsd:documentation>
+                </xsd:annotation>
+              </xsd:element>
+              <xsd:element name="eventIdentifier" type="BusinessEventIdentifier" minOccurs="0" maxOccurs="2">
+                <xsd:annotation>
+                  <xsd:documentation>Individual parties should only use a single event identifier to identify a retraction. Platforms providing services on behalf of both parties in a transaction may provide event identifiers for both parties; in this case it is up to the recipient (the trade repository) to validate that the event IDs refer to the same event.</xsd:documentation>
+                </xsd:annotation>
+              </xsd:element>
+            </xsd:sequence>
+          </xsd:choice>
+          <xsd:group ref="PartiesAndAccounts.model" minOccurs="0" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="PublicPackageInfo">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Information identifying a reported package and indicating whether it includes a non-reportable component.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="packageIdentifier" type="IssuerTradeId" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Identifies the reported package using a two-part issuer trade identifier, such as a USI, within public execution reporting.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="pacakageWithNonReportableComponent" type="xsd:boolean" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation fpml-annotation:aiGenerated="true">Indicates whether the package identified for public execution reporting contains a component that is not itself reportable for public dissemination.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="PublicRegulationDetails" fpml-annotation:deprecated="true" fpml-annotation:deprecatedReason="Not in use (RPTWG decision 2025-09-25).">
+    <xsd:annotation>
+      <xsd:documentation>DEPRECATED. Not in use (RPTWG decision 2025-09-25).</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="cftc_part43_2012" type="PublicReporting.Part43_2012" minOccurs="0" fpml-annotation:deprecated="true" fpml-annotation:deprecatedReason="Not in use (RPTWG decision 2025-09-25).">
+        <xsd:annotation>
+          <xsd:documentation>DEPRECATED. Not in use (RPTWG decision 2025-09-25).</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="cftc_part43_2019" type="PublicReporting.Part43_2019" minOccurs="0" fpml-annotation:deprecated="true" fpml-annotation:deprecatedReason="Not in use (RPTWG decision 2025-09-25).">
+        <xsd:annotation>
+          <xsd:documentation>DEPRECATED. Not in use (RPTWG decision 2025-09-25).</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="PublicReporting.Part43_2012" fpml-annotation:deprecated="true" fpml-annotation:deprecatedReason="Not in use (RPTWG decision 2025-09-25).">
+    <xsd:annotation>
+      <xsd:documentation>DEPRECATED. Not in use (RPTWG decision 2025-09-25).</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="cancellation" type="xsd:boolean" minOccurs="0" fpml-annotation:deprecated="true" fpml-annotation:deprecatedReason="Not in use (RPTWG decision 2025-09-25).">
+        <xsd:annotation>
+          <xsd:documentation>DEPRECATED. Not in use (RPTWG decision 2025-09-25).</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="cleared" type="xsd:token" minOccurs="0" fpml-annotation:deprecated="true" fpml-annotation:deprecatedReason="Not in use (RPTWG decision 2025-09-25).">
+        <xsd:annotation>
+          <xsd:documentation>DEPRECATED. Not in use (RPTWG decision 2025-09-25).</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="executionVenueType" type="ExecutionVenueType" minOccurs="0" fpml-annotation:deprecated="true" fpml-annotation:deprecatedReason="Not in use (RPTWG decision 2025-09-25).">
+        <xsd:annotation>
+          <xsd:documentation>DEPRECATED. Not in use (RPTWG decision 2025-09-25).</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="collateralizationType" type="CollateralizationType" minOccurs="0" fpml-annotation:deprecated="true" fpml-annotation:deprecatedReason="Not in use (RPTWG decision 2025-09-25).">
+        <xsd:annotation>
+          <xsd:documentation>DEPRECATED. Not in use (RPTWG decision 2025-09-25).</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="offMarketPrice" type="xsd:boolean" minOccurs="0" fpml-annotation:deprecated="true" fpml-annotation:deprecatedReason="Not in use (RPTWG decision 2025-09-25).">
+        <xsd:annotation>
+          <xsd:documentation>DEPRECATED. Not in use (RPTWG decision 2025-09-25).</xsd:documentation>
+          <xsd:documentation>Indicates that the price does not reflect the current market. For example, in a credit trade where the two counterparties are not of equal credit standing, there is no initial margin and one party pays collateral to the other in the form of an add-on to the price (say a price that would otherwise be 100 at the market is struck at 105 to include the collateral, resulting in a very off-market looking price.)</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="largeSizeTrade" type="xsd:boolean" minOccurs="0" fpml-annotation:deprecated="true" fpml-annotation:deprecatedReason="Not in use (RPTWG decision 2025-09-25).">
+        <xsd:annotation>
+          <xsd:documentation>DEPRECATED. Not in use (RPTWG decision 2025-09-25).</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="nonStandardTerms" type="xsd:boolean" minOccurs="0" fpml-annotation:deprecated="true" fpml-annotation:deprecatedReason="Not in use (RPTWG decision 2025-09-25).">
+        <xsd:annotation>
+          <xsd:documentation>DEPRECATED. Not in use (RPTWG decision 2025-09-25).</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="PublicReporting.Part43_2019" fpml-annotation:deprecated="true" fpml-annotation:deprecatedReason="Not in use (RPTWG decision 2025-09-25).">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">Deprecated public dissemination details capturing trade status, execution characteristics, and publication tracking information.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="cancellation" type="xsd:boolean" minOccurs="0" fpml-annotation:deprecated="true" fpml-annotation:deprecatedReason="Not in use (RPTWG decision 2025-09-25).">
+        <xsd:annotation>
+          <xsd:documentation>DEPRECATED. Not in use (RPTWG decision 2025-09-25).</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="cleared" type="xsd:token" minOccurs="0" fpml-annotation:deprecated="true" fpml-annotation:deprecatedReason="Not in use (RPTWG decision 2025-09-25).">
+        <xsd:annotation>
+          <xsd:documentation>DEPRECATED. Not in use (RPTWG decision 2025-09-25).</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="endUserException" type="xsd:boolean" minOccurs="0" fpml-annotation:deprecated="true" fpml-annotation:deprecatedReason="Not in use (RPTWG decision 2025-09-25).">
+        <xsd:annotation>
+          <xsd:documentation>DEPRECATED. Not in use (RPTWG decision 2025-09-25).</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="executionVenueType" type="ExecutionVenueType" minOccurs="0" fpml-annotation:deprecated="true" fpml-annotation:deprecatedReason="Not in use (RPTWG decision 2025-09-25).">
+        <xsd:annotation>
+          <xsd:documentation>DEPRECATED. Not in use (RPTWG decision 2025-09-25).</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="collateralizationType" type="CollateralizationType" minOccurs="0" fpml-annotation:deprecated="true" fpml-annotation:deprecatedReason="Not in use (RPTWG decision 2025-09-25).">
+        <xsd:annotation>
+          <xsd:documentation>DEPRECATED. Not in use (RPTWG decision 2025-09-25).</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="largeSizeTrade" type="xsd:boolean" minOccurs="0" fpml-annotation:deprecated="true" fpml-annotation:deprecatedReason="Not in use (RPTWG decision 2025-09-25).">
+        <xsd:annotation>
+          <xsd:documentation>DEPRECATED. Not in use (RPTWG decision 2025-09-25).</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="nonStandardTerms" type="xsd:boolean" minOccurs="0" fpml-annotation:deprecated="true" fpml-annotation:deprecatedReason="Not in use (RPTWG decision 2025-09-25).">
+        <xsd:annotation>
+          <xsd:documentation>DEPRECATED. Not in use (RPTWG decision 2025-09-25).</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="clearingService" type="PartyReference" minOccurs="0" fpml-annotation:deprecated="true" fpml-annotation:deprecatedReason="Not in use (RPTWG decision 2025-09-25).">
+        <xsd:annotation>
+          <xsd:documentation>DEPRECATED. Not in use (RPTWG decision 2025-09-25).</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="packageInfo" type="PublicPackageInfo" minOccurs="0" fpml-annotation:deprecated="true" fpml-annotation:deprecatedReason="Not in use (RPTWG decision 2025-09-25).">
+        <xsd:annotation>
+          <xsd:documentation>DEPRECATED. Not in use (RPTWG decision 2025-09-25).</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="disseminationTime" type="xsd:dateTime" minOccurs="0" fpml-annotation:deprecated="true" fpml-annotation:deprecatedReason="Not in use (RPTWG decision 2025-09-25).">
+        <xsd:annotation>
+          <xsd:documentation>DEPRECATED. Not in use (RPTWG decision 2025-09-25).</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="disseminationId" type="xsd:token" minOccurs="0" fpml-annotation:deprecated="true" fpml-annotation:deprecatedReason="Not in use (RPTWG decision 2025-09-25).">
+        <xsd:annotation>
+          <xsd:documentation>DEPRECATED. Not in use (RPTWG decision 2025-09-25).</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="originalDisseminationId" type="xsd:token" minOccurs="0" fpml-annotation:deprecated="true" fpml-annotation:deprecatedReason="Not in use (RPTWG decision 2025-09-25).">
+        <xsd:annotation>
+          <xsd:documentation>DEPRECATED. Not in use (RPTWG decision 2025-09-25).</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="postPricedIndicator" type="xsd:boolean" minOccurs="0" fpml-annotation:deprecated="true" fpml-annotation:deprecatedReason="Not in use (RPTWG decision 2025-09-25).">
+        <xsd:annotation>
+          <xsd:documentation>DEPRECATED. Not in use (RPTWG decision 2025-09-25).</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="publicExecutionReport" type="PublicExecutionReport">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A top-level request message reporting trade execution information for public dissemination, which may subsequently be corrected or retracted.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="publicExecutionReportAcknowledgement" type="Acknowledgement">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A top-level acknowledgement response for a public execution report, using the response message content model of the core FpML messaging framework.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="publicExecutionReportException" type="Exception">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A top-level message informing another system that an exception has been detected in public execution reporting.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="publicExecutionReportRetracted" type="PublicExecutionReportRetracted">
+    <xsd:annotation>
+      <xsd:documentation fpml-annotation:aiGenerated="true">A top-level request message representing retraction of a public execution report and precluding subsequent correction or retraction.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="publicDisclosure" type="PublicDisclosure" fpml-annotation:deprecated="true" fpml-annotation:deprecatedReason="Not in use (RPTWG decision 2025-09-25).">
+    <xsd:annotation>
+      <xsd:documentation>DEPRECATED. Not in use (RPTWG decision 2025-09-25).</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="publicDisclosureAcknowledgement" type="PublicDisclosureAcknowledgement" fpml-annotation:deprecated="true" fpml-annotation:deprecatedReason="Not in use (RPTWG decision 2025-09-25).">
+    <xsd:annotation>
+      <xsd:documentation>DEPRECATED. Not in use (RPTWG decision 2025-09-25).</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="publicDisclosureException" type="RegulatoryReportingException" fpml-annotation:deprecated="true" fpml-annotation:deprecatedReason="Not in use (RPTWG decision 2025-09-25).">
+    <xsd:annotation>
+      <xsd:documentation>DEPRECATED. Not in use (RPTWG decision 2025-09-25).</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="publicDisclosureWithdrawal" type="RegulatoryWithdrawal" fpml-annotation:deprecated="true" fpml-annotation:deprecatedReason="Not in use (RPTWG decision 2025-09-25).">
+    <xsd:annotation>
+      <xsd:documentation>DEPRECATED. Not in use (RPTWG decision 2025-09-25).</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+</xsd:schema>
+

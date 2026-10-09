@@ -46,8 +46,7 @@
             </scheduledTerminationDate>
             <referenceInformation>
                <referenceEntity id="referenceEntity">
-                  <entityName>Banco Nacional de Desenvolvimento Economico E Social -
-							BNDES</entityName>
+                  <entityName>Banco Nacional de Desenvolvimento Economico E Social - BNDES</entityName>
                   <entityId entityIdScheme="http://www.fpml.org/coding-scheme/external/entity-id-RED">05EF75</entityId>
                </referenceEntity>
                <referenceObligation>

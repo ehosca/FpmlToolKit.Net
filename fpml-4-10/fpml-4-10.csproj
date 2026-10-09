@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net10.0</TargetFrameworks>
+    <RootNamespace>fpml_4_10</RootNamespace>
+    <AssemblyName>fpml-4-10</AssemblyName>
+    <Description>Strongly typed LINQ to XSD classes for FpML 4.10.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="XObjectsCore" Version="$(XObjectsCoreVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <LinqToXsdSchema Include="xsd\fpml-main-4-10.xsd" />
+    <LinqToXsdConfiguration Include="xsd\namespaceconfig.xml" />
+  </ItemGroup>
+
+</Project>

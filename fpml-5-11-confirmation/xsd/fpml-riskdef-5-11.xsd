@@ -4,7 +4,7 @@
 == Financial Products Markup Language is subject to the FpML public license. 
 == A copy of this license is available at http://www.fpml.org/license/license.html
 -->
-<xsd:schema xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns="http://www.fpml.org/FpML-5/confirmation" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.fpml.org/FpML-5/confirmation" ecore:documentRoot="FpML" ecore:nsPrefix="conf" ecore:package="org.fpml.confirmation" version="$Revision: 13881 $" elementFormDefault="qualified" attributeFormDefault="unqualified">
+<xsd:schema xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns="http://www.fpml.org/FpML-5/confirmation" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.fpml.org/FpML-5/confirmation" ecore:documentRoot="FpML" ecore:nsPrefix="conf" ecore:package="org.fpml.confirmation" version="$Revision: 14066 $" elementFormDefault="qualified" attributeFormDefault="unqualified">
   <xsd:include schemaLocation="fpml-asset-5-11.xsd" />
   <xsd:complexType name="AssetOrTermPointOrPricingStructureReference">
     <xsd:annotation>
@@ -273,7 +273,22 @@
       <xsd:choice>
         <xsd:element name="parameterReference" type="AssetOrTermPointOrPricingStructureReference" minOccurs="0">
           <xsd:annotation>
-            <xsd:documentation xml:lang="en">A reference to the pricing input parameter to which the sensitivity is computed. If it is omitted, the derivative definition is generic, and applies to any input point in the valuation set.</xsd:documentation>
+            <xsd:documentation xml:lang="en">DEPRECATED. A reference to the pricing input parameter to which the sensitivity is computed. If it is omitted, the derivative definition is generic, and applies to any input point in the valuation set.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="assetReference" type="AssetReference" minOccurs="0">
+          <xsd:annotation>
+            <xsd:documentation xml:lang="en">A reference to the asset to which the sensitivity is computed. If it is omitted, the derivative definition is generic, and applies to any input point in the valuation set.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="termPointReference" type="TermPointReference" minOccurs="0">
+          <xsd:annotation>
+            <xsd:documentation xml:lang="en">A reference to the term point to which the sensitivity is computed. If it is omitted, the derivative definition is generic, and applies to any input point in the valuation set.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="pricingStructureReference" type="PricingStructureReference" minOccurs="0">
+          <xsd:annotation>
+            <xsd:documentation xml:lang="en">A reference to the pricing structure to which the sensitivity is computed. If it is omitted, the derivative definition is generic, and applies to any input point in the valuation set.</xsd:documentation>
           </xsd:annotation>
         </xsd:element>
         <xsd:element name="inputDateReference" type="ValuationReference" maxOccurs="unbounded">
@@ -305,7 +320,28 @@
       <xsd:documentation xml:lang="en">A definition of a shift with respect to a specific pricing parameter.</xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="parameterReference" type="AssetOrTermPointOrPricingStructureReference" />
+      <xsd:choice>
+        <xsd:element name="parameterReference" type="AssetOrTermPointOrPricingStructureReference">
+          <xsd:annotation>
+            <xsd:documentation xml:lang="en">DEPRECATED. A reference to the pricing input parameter to which the shift is computed.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="assetReference" type="AssetReference">
+          <xsd:annotation>
+            <xsd:documentation xml:lang="en">A reference to the asset to which the shift is computed.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="termPointReference" type="TermPointReference">
+          <xsd:annotation>
+            <xsd:documentation xml:lang="en">A reference to the term point to which the shift is computed.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="pricingStructureReference" type="PricingStructureReference">
+          <xsd:annotation>
+            <xsd:documentation xml:lang="en">A reference to the pricing structure to which the shift is computed.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+      </xsd:choice>
       <xsd:element name="shift" type="xsd:decimal">
         <xsd:annotation>
           <xsd:documentation xml:lang="en">The size of the denominator, e.g. 0.0001 = 1 bp.</xsd:documentation>
@@ -429,6 +465,16 @@
     <xsd:complexContent>
       <xsd:extension base="Reference">
         <xsd:attribute name="href" type="xsd:IDREF" use="required" ecore:reference="SensitivitySetDefinition" />
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="TermPointReference">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">Reference to a term point.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="Reference">
+        <xsd:attribute name="href" type="xsd:IDREF" use="required" ecore:reference="TermPoint" />
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>

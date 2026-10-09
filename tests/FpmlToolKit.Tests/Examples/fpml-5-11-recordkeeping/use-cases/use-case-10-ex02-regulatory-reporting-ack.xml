@@ -27,13 +27,13 @@
     <status>WithdrawnFromReporting</status>
   </reportingStatus>
   <reportingStatus>
-    <regimeName>DoddFrank</regimeName>
+    <regimeName>DoddFrankAct</regimeName>
     <supervisoryBody>CFTC</supervisoryBody>
     <regulation>CFTC_PART45</regulation>
     <status>WithdrawnFromReporting</status>
   </reportingStatus>
   <reportingStatus>
-    <regimeName>DoddFrank</regimeName>
+    <regimeName>DoddFrankAct</regimeName>
     <supervisoryBody>SEC</supervisoryBody>
     <status>FullyReported</status>
     <reason>
