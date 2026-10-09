@@ -43,6 +43,7 @@ regenerate only projects whose schemas or generation settings changed. On Window
   4.8). A change that touches schemas, `dotnet-tools.json` or `build/LinqToXsd.targets` regenerates the affected
   projects in CI, which can take up to about 40 minutes.
 - Keep a pull request to one change, and describe what it changes and why.
+- Add a line under **Unreleased** in [CHANGELOG.md](CHANGELOG.md) for changes users will notice.
 - Pull requests are merged with a merge commit.
 
 By contributing you agree that your contribution is licensed under the [MIT License](LICENSE) of this project.
