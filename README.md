@@ -141,6 +141,17 @@ they include every view in FpML's downloads (legal from 5.7, pretrade from 5.5) 
 published schema does not compile (`fpml-business-events-5-8.xsd` uses a `Withdrawal` type the view never declares;
 fixed in 5.9). For 5.0-5.3 they include the views this project has carried since 2012.
 
+The schemas for 5.4-5.13 are FpML's published files, unchanged. The schemas for 4.0-4.9 and 5.0-5.3 date from 2012:
+each version and view is a single combined `fpml-main-*.xsd`, made from FpML's multi-file schemas with Eclipse EMF
+tooling, which adds `ecore:` annotations. They are kept as they are so that the generated API stays the same as in
+earlier releases. Compared with FpML's current downloads, they define the same named types, elements and groups,
+except:
+
+- 4.2 and 4.3: FpML has since added types for the 2021 ISDA definitions and benchmark fallbacks to these versions
+  (such as `BenchmarkRate`, `FallbackRate` and `CashSettlementMethods2021.model`), which the 2012 files don't have.
+  4.3 also has a `StubValue` type that the current download doesn't.
+- 5.3 confirmation has an extra `EmbeddedOptionType` type, and 5.3 transparency lacks the `BuyerSeller.model` group.
+
     dotnet tool restore
     dotnet build FpmlToolKit.slnx
     dotnet test FpmlToolKit.slnx
