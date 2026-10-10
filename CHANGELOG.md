@@ -6,6 +6,11 @@ and versions follow [Semantic Versioning](https://semver.org/). Packages for eac
 
 ## [Unreleased]
 
+### Changed
+
+- Rewritten README, CONTRIBUTING and package READMEs, with a quick start and tested recipes for reading, querying,
+  building, editing and validating FpML. Release and FpML version upkeep moved to MAINTAINING.md.
+
 ## [2.0.0-beta.5] - 2026-10-09
 
 ### Changed
