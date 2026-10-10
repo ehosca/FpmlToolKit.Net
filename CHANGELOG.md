@@ -6,10 +6,13 @@ and versions follow [Semantic Versioning](https://semver.org/). Packages for eac
 
 ## [Unreleased]
 
+## [2.0.0-beta.6] - 2026-10-10
+
 ### Changed
 
 - Rewritten README, CONTRIBUTING and package READMEs, with a quick start and tested recipes for reading, querying,
   building, editing and validating FpML. Release and FpML version upkeep moved to MAINTAINING.md.
+  ([#14](https://github.com/ehosca/FpmlToolKit.Net/pull/14))
 
 ## [2.0.0-beta.5] - 2026-10-09
 
@@ -112,7 +115,8 @@ The 2012 toolkit modernised. ([#1](https://github.com/ehosca/FpmlToolKit.Net/pul
 
 FpML 4.0 to 4.9 and 5.0 to 5.3 for .NET Framework 4.0, generated with CodePlex LinqToXsd. Not published as packages.
 
-[Unreleased]: https://github.com/ehosca/FpmlToolKit.Net/compare/v2.0.0-beta.5...HEAD
+[Unreleased]: https://github.com/ehosca/FpmlToolKit.Net/compare/v2.0.0-beta.6...HEAD
+[2.0.0-beta.6]: https://github.com/ehosca/FpmlToolKit.Net/compare/v2.0.0-beta.5...v2.0.0-beta.6
 [2.0.0-beta.5]: https://github.com/ehosca/FpmlToolKit.Net/compare/v2.0.0-beta.4...v2.0.0-beta.5
 [2.0.0-beta.4]: https://github.com/ehosca/FpmlToolKit.Net/compare/v2.0.0-beta.3...v2.0.0-beta.4
 [2.0.0-beta.3]: https://github.com/ehosca/FpmlToolKit.Net/compare/v2.0.0-beta.2...v2.0.0-beta.3
