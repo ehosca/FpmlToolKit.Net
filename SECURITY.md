@@ -1,5 +1,8 @@
 # Security policy
 
+Thank you for helping keep FpmlToolKit.Net and the people who use it safe. If you think you have found a
+vulnerability, we want to hear about it, and we will work with you to fix it quickly.
+
 ## Supported versions
 
 | Version | Supported |

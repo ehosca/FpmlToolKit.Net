@@ -1,9 +1,27 @@
 # FpmlToolKit.Fpml511
 
-Strongly typed LINQ to XSD classes for FpML 5.11, one assembly per view: confirmation, legal, pretrade, recordkeeping, reporting, transparency.
+Strongly typed C# for FpML 5.11: read, build and validate FpML documents in a few lines, with IntelliSense
+for every element. Part of [FpmlToolKit.Net](https://github.com/ehosca/FpmlToolKit.Net), which covers every FpML
+version from 4.0 to 5.14. Targets .NET Standard 2.0 and .NET 10.
 
-Generated from the FpML 5.11 schemas with [LinqToXsdCore](https://github.com/mamift/LinqToXsdCore),
-as part of [FpmlToolKit.Net](https://github.com/ehosca/FpmlToolKit.Net). Targets .NET Standard 2.0 and .NET 10.
+## Get started
+
+```csharp
+using fpml_5_11_confirmation;
+
+var doc = XRoot.Load("document.xml");           // any FpML 5.11 confirmation document
+Console.WriteLine(doc.Root.GetType().Name);     // the typed root element
+
+bool valid = FpmlSchema.IsValid(doc.Root);      // the official schemas are built in: no files, no setup
+```
+
+Element and type names are FpML's own, so the FpML specification is your API reference. Root elements have
+`Load` and `Parse`, every type can be built with object initializers and saved with `Save` or `ToString()`, and
+`FpmlSchema.Validate` tells you exactly what's wrong when a document isn't valid. The
+[FpmlToolKit.Net README](https://github.com/ehosca/FpmlToolKit.Net#readme) has a quick start and recipes for
+reading, querying, building, editing and validating.
+
+## What's inside
 
 | View | Assembly | Namespace |
 |---|---|---|
@@ -14,26 +32,8 @@ as part of [FpmlToolKit.Net](https://github.com/ehosca/FpmlToolKit.Net). Targets
 | reporting | `fpml-5-11-reporting.dll` | `fpml_5_11_reporting` |
 | transparency | `fpml-5-11-transparency.dll` | `fpml_5_11_transparency` |
 
-Each assembly has its own copy of the W3C XML Signature types, in `<namespace>.xmldsig`.
-
-## Usage
-
-```csharp
-using fpml_5_11_confirmation;
-
-// Load an FpML 5.11 confirmation view document (use the matching namespace for other views); Root is the typed root element.
-var doc = XRoot.Load("document.xml");
-Console.WriteLine(doc.Root.GetType().Name);
-
-// Validate against the schemas embedded in the assembly (no files or network access needed).
-foreach (var problem in FpmlSchema.Validate(doc.Root))
-    Console.WriteLine($"{problem.Severity}: {problem.Message}");
-```
-
-Root element types also have static `Load` and `Parse` methods, and every type can be built in code and
-serialised with `ToString()`. Each assembly embeds the schemas it was generated from: `FpmlSchema` validates
-documents and typed elements (`Validate`, `IsValid`), returns a compiled `XmlSchemaSet` (`CreateSchemaSet`) and
-opens the raw files (`SchemaFileNames`, `OpenSchema`).
+Each assembly also has its own copy of the W3C XML Signature types, in `<namespace>.xmldsig`. The schemas are
+FpML's official files, unchanged, from the latest Recommendation build of FpML 5.11.
 
 ## License
 

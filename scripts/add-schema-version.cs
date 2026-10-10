@@ -121,43 +121,40 @@ void WriteVersionPackages()
             return $"| {view} | `{p}.dll` | `{p.Replace('-', '_')}` |";
         }));
         var exampleNamespace = projects[0].Replace('-', '_');
-        // Contains braces, so it is kept out of the raw interpolated readme template below.
-        const string printProblem = "Console.WriteLine($\"{problem.Severity}: {problem.Message}\");";
-        var exampleDocument = viewNames.Count == 0
-            ? $"an FpML {major}.{minor} document"
-            : $"an FpML {major}.{minor} {viewNames[0]} view document (use the matching namespace for other views)";
+        var exampleDocument = viewNames.Count == 0 ? $"any FpML {major}.{minor} document" : $"any FpML {major}.{minor} {viewNames[0]} document";
+        var dottedVersion = $"{major}.{minor}";
         File.WriteAllText(Path.Combine(dir, "README.md"), $"""
             # {packageId}
 
-            {description}
+            Strongly typed C# for FpML {dottedVersion}: read, build and validate FpML documents in a few lines, with IntelliSense
+            for every element. Part of [FpmlToolKit.Net](https://github.com/ehosca/FpmlToolKit.Net), which covers every FpML
+            version from 4.0 to 5.14. Targets .NET Standard 2.0 and .NET 10.
 
-            Generated from the FpML {major}.{minor} schemas with [LinqToXsdCore](https://github.com/mamift/LinqToXsdCore),
-            as part of [FpmlToolKit.Net](https://github.com/ehosca/FpmlToolKit.Net). Targets .NET Standard 2.0 and .NET 10.
+            ## Get started
+
+            ```csharp
+            using {exampleNamespace};
+
+            var doc = XRoot.Load("document.xml");           // {exampleDocument}
+            Console.WriteLine(doc.Root.GetType().Name);     // the typed root element
+
+            bool valid = FpmlSchema.IsValid(doc.Root);      // the official schemas are built in: no files, no setup
+            ```
+
+            Element and type names are FpML's own, so the FpML specification is your API reference. Root elements have
+            `Load` and `Parse`, every type can be built with object initializers and saved with `Save` or `ToString()`, and
+            `FpmlSchema.Validate` tells you exactly what's wrong when a document isn't valid. The
+            [FpmlToolKit.Net README](https://github.com/ehosca/FpmlToolKit.Net#readme) has a quick start and recipes for
+            reading, querying, building, editing and validating.
+
+            ## What's inside
 
             | View | Assembly | Namespace |
             |---|---|---|
             {rows}
 
-            Each assembly has its own copy of the W3C XML Signature types, in `<namespace>.xmldsig`.
-
-            ## Usage
-
-            ```csharp
-            using {exampleNamespace};
-
-            // Load {exampleDocument}; Root is the typed root element.
-            var doc = XRoot.Load("document.xml");
-            Console.WriteLine(doc.Root.GetType().Name);
-
-            // Validate against the schemas embedded in the assembly (no files or network access needed).
-            foreach (var problem in FpmlSchema.Validate(doc.Root))
-                {printProblem}
-            ```
-
-            Root element types also have static `Load` and `Parse` methods, and every type can be built in code and
-            serialised with `ToString()`. Each assembly embeds the schemas it was generated from: `FpmlSchema` validates
-            documents and typed elements (`Validate`, `IsValid`), returns a compiled `XmlSchemaSet` (`CreateSchemaSet`) and
-            opens the raw files (`SchemaFileNames`, `OpenSchema`).
+            Each assembly also has its own copy of the W3C XML Signature types, in `<namespace>.xmldsig`. The schemas are
+            FpML's official files, unchanged, from the latest Recommendation build of FpML {dottedVersion}.
 
             ## License
 

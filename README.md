@@ -1,62 +1,101 @@
 # FpmlToolKit.Net
 
-FpmlToolKit.Net exists to speed up the initial ramp up time for projects that deal with FpML documents.
-It generates strongly typed classes from the FpML schemas with [LinqToXsdCore](https://github.com/mamift/LinqToXsdCore).
+[![NuGet](https://img.shields.io/nuget/vpre/FpmlToolKit.Fpml513?label=FpmlToolKit.Fpml513)](https://www.nuget.org/packages/FpmlToolKit.Fpml513)
+[![CI](https://github.com/ehosca/FpmlToolKit.Net/actions/workflows/ci.yml/badge.svg)](https://github.com/ehosca/FpmlToolKit.Net/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-## Packages
+**Strongly typed C# for every FpML version, 4.0 to 5.14.** Read, build and validate FpML documents in a few lines of
+code, with IntelliSense for every element and nothing to generate yourself. If you work with derivatives
+confirmations, reports or trade messages in .NET, you can be productive in the next five minutes.
 
-There is one NuGet package per FpML version, `FpmlToolKit.Fpml<major><minor>` (for example `FpmlToolKit.Fpml513`), each
-containing one assembly per view (`fpml-5-13-confirmation.dll`, `fpml-5-13-reporting.dll`, ...). Packages target `netstandard2.0` and `net10.0` and are attached to each
-[GitHub release](https://github.com/ehosca/FpmlToolKit.Net/releases). To use one, download the `.nupkg` into a folder,
-add that folder as a package source, and reference the package:
+## Quick start
 
-    dotnet nuget add source ~/fpml-packages --name fpmltoolkit
+Add the package for your FpML version:
+
     dotnet add package FpmlToolKit.Fpml513 --prerelease
 
-Packages are not on NuGet.org yet. See [CHANGELOG.md](CHANGELOG.md) for what changed in each release.
-
-## Usage
-
-Each view has its own namespace, named after its assembly: `fpml_5_13_confirmation`, `fpml_5_13_reporting`,
-`fpml_4_9` and so on. Element and type names are the FpML names unchanged, so the FpML specification documents the
-API: element `<dataDocument>` is class `dataDocument`, complex type `Party` is class `Party`, and child elements and
-attributes are properties with the same names. The examples use the 5.13 confirmation view; the other views and
-versions work the same way.
-
-### Reading a document
-
-When you don't know which root element a file has, load it through `XRoot` and look at the type of `Root`:
+Then read a trade:
 
 ```csharp
 using fpml_5_13_confirmation;
 
-var doc = XRoot.Load("trade.xml");
-if (doc.Root is dataDocument data)
-{
-    foreach (var trade in data.trade)
-        Console.WriteLine($"Trade dated {trade.tradeHeader.tradeDate.TypedValue:yyyy-MM-dd}");
+var fpml = dataDocument.Load("ird-ex08-fra.xml");
+var trade = fpml.trade[0];
 
-    foreach (var party in data.party)
-        Console.WriteLine($"{party.id}: {party.partyId[0].TypedValue}");
-}
+if (trade.product is fra deal)
+    Console.WriteLine($"{trade.tradeHeader.tradeDate.TypedValue:yyyy-MM-dd}: FRA on {deal.notional.amount:N0} " +
+                      $"{deal.notional.currency.TypedValue}, fixed {deal.fixedRate.TypedValue} vs {deal.floatingRateIndex.TypedValue}");
 ```
 
-When you do know it, each root element class has static `Load` (from a file) and `Parse` (from a string) methods:
+    1991-05-14: FRA on 25,000,000 CHF, fixed 0.04 vs CHF-LIBOR-BBA
+
+That's it: real dates, real decimals, and the FpML names you already know. (The file is one of FpML's own examples.)
+
+## Pick your package
+
+There's one package per FpML version, and it contains every view of that version. They target `netstandard2.0`
+(so .NET Framework 4.7.2 and later, too) and `net10.0`.
+
+| FpML | Package | Namespaces |
+|---|---|---|
+| 5.14 | `FpmlToolKit.Fpml514` | `fpml_5_14_confirmation`, `_reporting`, `_recordkeeping`, `_transparency`, `_pretrade`, `_legal` |
+| 5.13 | `FpmlToolKit.Fpml513` | `fpml_5_13_confirmation`, `_reporting`, ... (same six views) |
+| 5.0 – 5.12 | `FpmlToolKit.Fpml50` ... `FpmlToolKit.Fpml512` | `fpml_5_<minor>_<view>` |
+| 4.0 – 4.10 | `FpmlToolKit.Fpml40` ... `FpmlToolKit.Fpml410` | `fpml_4_<minor>` (4.x has no views) |
+
+The 5.x views grew over time: 5.0–5.2 have confirmation and reporting; recordkeeping and transparency arrive in 5.3,
+pretrade in 5.5 and legal in 5.7. 5.8 has no transparency view, because FpML's published schema for it doesn't compile.
+
+The FpML specification doubles as your API reference: element `<dataDocument>` is class `dataDocument`, type `Party`
+is class `Party`, and child elements and attributes are properties with the same names.
+
+## Recipes
+
+Every example below is also a test in this repository, so you can copy them with confidence.
+
+### Read any document
+
+Don't know what's in the file? `XRoot` loads any FpML document and gives you the right type:
 
 ```csharp
-var data = dataDocument.Load("trade.xml");
+var doc = XRoot.Load("incoming.xml");
+
+if (doc.Root is dataDocument data)
+    foreach (var party in data.party)
+        Console.WriteLine($"{party.id}: {party.partyId[0].TypedValue}");
+```
+
+When you do know, every root element has `Load` (from a file) and `Parse` (from a string):
+
+```csharp
+var fromFile = dataDocument.Load("trade.xml");
 var fromString = dataDocument.Parse(xmlText);
 ```
 
-- Repeating elements are lists (`data.trade`, `party.partyId`); optional elements that are absent are `null`.
-- Elements with text content and attributes, such as `<partyId partyIdScheme="...">`, are objects: the text is
-  `TypedValue`, converted to its schema type (`string`, `DateTime`, `decimal`, ...), and the attributes are properties.
-- Every typed object wraps an `XElement`, available as `Untyped`, for anything the typed API doesn't cover:
-  `data.Untyped.Descendants()`, LINQ to XML queries, and so on. Changes through either view are visible in the other.
+### Query with LINQ
 
-### Building a document
+Lists are just lists, so LINQ works the way you'd hope. Resolve a party reference:
 
-Create objects with initializers, then serialise with `ToString()` or `Save`:
+```csharp
+var deal = (fra)fpml.trade[0].product;
+var buyer = fpml.party.Single(p => p.id == deal.buyerPartyReference.href);
+```
+
+Or total up the CHF notional across a whole folder of FRAs:
+
+```csharp
+var chfNotional = Directory.EnumerateFiles("trades", "*.xml")
+    .Select(dataDocument.Load)
+    .SelectMany(doc => doc.trade)
+    .Select(trade => trade.product)
+    .OfType<fra>()
+    .Where(deal => deal.notional.currency.TypedValue == "CHF")
+    .Sum(deal => deal.notional.amount);
+```
+
+### Build a document
+
+Object initializers and collection expressions make new documents read like the XML they produce:
 
 ```csharp
 var document = new dataDocument
@@ -76,123 +115,92 @@ string xml = document.ToString();
 document.Save("party.xml");
 ```
 
-The typed API does not check that required elements and attributes are present or that values meet the schema's
-constraints, so validate documents you build before sending them.
+### Edit and save
 
-### Validating
-
-Each view assembly embeds the FpML schemas it was generated from, and `FpmlSchema` validates against them:
+Load, change what you need, save. The rest of the document stays as it was:
 
 ```csharp
-foreach (var problem in FpmlSchema.Validate(document))      // typed element, or an XDocument
-    Console.WriteLine($"{problem.Severity}: {problem.Message}");
+var fpml = dataDocument.Load("ird-ex08-fra.xml");
+var deal = (fra)fpml.trade[0].product;
 
-bool ok = FpmlSchema.IsValid(document);                       // errors only; warnings are ignored
-var schemas = FpmlSchema.CreateSchemaSet();                   // compiled XmlSchemaSet, e.g. for XmlReader validation
+deal.notional.amount = 30_000_000m;
+fpml.Save("ird-ex08-fra-amended.xml");
 ```
 
-- `FpmlSchema` resolves includes and imports from the embedded files only; it never reads schemas from disk or the
-  network. `SchemaFileNames` and `OpenSchema` give access to the raw XSDs.
-- `Validate` and `IsValid` are thread-safe and don't modify the document. `CreateSchemaSet` returns a new set each
-  time; `XmlSchemaSet` itself is not thread-safe.
+### Validate
 
-### Using several views or versions
+Each assembly carries the official FpML schemas inside it, so validation works offline with no setup at all. It
+catches what the typed API can't, such as a missing required attribute:
 
-Every view of a version ships in that version's package, and packages for different versions can be referenced side by
-side: each assembly has its own namespace, so no type name is defined twice. When a file uses the same class names
-from two views, qualify them or use a `using` alias:
+```csharp
+var draft = new dataDocument
+{
+    fpmlVersion = "5-13",
+    party = [new Party { id = "p1", partyId = [new PartyId { TypedValue = "ACME" }] }],
+};
+
+foreach (var problem in FpmlSchema.Validate(draft))
+    Console.WriteLine(problem.Message);   // The required attribute 'partyIdScheme' is missing.
+```
+
+It works on plain XML from anywhere, too:
+
+```csharp
+var incoming = XDocument.Load("from-counterparty.xml");
+bool ok = FpmlSchema.IsValid(incoming);              // errors only; warnings are ignored
+var schemas = FpmlSchema.CreateSchemaSet();          // a compiled XmlSchemaSet, e.g. for XmlReader validation
+```
+
+### Use several views or versions together
+
+Every view and version lives in its own namespace, so mix them freely. A `using` alias keeps things tidy:
 
 ```csharp
 using Confirmation = fpml_5_13_confirmation;
 using Reporting = fpml_5_13_reporting;
 
 var confirmation = Confirmation.XRoot.Load("confirmation.xml");
-var report = Reporting.XRoot.Load("report.xml");
+var report = new Reporting.dataDocument { fpmlVersion = "5-13" };
 ```
 
-The W3C XML Signature types are generated into each view too, under a namespace inside the view's:
-`fpml_5_13_confirmation.xmldsig.Signature`, `fpml_4_9.xmldsig.Signature` and so on.
+### Drop down to LINQ to XML
 
-## Releasing
+Every typed object wraps an `XElement`, available as `Untyped`. Use it for anything the typed API doesn't cover;
+changes made through either side show up in the other:
 
-Releases are made by pushing a version tag on a commit that is already on `main`:
+```csharp
+var elementNames = fpml.trade[0].Untyped.Elements().Select(e => e.Name.LocalName);
+fpml.party[0].Untyped.SetAttributeValue("id", "renamed");   // fpml.party[0].id is now "renamed"
+```
 
-    git tag v2.0.0-beta.2
-    git push origin v2.0.0-beta.2
+## Good to know
 
-The Release workflow (`.github/workflows/release.yml`) builds and tests everything with that version, packs one
-`.nupkg` per FpML version and attaches them to a GitHub release for the tag; versions with a suffix such as `-beta.2`
-are marked as prereleases. Running the workflow manually from the Actions tab does a dry run: the packages are kept as a
-workflow artifact, with no GitHub release and no NuGet.org push.
+- **Lists and nulls:** repeating elements are lists (`fpml.trade`, `party.partyId`); optional elements that are
+  absent are `null`.
+- **Values:** elements with text and attributes, like `<partyId partyIdScheme="...">`, are objects. The text is
+  `TypedValue`, already converted to `string`, `DateTime`, `decimal` and so on, and the attributes are properties.
+- **Validate before you send:** the typed API happily builds incomplete documents, so run `FpmlSchema.Validate` on
+  anything you produce.
+- **Thread safety:** `FpmlSchema.Validate` and `IsValid` are thread-safe and never modify your document.
+  `CreateSchemaSet` returns a new set each time.
+- **XML Signature:** the W3C signature types are in each view's own `xmldsig` namespace, such as
+  `fpml_5_13_confirmation.xmldsig.Signature`.
 
-Publishing the same packages to NuGet.org is off until it is switched on:
+## Official schemas, untouched
 
-1. On nuget.org, under **Trusted Publishing**, create a policy for GitHub Actions: repository owner `ehosca`,
-   repository `FpmlToolKit.Net`, workflow file `release.yml`, environment `nuget`, scope **Push new packages and package
-   versions**, glob pattern `FpmlToolKit.*`. The workflow then gets a short-lived API key for each run; no key is
-   stored in GitHub.
-2. Create the `nuget` environment (Settings > Environments) and add the environment variable `NUGET_USER`: the
-   nuget.org profile name that owns the policy. Optionally, add a required reviewer, so each push waits for approval
-   after the GitHub release is created.
-3. Set the repository variable `NUGET_PUBLISH` to `true` (Settings > Secrets and variables > Actions > Variables). It
-   has to be a repository variable: the `nuget` job checks it before the job enters the environment, when
-   environment variables are not yet available.
+Every schema is a byte-for-byte copy of FpML's published files from the latest Recommendation build of its version,
+and so are the official examples used in the tests. [`official-files.txt`](official-files.txt) records where each file
+came from with its SHA-256, and the tests check it on every build. FpML is a registered trademark of ISDA; see
+[THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
 
-The next version tag then also runs the `nuget` job. It uses `--skip-duplicate`, so re-running it after a partial push
-is safe; NuGet.org versions cannot be deleted, only unlisted.
+## Get involved
 
-## Building
-
-The 2.0 line targets `netstandard2.0` and `net10.0` and uses [LinqToXsdCore](https://github.com/mamift/LinqToXsdCore)
-in place of the original CodePlex LinqToXsd. Schema projects cover FpML 4.0-4.10 and 5.0-5.14, each from the latest
-published Recommendation build of that version (for example 5.13 build 8, `fpml-5-13-8-rec-2`). They include every
-view in FpML's downloads except 5.8 transparency, whose published schema does not compile
-(`fpml-business-events-5-8.xsd` uses a `Withdrawal` type the view never declares; fixed in 5.9).
-
-The schemas (`fpml-*/xsd/*.xsd`) and the example documents (`tests/FpmlToolKit.Tests/Examples/`) are byte-for-byte
-copies of FpML's "Schema and Examples" downloads and are never edited. `official-files.txt` lists every one with its
-SHA-256 and the download and entry it came from, and the downloads with their own SHA-256; `.gitattributes` stops git
-from converting their line endings. The tests fail if a file no longer matches the list, and
-`dotnet run scripts/official-files.cs -- verify` downloads the listed zips from fpml.org and checks every file against
-them.
-
-    dotnet tool restore
-    dotnet build FpmlToolKit.slnx
-    dotnet test FpmlToolKit.slnx
-
-On Windows the tests also run on .NET Framework 4.8 (`net48`), against the `netstandard2.0` build of each schema
-assembly; CI does the same in a separate Windows job.
-
-C# classes are generated from the XSDs at build time into `obj/` (see `Directory.Build.targets`) and are not
-committed, since each schema set produces about 10 MB of code. A project regenerates only when the content hash of
-its schemas, namespace config, `dotnet-tools.json` or `build/LinqToXsd.targets` changes; CI caches the generated code
-between runs, so a push regenerates only the projects whose schemas changed. The LinqToXsdCore tool version
-(`dotnet-tools.json`) and the `XObjectsCore` runtime version (`XObjectsCoreVersion` in `Directory.Build.props`) must
-match.
-
-To add a schema version, download the "Schema and Examples" zip of each view of its latest Recommendation build from
-[fpml.org](https://www.fpml.org/the_standard/current/) (the download links show once you are logged in; the files
-themselves need no login). Keep the zips under their path on fpml.org (for example
-`zips/fpml-5-13-8-rec-2/xml/confirmation-5-13_xml.zip`), unzip copies of them elsewhere, and run
-`dotnet run scripts/add-schema-version.cs -- <folder>`. It creates one `fpml-<version>-<view>` project (`fpml-<version>`
-for 4.x) per `fpml-main-*.xsd` it finds under the folder (skipping schemas that do not compile), adds it to the
-solution, and copies five schema-valid official examples per view into `tests/FpmlToolKit.Tests/Examples/`. The tests
-validate each example, load it through the generated `XRoot` API and check that it round-trips unchanged. It also
-regenerates `packages/FpmlToolKit.Fpml<version>/`, the per-version package projects (see
-`build/VersionPackage.targets`); `dotnet pack FpmlToolKit.slnx` produces one `.nupkg` per FpML version. To move an
-existing version to a newer FpML build, run it with `--replace`. Then run
-`dotnet run scripts/official-files.cs -- write <zips>` to record the new files in `official-files.txt`.
+Questions, ideas, bug reports and pull requests are all very welcome. Start with
+[CONTRIBUTING.md](CONTRIBUTING.md); it gets you building in three commands. See [CHANGELOG.md](CHANGELOG.md) for
+what's new, [SECURITY.md](SECURITY.md) to report a vulnerability, and [MAINTAINING.md](MAINTAINING.md) for releases
+and adding FpML versions.
 
 ## License
 
-The MIT license below covers FpmlToolKit.Net's own code. The FpML and W3C schemas included in the repository and
-packages are under their owners' terms; see [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
-
-Copyright (C) 2012 Erhan Hosca
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
+FpmlToolKit.Net is [MIT licensed](LICENSE). The FpML and W3C schemas it includes are under their owners' terms; see
+[THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
