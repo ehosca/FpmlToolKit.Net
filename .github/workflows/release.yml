@@ -99,7 +99,7 @@ jobs:
 
       # Also used by the nuget job, so it pushes exactly the packages that were tested and released.
       - name: Keep packages
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: packages-${{ steps.version.outputs.version }}
           path: artifacts/*.nupkg
@@ -130,7 +130,7 @@ jobs:
     permissions:
       id-token: write # the GitHub OIDC token that NuGet/login exchanges for a short-lived API key
     steps:
-      - uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@v8
         with:
           name: packages-${{ needs.release.outputs.version }}
           path: artifacts
