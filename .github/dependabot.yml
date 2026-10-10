@@ -20,14 +20,8 @@ updates:
           - xunit
           - xunit.*
 
-  # The .NET SDK pinned by global.json. A new major version (.NET 11) is a deliberate upgrade, not a weekly bump.
-  - package-ecosystem: dotnet-sdk
-    directory: /
-    schedule:
-      interval: weekly
-    ignore:
-      - dependency-name: '*'
-        update-types: [version-update:semver-major]
+  # No dotnet-sdk entry: global.json sets the minimum SDK (10.0.100) with rollForward latestFeature, so local builds use
+  # any installed .NET 10 SDK and CI (setup-dotnet) installs the newest one. Raising the minimum is a deliberate change.
 
   - package-ecosystem: github-actions
     directory: /
