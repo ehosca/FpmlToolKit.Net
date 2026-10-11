@@ -7,7 +7,7 @@ vulnerability, we want to hear about it, and we will work with you to fix it qui
 
 | Version | Supported |
 | ------- | --------- |
-| 2.x (latest release or prerelease) | Yes |
+| 2.x (latest release) | Yes |
 | 1.x (2012, .NET Framework 4.0) | No |
 
 Fixes are made on `main` and ship in the next 2.x release. Only the latest 2.x release receives fixes.

@@ -6,6 +6,23 @@ and versions follow [Semantic Versioning](https://semver.org/). Packages for eac
 
 ## [Unreleased]
 
+## [2.0.0] - 2026-10-11
+
+The first stable release of the 2.0 line, and the first on NuGet.org without the `--prerelease` flag. The packages
+are the same as 2.0.0-beta.6. Compared with the 2012 1.x toolkit, 2.0 brings:
+
+- One NuGet package per FpML version, `FpmlToolKit.Fpml40` to `FpmlToolKit.Fpml514`, targeting `netstandard2.0` and
+  `net10.0`.
+- FpML 4.0 to 4.10 and 5.0 to 5.14, every view, from FpML's official files, unchanged, from the latest Recommendation
+  build of each version.
+- Built-in validation against the embedded schemas with `FpmlSchema`, with no files or network access needed.
+- Code generated with LinqToXsdCore 3.4.24, tested on .NET 10 and on .NET Framework 4.8.
+
+### Changed
+
+- From 2.0.0 on, releases follow Semantic Versioning, with FpML schema updates that change the generated API released
+  as major versions; see MAINTAINING.md.
+
 ## [2.0.0-beta.6] - 2026-10-10
 
 ### Changed
@@ -115,7 +132,8 @@ The 2012 toolkit modernised. ([#1](https://github.com/ehosca/FpmlToolKit.Net/pul
 
 FpML 4.0 to 4.9 and 5.0 to 5.3 for .NET Framework 4.0, generated with CodePlex LinqToXsd. Not published as packages.
 
-[Unreleased]: https://github.com/ehosca/FpmlToolKit.Net/compare/v2.0.0-beta.6...HEAD
+[Unreleased]: https://github.com/ehosca/FpmlToolKit.Net/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/ehosca/FpmlToolKit.Net/compare/v2.0.0-beta.6...v2.0.0
 [2.0.0-beta.6]: https://github.com/ehosca/FpmlToolKit.Net/compare/v2.0.0-beta.5...v2.0.0-beta.6
 [2.0.0-beta.5]: https://github.com/ehosca/FpmlToolKit.Net/compare/v2.0.0-beta.4...v2.0.0-beta.5
 [2.0.0-beta.4]: https://github.com/ehosca/FpmlToolKit.Net/compare/v2.0.0-beta.3...v2.0.0-beta.4
