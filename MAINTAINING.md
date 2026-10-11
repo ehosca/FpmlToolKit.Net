@@ -55,6 +55,14 @@ exchanges its GitHub OIDC token for a short-lived API key, so no key is stored a
 If the "Log in to NuGet.org" step fails, check that the policy still matches the repository, workflow file name and
 environment exactly.
 
+### Reserved package ID prefix
+
+The `FpmlToolKit` ID prefix is reserved on nuget.org for the `ehosca` account (granted 2026-10-11). Only that account
+can publish package IDs starting with `FpmlToolKit`, and its packages show the verified checkmark on nuget.org and in
+Visual Studio. Keep new package IDs under the prefix (`FpmlToolKit.Fpml<major><minor>`, as
+`scripts/add-schema-version.cs` generates them) so they get the checkmark too. A different owning account would need
+the reservation moved or shared: email account@nuget.org.
+
 ## Adding or updating an FpML version
 
 Every schema and example comes unchanged from FpML's "Schema and Examples" downloads, from the latest Recommendation
