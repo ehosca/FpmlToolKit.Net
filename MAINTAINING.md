@@ -3,12 +3,25 @@
 How to ship a release, bring in a new FpML version, and understand the build. Everything here is automated, so most
 of it is a single command or a tag push.
 
+## Versioning
+
+Releases follow [Semantic Versioning](https://semver.org/), and the public API is the generated code, so it moves with
+FpML:
+
+- **Major** (3.0.0): any change that can break code compiled against the packages. That includes moving an existing
+  FpML version to a newer FpML build when the generated API changes (5.11 build 7 to 9 renamed and retyped
+  properties, for example), changes to `FpmlSchema`, and dropping a target framework.
+- **Minor** (2.1.0): new FpML versions or views, new helpers, and newer FpML builds that only add types.
+- **Patch** (2.0.1): fixes that leave the API alone, such as packaging or documentation fixes.
+
+The CHANGELOG's API notes for a schema update come from comparing the generated code before and after.
+
 ## Releasing
 
 A release is one tag on a commit that is already on `main`:
 
-    git tag -a v2.0.0-beta.6 -m "FpmlToolKit.Net 2.0.0-beta.6"
-    git push origin v2.0.0-beta.6
+    git tag -a v2.1.0 -m "FpmlToolKit.Net 2.1.0"
+    git push origin v2.1.0
 
 Before tagging, move the **Unreleased** entries in [CHANGELOG.md](CHANGELOG.md) under the new version, through a pull
 request as usual.
@@ -16,7 +29,7 @@ request as usual.
 The tag runs the Release workflow (`.github/workflows/release.yml`):
 
 1. **`release` job:** builds and tests everything with that version, packs one `.nupkg` per FpML version and attaches
-   them to a GitHub release for the tag. Versions with a suffix such as `-beta.6` are marked as prereleases. The
+   them to a GitHub release for the tag. Versions with a suffix such as `-beta.1` are marked as prereleases. The
    release notes are generated from pull request titles; replacing them with the version's CHANGELOG section reads
    better.
 2. **`nuget` job:** pushes the same packages to NuGet.org. It runs in the `nuget` environment, which requires approval

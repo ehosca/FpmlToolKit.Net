@@ -1,6 +1,6 @@
 # FpmlToolKit.Net
 
-[![NuGet](https://img.shields.io/nuget/vpre/FpmlToolKit.Fpml513?label=FpmlToolKit.Fpml513)](https://www.nuget.org/packages/FpmlToolKit.Fpml513)
+[![NuGet](https://img.shields.io/nuget/v/FpmlToolKit.Fpml513?label=FpmlToolKit.Fpml513)](https://www.nuget.org/packages/FpmlToolKit.Fpml513)
 [![CI](https://github.com/ehosca/FpmlToolKit.Net/actions/workflows/ci.yml/badge.svg)](https://github.com/ehosca/FpmlToolKit.Net/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
@@ -12,7 +12,7 @@ confirmations, reports or trade messages in .NET, you can be productive in the n
 
 Add the package for your FpML version:
 
-    dotnet add package FpmlToolKit.Fpml513 --prerelease
+    dotnet add package FpmlToolKit.Fpml513
 
 Then read a trade:
 
