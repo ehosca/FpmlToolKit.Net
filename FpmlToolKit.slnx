@@ -27,6 +27,10 @@
     <Project Path="packages/FpmlToolKit.Fpml58/FpmlToolKit.Fpml58.csproj" />
     <Project Path="packages/FpmlToolKit.Fpml59/FpmlToolKit.Fpml59.csproj" />
   </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/FpmlToolKit.Cli/FpmlToolKit.Cli.csproj" />
+    <Project Path="src/FpmlToolKit.Validation/FpmlToolKit.Validation.csproj" />
+  </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/FpmlToolKit.Tests/FpmlToolKit.Tests.csproj" />
   </Folder>

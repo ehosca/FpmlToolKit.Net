@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net10.0</TargetFrameworks>
+    <Nullable>enable</Nullable>
+    <RootNamespace>FpmlToolKit.Validation</RootNamespace>
+    <PackageId>FpmlToolKit.Validation</PackageId>
+    <Description>FpML business validation rules (shared-*, ref-*) for FpML 5.x confirmation, reporting, recordkeeping and transparency documents: schema validation plus the rules the FpML Validation Working Group publishes on top of the XSD.</Description>
+    <PackageTags>$(PackageTags);validation;business-rules</PackageTags>
+    <IsPackable>true</IsPackable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <!-- No schemas in this package, only code; THIRD-PARTY-NOTICES.md covers the paraphrased FpML rule descriptions. -->
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\THIRD-PARTY-NOTICES.md" Pack="true" PackagePath="\" Visible="false" />
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+</Project>

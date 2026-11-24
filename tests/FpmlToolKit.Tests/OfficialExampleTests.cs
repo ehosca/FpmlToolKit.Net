@@ -24,6 +24,30 @@ public class OfficialExampleTests
         return data;
     }
 
+    // Official business-rule test cases that are also schema-invalid, because of a typo in a year.
+    internal static readonly (string Project, string Example)[] SchemaInvalidExamples =
+    [
+        ("fpml-5-13-confirmation", "validation/invalid-testcases/invalid-ln-17-01.xml"),  // creationTimestamp 20013-10-21
+        ("fpml-5-13-confirmation", "validation/invalid-testcases/invalid-ln-18-01.xml"),  // creationTimestamp 20013-10-21
+        ("fpml-5-13-confirmation", "validation/invalid-testcases/invalid-shared-9-01.xml"),  // unadjustedDate 20011-08-30
+    ];
+
+    public static TheoryData<string, string> SchemaValidExamples()
+    {
+        var data = new TheoryData<string, string>();
+        foreach (var row in Examples())
+            if (!SchemaInvalidExamples.Contains(((string)row[0], (string)row[1])))
+                data.Add((string)row[0], (string)row[1]);
+        return data;
+    }
+
+    [Fact]
+    public void Schema_invalid_examples_are_schema_invalid()
+    {
+        Assert.All(SchemaInvalidExamples, e =>
+            Assert.NotEmpty(SchemaValidator.Validate(XDocument.Load(PathOf(e.Project, e.Example)), SchemasFor(e.Project))));
+    }
+
     [Fact]
     public void Every_example_folder_has_a_schema_project()
     {
@@ -33,7 +57,7 @@ public class OfficialExampleTests
     }
 
     [Theory]
-    [MemberData(nameof(Examples))]
+    [MemberData(nameof(SchemaValidExamples))]
     public void Example_is_schema_valid(string project, string example)
     {
         var document = XDocument.Load(PathOf(project, example));

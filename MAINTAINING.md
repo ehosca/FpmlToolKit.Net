@@ -82,6 +82,14 @@ build of each version.
 4. **Check.** `dotnet run scripts/official-files.cs -- verify` downloads the listed zips from fpml.org and checks every
    file against them. Then build, test, and add a CHANGELOG entry noting any API changes.
 
+The business rules (`src/FpmlToolKit.Validation`) are tested against every official 5.x example, and against all of
+5.13 confirmation's examples and `validation/` test cases. If a new build makes `ValidationRuleTests` fail, find out
+whether the rule or the file is wrong before you change anything. FpML's own examples don't all follow its rules.
+Record each reviewed exception, with the reason, in `tests/FpmlToolKit.Tests/KnownRuleViolations.cs`. Moving the
+rules to a newer FpML build means copying that build's confirmation `products/`, `business-processes/` and
+`validation/` files into the examples, and checking each rule against its
+`html/confirmation/validation-rules/rules-english-*.html` pages.
+
 ## How code generation works
 
 C# classes are generated from the XSDs at build time into each project's `obj/` folder (see `build/LinqToXsd.targets`,

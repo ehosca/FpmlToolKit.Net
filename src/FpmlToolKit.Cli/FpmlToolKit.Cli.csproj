@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>FpmlToolKit.Cli</RootNamespace>
+    <AssemblyName>fpml</AssemblyName>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>fpml</ToolCommandName>
+    <PackageId>FpmlToolKit.Cli</PackageId>
+    <Description>The fpml command: validate FpML documents (any version, 4.0 to 5.14) against their schema and FpML's business rules, and detect a document's version and view.</Description>
+    <PackageTags>$(PackageTags);validation;cli;dotnet-tool</PackageTags>
+    <IsPackable>true</IsPackable>
+    <!-- A license file rather than an MIT expression: the package also contains FpML and W3C schemas under their own terms. -->
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FpmlToolKit.Validation\FpmlToolKit.Validation.csproj" />
+    <InternalsVisibleTo Include="FpmlToolKit.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Every version's schemas, as schemas/<project>/*.xsd next to the tool. The tool needs schema sets, not the
+         generated classes, so it ships the XSDs (about a tenth of the size once packed) instead of the assemblies. -->
+    <Content Include="..\..\fpml-*\xsd\*.xsd" Link="schemas\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" Pack="false" Visible="false" />
+    <None Include="..\..\THIRD-PARTY-NOTICES.md" Pack="true" PackagePath="\" Visible="false" />
+    <None Include="..\..\build\PackageLicense.txt" Pack="true" PackagePath="LICENSE.txt" Visible="false" />
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+</Project>

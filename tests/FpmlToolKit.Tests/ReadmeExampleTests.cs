@@ -186,6 +186,21 @@ public class ReadmeExampleTests
         Assert.Equal("renamed", fpml.party[0].id);
     }
 
+    // Business rules (README.md and src/FpmlToolKit.Validation/README.md), with the embedded schema set
+    [Fact]
+    public void Business_rules()
+    {
+        var schemas = FpmlSchema.CreateSchemaSet();
+
+        var report = Validation.FpmlValidator.Validate(XDocument.Load(TradePath, LoadOptions.SetLineInfo), schemas);
+        Assert.True(report.IsValid);
+
+        var invalid = Path.Combine(AppContext.BaseDirectory, "Examples", "fpml-5-13-confirmation", "validation", "invalid-testcases", "invalid-shared-5-01.xml");
+        var violation = Assert.Single(Validation.FpmlValidator.Validate(XDocument.Load(invalid, LoadOptions.SetLineInfo), schemas).RuleViolations);
+        Assert.Equal("line 184: shared-5 payerPartyReference/@href must not equal receiverPartyReference/@href.",
+            $"line {violation.LineNumber}: {violation.RuleId} {violation.Rule.Description}");
+    }
+
     // The package README (scripts/add-schema-version.cs)
     [Fact]
     public void Package_readme_example()

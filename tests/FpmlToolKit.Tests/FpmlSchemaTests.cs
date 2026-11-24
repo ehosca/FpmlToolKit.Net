@@ -44,7 +44,7 @@ public class FpmlSchemaTests
     }
 
     [Theory]
-    [MemberData(nameof(OfficialExampleTests.Examples), MemberType = typeof(OfficialExampleTests))]
+    [MemberData(nameof(OfficialExampleTests.SchemaValidExamples), MemberType = typeof(OfficialExampleTests))]
     public void Official_example_is_valid_according_to_FpmlSchema(string project, string example)
     {
         var validate = FpmlSchemaType(project).GetMethod("Validate", [typeof(XDocument)])!;

@@ -6,6 +6,16 @@ and versions follow [Semantic Versioning](https://semver.org/). Packages for eac
 
 ## [Unreleased]
 
+### Added
+
+- `FpmlToolKit.Validation`: FpML's business validation rules, the shared (`shared-*`) and ID/IDREF (`ref-*`) rules of
+  the 5.13 Recommendation, for FpML 5.x confirmation, reporting, recordkeeping and transparency documents. `netstandard2.0`
+  and `net10.0`.
+- `FpmlToolKit.Cli`: the `fpml` .NET tool. `fpml validate` checks any FpML 4.0–5.14 document against its schema and the
+  business rules, with `file(line)` text output or JSON and CI-friendly exit codes. `fpml detect` reports a document's
+  version and view, and `fpml rules` lists the rules.
+- The tests now cover every official FpML 5.13 confirmation example and validation test case (1,034 files).
+
 ## [2.0.0] - 2026-10-11
 
 The first stable release of the 2.0 line, and the first on NuGet.org without the `--prerelease` flag. The packages
