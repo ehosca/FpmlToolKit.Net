@@ -7,9 +7,12 @@ schemas themselves.
 ## FpML schemas
 
 Files: `fpml-*/xsd/fpml-*.xsd` (embedded as `FpmlSchemas/*` resources in each assembly of the `FpmlToolKit.Fpml*`
-packages), and the official FpML
-example documents in `tests/FpmlToolKit.Tests/Examples/` (copied unmodified from FpML's "Schema and Examples"
-downloads).
+packages, and shipped as `schemas/*/xsd/*.xsd` files in the `FpmlToolKit.Cli` tool), and the official FpML example
+documents and validation test cases in `tests/FpmlToolKit.Tests/Examples/` (copied unmodified from FpML's "Schema and
+Examples" downloads).
+
+The rule identifiers and descriptions in `FpmlToolKit.Validation` paraphrase the FpML Validation Rules published with
+the FpML Specifications, under the same license.
 
 The FpML Specifications of this document are subject to the FpML Public License (the "License"); you may not use the
 FpML Specifications except in compliance with the License. You may obtain a copy of the License at
@@ -31,7 +34,7 @@ each version. `official-files.txt` lists the download and entry each one was cop
 
 ## XML Signature schema
 
-Files: `fpml-*/xsd/xmldsig-core-schema.xsd` (also embedded in each assembly).
+Files: `fpml-*/xsd/xmldsig-core-schema.xsd` (also embedded in each assembly, and shipped with `FpmlToolKit.Cli`).
 
 Copyright 2001 The Internet Society and W3C (Massachusetts Institute of Technology, Institut National de Recherche en
 Informatique et en Automatique, Keio University). All Rights Reserved. http://www.w3.org/Consortium/Legal/

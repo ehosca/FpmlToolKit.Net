@@ -173,6 +173,40 @@ var elementNames = fpml.trade[0].Untyped.Elements().Select(e => e.Name.LocalName
 fpml.party[0].Untyped.SetAttributeValue("id", "renamed");   // fpml.party[0].id is now "renamed"
 ```
 
+## Business rules
+
+The XSD can't say "a `partyReference` must point at a party" or "business centers only with a business day
+convention". FpML publishes those constraints as validation rules, and
+[`FpmlToolKit.Validation`](src/FpmlToolKit.Validation/README.md) checks them:
+
+    dotnet add package FpmlToolKit.Validation
+
+```csharp
+using FpmlToolKit.Validation;
+
+var schemas = FpmlSchema.CreateSchemaSet();              // the version's schemas; create once, reuse
+var report = FpmlValidator.Validate(XDocument.Load("trade.xml", LoadOptions.SetLineInfo), schemas);
+
+foreach (var v in report.RuleViolations)
+    Console.WriteLine($"line {v.LineNumber}: {v.RuleId} {v.Rule.Description}");
+```
+
+It implements FpML's shared (`shared-*`) and ID/IDREF (`ref-*`) rules for 5.x documents in the confirmation,
+reporting, recordkeeping and transparency views. `report` also has the schema errors. The tests run every official
+5.x example and every 5.13 confirmation validation test case, and they check the exact rules each one raises. FpML's
+own files don't all follow FpML's rules: [KnownRuleViolations.cs](tests/FpmlToolKit.Tests/KnownRuleViolations.cs)
+lists the ones that don't, and why.
+
+## Command line
+
+The [`fpml`](src/FpmlToolKit.Cli/README.md) tool validates any FpML document, 4.0 to 5.14, against its own version's
+schema and the business rules. It reads the version and view from the document:
+
+    dotnet tool install -g FpmlToolKit.Cli
+    fpml validate trades/            # file(line): error shared-1: ... ; exit code 1 if anything is invalid
+    fpml validate trade.xml --format json
+    fpml detect trade.xml            # trade.xml: FpML 5.13 confirmation <dataDocument>
+
 ## Good to know
 
 - **Lists and nulls:** repeating elements are lists (`fpml.trade`, `party.partyId`); optional elements that are

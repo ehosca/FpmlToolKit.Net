@@ -88,9 +88,10 @@ jobs:
 
       - name: Check packages
         run: |
-          expected=$(find packages -mindepth 2 -maxdepth 2 -name '*.csproj' | wc -l)
+          # One package per FpML version (packages/*) plus FpmlToolKit.Validation and FpmlToolKit.Cli (src/*).
+          expected=$(find packages src -mindepth 2 -maxdepth 2 -name '*.csproj' | wc -l)
           actual=$(find artifacts -name "*.${{ steps.version.outputs.version }}.nupkg" | wc -l)
-          echo "$actual packages for $expected FpML versions"
+          echo "$actual packages for $expected package projects"
           if [ "$actual" -ne "$expected" ]; then
             echo "::error::expected $expected packages, found $actual"
             ls artifacts

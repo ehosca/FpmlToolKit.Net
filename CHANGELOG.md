@@ -6,6 +6,18 @@ and versions follow [Semantic Versioning](https://semver.org/). Packages for eac
 
 ## [Unreleased]
 
+## [2.1.0] - 2026-11-23
+
+### Added
+
+- `FpmlToolKit.Validation`: FpML's business validation rules, the shared (`shared-*`) and ID/IDREF (`ref-*`) rules of
+  the 5.13 Recommendation, for FpML 5.x confirmation, reporting, recordkeeping and transparency documents. `netstandard2.0`
+  and `net10.0`.
+- `FpmlToolKit.Cli`: the `fpml` .NET tool. `fpml validate` checks any FpML 4.0–5.14 document against its schema and the
+  business rules, with `file(line)` text output or JSON and CI-friendly exit codes. `fpml detect` reports a document's
+  version and view, and `fpml rules` lists the rules.
+- The tests now cover every official FpML 5.13 confirmation example and validation test case (1,034 files).
+
 ## [2.0.0] - 2026-10-11
 
 The first stable release of the 2.0 line, and the first on NuGet.org without the `--prerelease` flag. The packages
@@ -132,7 +144,8 @@ The 2012 toolkit modernised. ([#1](https://github.com/ehosca/FpmlToolKit.Net/pul
 
 FpML 4.0 to 4.9 and 5.0 to 5.3 for .NET Framework 4.0, generated with CodePlex LinqToXsd. Not published as packages.
 
-[Unreleased]: https://github.com/ehosca/FpmlToolKit.Net/compare/v2.0.0...HEAD
+[Unreleased]: https://github.com/ehosca/FpmlToolKit.Net/compare/v2.1.0...HEAD
+[2.1.0]: https://github.com/ehosca/FpmlToolKit.Net/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/ehosca/FpmlToolKit.Net/compare/v2.0.0-beta.6...v2.0.0
 [2.0.0-beta.6]: https://github.com/ehosca/FpmlToolKit.Net/compare/v2.0.0-beta.5...v2.0.0-beta.6
 [2.0.0-beta.5]: https://github.com/ehosca/FpmlToolKit.Net/compare/v2.0.0-beta.4...v2.0.0-beta.5
