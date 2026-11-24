@@ -76,8 +76,11 @@ public class FpmlSchemaTests
     [Fact]
     public void Validation_works_in_parallel()
     {
-        var examples = Directory.GetFiles(Path.Combine(ExamplesRoot, "fpml-5-13-confirmation"), "*.xml", SearchOption.AllDirectories)
-            .Select(XDocument.Load).ToArray();
+        // Only schema-valid examples, in a fixed order (Directory.GetFiles order differs between file systems).
+        var examples = OfficialExampleTests.SchemaValidExamples()
+            .Where(row => (string)row[0] == "fpml-5-13-confirmation")
+            .Select(row => XDocument.Load(Path.Combine(ExamplesRoot, "fpml-5-13-confirmation", (string)row[1])))
+            .ToArray();
         var failures = new ConcurrentBag<string>();
 
         Parallel.For(0, 200, new ParallelOptions { MaxDegreeOfParallelism = 8 }, i =>

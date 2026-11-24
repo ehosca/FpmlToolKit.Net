@@ -6,7 +6,7 @@ and versions follow [Semantic Versioning](https://semver.org/). Packages for eac
 
 ## [Unreleased]
 
-## [2.1.0] - 2026-11-23
+## [2.1.0] - 2026-11-24
 
 ### Added
 
